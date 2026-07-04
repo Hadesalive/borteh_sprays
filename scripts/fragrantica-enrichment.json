@@ -1,0 +1,4261 @@
+[
+  {
+    "slug": "asad",
+    "ok": true,
+    "data": {
+      "id": 72821,
+      "year": 2021,
+      "family": "Oriental",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "amber",
+          "strength": 100
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 87
+        },
+        {
+          "name": "woody",
+          "strength": 80
+        },
+        {
+          "name": "warm spicy",
+          "strength": 77
+        },
+        {
+          "name": "vanilla",
+          "strength": 74
+        },
+        {
+          "name": "sweet",
+          "strength": 61
+        }
+      ],
+      "top": [
+        "Black Pepper",
+        "Tobacco",
+        "Pineapple"
+      ],
+      "heart": [
+        "Patchouli",
+        "Coffee",
+        "Iris"
+      ],
+      "base": [
+        "Vanilla",
+        "Amber",
+        "Dry Wood",
+        "Benzoin",
+        "Labdanum"
+      ],
+      "description": "Asad by Lattafa Perfumes is a Oriental fragrance for men. Asad was launched in 2021. Top notes are Black Pepper, Tobacco and Pineapple; middle notes are Patchouli, Coffee and Iris; base notes are Vanilla, Amber, Dry Wood, Benzoin and Labdanum.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "yara",
+    "ok": true,
+    "data": {
+      "id": 76880,
+      "year": 2020,
+      "family": "Oriental Vanilla",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "vanilla",
+          "strength": 96
+        },
+        {
+          "name": "powdery",
+          "strength": 92
+        },
+        {
+          "name": "tropical",
+          "strength": 47
+        },
+        {
+          "name": "fruity",
+          "strength": 45
+        },
+        {
+          "name": "musky",
+          "strength": 45
+        }
+      ],
+      "top": [
+        "Orchid",
+        "Heliotrope",
+        "Tangerine"
+      ],
+      "heart": [
+        "Gourmand Accord",
+        "Tropical Fruits"
+      ],
+      "base": [
+        "Vanilla",
+        "Musk",
+        "Sandalwood"
+      ],
+      "description": "Yara by Lattafa Perfumes is a Oriental Vanilla fragrance for women. Yara was launched in 2020. Top notes are Orchid, Heliotrope and Tangerine; middle notes are Gourmand Accord and Tropical Fruits; base notes are Vanilla, Musk and Sandalwood.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "khamrah",
+    "ok": true,
+    "data": {
+      "id": 75805,
+      "year": 2022,
+      "family": "Oriental Spicy",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "warm spicy",
+          "strength": 74
+        },
+        {
+          "name": "vanilla",
+          "strength": 72
+        },
+        {
+          "name": "amber",
+          "strength": 67
+        },
+        {
+          "name": "cinnamon",
+          "strength": 55
+        },
+        {
+          "name": "woody",
+          "strength": 27
+        }
+      ],
+      "top": [
+        "Cinnamon",
+        "Nutmeg",
+        "Bergamot"
+      ],
+      "heart": [
+        "Dates",
+        "Praline",
+        "Tuberose",
+        "Mahonial"
+      ],
+      "base": [
+        "Vanilla",
+        "Tonka Bean",
+        "Amberwood",
+        "Myrrh",
+        "Benzoin",
+        "Akigalawood"
+      ],
+      "description": "Khamrah by Lattafa Perfumes is a Oriental Spicy fragrance for women and men. Khamrah was launched in 2022. Top notes are Cinnamon, Nutmeg and Bergamot; middle notes are Dates, Praline, Tuberose and Mahonial; base notes are Vanilla, Tonka Bean, Amberwood, Myrrh, Benzoin and Akigalawood.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "badee-al-oud-amethyst",
+    "ok": true,
+    "data": {
+      "id": 68214,
+      "year": 2021,
+      "family": "Oriental Vanilla",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "rose",
+          "strength": 100
+        },
+        {
+          "name": "oud",
+          "strength": 79
+        },
+        {
+          "name": "amber",
+          "strength": 42
+        },
+        {
+          "name": "soft spicy",
+          "strength": 39
+        },
+        {
+          "name": "floral",
+          "strength": 37
+        },
+        {
+          "name": "vanilla",
+          "strength": 30
+        }
+      ],
+      "top": [
+        "Pink Pepper",
+        "Bergamot"
+      ],
+      "heart": [
+        "Turkish Rose",
+        "Bulgarian Rose",
+        "Jasmine"
+      ],
+      "base": [
+        "Agarwood (Oud)",
+        "Amber",
+        "Vanilla"
+      ],
+      "description": "Bade'e Al Oud Amethyst by Lattafa Perfumes is a Oriental Vanilla fragrance for women and men. Bade'e Al Oud Amethyst was launched in 2021. Top notes are Pink Pepper and Bergamot; middle notes are Turkish Rose, Bulgarian Rose and Jasmine; base notes are Agarwood (Oud), Amber and Vanilla.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "fakhar-black",
+    "ok": true,
+    "data": {
+      "id": 70465,
+      "year": 2022,
+      "family": "Oriental",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "aromatic",
+          "strength": 100
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 95
+        },
+        {
+          "name": "woody",
+          "strength": 68
+        },
+        {
+          "name": "fruity",
+          "strength": 60
+        },
+        {
+          "name": "fresh",
+          "strength": 49
+        },
+        {
+          "name": "citrus",
+          "strength": 48
+        }
+      ],
+      "top": [
+        "Apple",
+        "Bergamot",
+        "Ginger"
+      ],
+      "heart": [
+        "Lavender",
+        "Sage",
+        "Juniper Berries",
+        "Geranium"
+      ],
+      "base": [
+        "Tonka Bean",
+        "Cedar",
+        "Amberwood",
+        "Vetiver"
+      ],
+      "description": "Fakhar Black by Lattafa Perfumes is a Oriental fragrance for men. Fakhar Black was launched in 2022. Top notes are Apple, Bergamot and Ginger; middle notes are Lavender, Sage, Juniper Berries and Geranium; base notes are Tonka Bean, Cedar, Amberwood and Vetiver.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "club-de-nuit-intense-man",
+    "ok": true,
+    "data": {
+      "id": 34696,
+      "year": 2015,
+      "family": "Woody Spicy",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "fruity",
+          "strength": 58
+        },
+        {
+          "name": "leather",
+          "strength": 46
+        },
+        {
+          "name": "smoky",
+          "strength": 37
+        },
+        {
+          "name": "woody",
+          "strength": 36
+        },
+        {
+          "name": "aromatic",
+          "strength": 34
+        }
+      ],
+      "top": [
+        "Lemon",
+        "Pineapple",
+        "Bergamot",
+        "Black Currant",
+        "Apple"
+      ],
+      "heart": [
+        "Birch",
+        "Jasmine",
+        "Rose"
+      ],
+      "base": [
+        "Musk",
+        "Ambergris",
+        "Patchouli",
+        "Vanilla"
+      ],
+      "description": "Club de Nuit Intense Man by Armaf is a Woody Spicy fragrance for men. Club de Nuit Intense Man was launched in 2015. Top notes are Lemon, Pineapple, Bergamot, Black Currant and Apple; middle notes are Birch, Jasmine and Rose; base notes are Musk, Ambergris, Patchouli and Vanilla.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "tres-nuit",
+    "ok": true,
+    "data": {
+      "id": 27711,
+      "year": null,
+      "family": "Aromatic Spicy",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "powdery",
+          "strength": 100
+        },
+        {
+          "name": "violet",
+          "strength": 98
+        },
+        {
+          "name": "lavender",
+          "strength": 73
+        },
+        {
+          "name": "woody",
+          "strength": 56
+        },
+        {
+          "name": "iris",
+          "strength": 56
+        },
+        {
+          "name": "citrus",
+          "strength": 55
+        }
+      ],
+      "top": [
+        "Iris",
+        "Lemon",
+        "Vervain"
+      ],
+      "heart": [
+        "Lavender",
+        "Violet",
+        "Spicy Notes"
+      ],
+      "base": [
+        "Ambergris",
+        "Sandalwood"
+      ],
+      "description": "Tres Nuit by Armaf is a Aromatic Spicy fragrance for men. Top notes are Iris, Lemon and Vervain; middle notes are Lavender, Violet and Spicy Notes; base notes are Ambergris and Sandalwood.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "kismet-angel",
+    "ok": true,
+    "data": {
+      "id": 79015,
+      "year": 2020,
+      "family": "Oriental Vanilla",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "warm spicy",
+          "strength": 100
+        },
+        {
+          "name": "sweet",
+          "strength": 84
+        },
+        {
+          "name": "vanilla",
+          "strength": 68
+        },
+        {
+          "name": "cinnamon",
+          "strength": 66
+        },
+        {
+          "name": "amber",
+          "strength": 54
+        },
+        {
+          "name": "woody",
+          "strength": 50
+        }
+      ],
+      "top": [
+        "Vanilla",
+        "Honeycomb",
+        "Amber"
+      ],
+      "heart": [
+        "Cognac",
+        "Cinnamon",
+        "Caramel",
+        "Tonka Bean"
+      ],
+      "base": [
+        "Dark Chocolate"
+      ],
+      "description": "Kismet Angel by Maison Alhambra is a Oriental Vanilla fragrance for women and men. Kismet Angel was launched in 2020. Top notes are Vanilla, Honeycomb and Amber; middle notes are Cognac, Cinnamon, Caramel and Tonka Bean; base note is Dark Chocolate.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "fakhar-lattafa-rose",
+    "ok": true,
+    "data": {
+      "id": 70466,
+      "year": 2022,
+      "family": "Floral",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "white floral",
+          "strength": 100
+        },
+        {
+          "name": "fruity",
+          "strength": 36
+        },
+        {
+          "name": "tuberose",
+          "strength": 35
+        },
+        {
+          "name": "sweet",
+          "strength": 25
+        },
+        {
+          "name": "woody",
+          "strength": 23
+        },
+        {
+          "name": "animalic",
+          "strength": 22
+        }
+      ],
+      "top": [
+        "Fruits",
+        "Lily",
+        "Pomegranate",
+        "Aldehydes"
+      ],
+      "heart": [
+        "Tuberose",
+        "Jasmine",
+        "Gardenia",
+        "Ylang-Ylang",
+        "Rose",
+        "Honeysuckle",
+        "Peony"
+      ],
+      "base": [
+        "Vanilla",
+        "White Musk",
+        "Sandalwood",
+        "Ambroxan"
+      ],
+      "description": "Fakhar Rose by Lattafa Perfumes is a Floral fragrance for women. Fakhar Rose was launched in 2022. Top notes are Fruits, Lily, Pomegranate and Aldehydes; middle notes are Tuberose, Jasmine, Gardenia, Ylang-Ylang, Rose, Honeysuckle and Peony; base notes are Vanilla, White Musk, Sandalwood and Ambroxan.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "asad-zanzibar",
+    "ok": true,
+    "data": {
+      "id": 90713,
+      "year": 2024,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "vanilla",
+          "strength": 100
+        },
+        {
+          "name": "iris",
+          "strength": 79
+        },
+        {
+          "name": "powdery",
+          "strength": 78
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 70
+        },
+        {
+          "name": "lavender",
+          "strength": 68
+        },
+        {
+          "name": "salty",
+          "strength": 46
+        }
+      ],
+      "top": [
+        "Lavender",
+        "Black Pepper"
+      ],
+      "heart": [
+        "Coconut Water",
+        "Iris",
+        "Salt"
+      ],
+      "base": [
+        "Vanilla",
+        "Incense"
+      ],
+      "description": "Asad Zanzibar by Lattafa Perfumes is a fragrance for men. Asad Zanzibar was launched in 2024. The nose behind this fragrance is Fanny Bal. Top notes are Lavender and Black Pepper; middle notes are Coconut Water, Iris and Salt; base notes are Vanilla and Incense.",
+      "perfumer": "Fanny Bal"
+    }
+  },
+  {
+    "slug": "yara-moi",
+    "ok": true,
+    "data": {
+      "id": 80722,
+      "year": 2022,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "woody",
+          "strength": 100
+        },
+        {
+          "name": "white floral",
+          "strength": 96
+        },
+        {
+          "name": "patchouli",
+          "strength": 73
+        },
+        {
+          "name": "warm spicy",
+          "strength": 59
+        },
+        {
+          "name": "caramel",
+          "strength": 56
+        },
+        {
+          "name": "powdery",
+          "strength": 47
+        }
+      ],
+      "top": [
+        "Jasmine",
+        "Peach"
+      ],
+      "heart": [
+        "Caramel",
+        "Amber"
+      ],
+      "base": [
+        "Patchouli",
+        "Sandalwood"
+      ],
+      "description": "Yara Moi by Lattafa Perfumes is a fragrance for women. Yara Moi was launched in 2022. Top notes are Jasmine and Peach; middle notes are Caramel and Amber; base notes are Patchouli and Sandalwood.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "yara-tous",
+    "ok": true,
+    "data": {
+      "id": 83320,
+      "year": 2023,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "tropical",
+          "strength": 100
+        },
+        {
+          "name": "sweet",
+          "strength": 93
+        },
+        {
+          "name": "vanilla",
+          "strength": 72
+        },
+        {
+          "name": "white floral",
+          "strength": 72
+        },
+        {
+          "name": "fruity",
+          "strength": 70
+        },
+        {
+          "name": "powdery",
+          "strength": 59
+        }
+      ],
+      "top": [
+        "Mango",
+        "Coconut",
+        "Passionfruit"
+      ],
+      "heart": [
+        "Jasmine",
+        "Orange Blossom",
+        "Heliotrope"
+      ],
+      "base": [
+        "Vanilla",
+        "Musk",
+        "Cashmeran"
+      ],
+      "description": "Yara Tous by Lattafa Perfumes is a fragrance for women. Yara Tous was launched in 2023. Top notes are Mango, Coconut and Passionfruit; middle notes are Jasmine, Orange Blossom and Heliotrope; base notes are Vanilla, Musk and Cashmeran.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "khamrah-qahwa",
+    "ok": true,
+    "data": {
+      "id": 88175,
+      "year": 2023,
+      "family": "Oriental Vanilla",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "warm spicy",
+          "strength": 100
+        },
+        {
+          "name": "sweet",
+          "strength": 82
+        },
+        {
+          "name": "vanilla",
+          "strength": 73
+        },
+        {
+          "name": "cinnamon",
+          "strength": 49
+        },
+        {
+          "name": "coffee",
+          "strength": 44
+        },
+        {
+          "name": "amber",
+          "strength": 31
+        }
+      ],
+      "top": [
+        "Cinnamon",
+        "Cardamom",
+        "Ginger"
+      ],
+      "heart": [
+        "Praline",
+        "Candied Fruits",
+        "White Flowers"
+      ],
+      "base": [
+        "Vanilla",
+        "Coffee",
+        "Tonka Bean",
+        "Benzoin",
+        "Musk"
+      ],
+      "description": "Khamrah Qahwa by Lattafa Perfumes is a Oriental Vanilla fragrance for women and men. Khamrah Qahwa was launched in 2023. Top notes are Cinnamon, Cardamom and Ginger; middle notes are Praline, Candied Fruits and White Flowers; base notes are Vanilla, Coffee, Tonka Bean, Benzoin and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "ana-abiyedh-rouge",
+    "ok": true,
+    "data": {
+      "id": 63062,
+      "year": 2016,
+      "family": "Woody Spicy",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 89
+        },
+        {
+          "name": "caramel",
+          "strength": 72
+        },
+        {
+          "name": "aromatic",
+          "strength": 66
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 65
+        },
+        {
+          "name": "animalic",
+          "strength": 62
+        }
+      ],
+      "top": [
+        "Nashi Pear",
+        "Kumquat",
+        "Bergamot"
+      ],
+      "heart": [
+        "Caramel",
+        "Geranium"
+      ],
+      "base": [
+        "Ambergris",
+        "Musk",
+        "Oakmoss"
+      ],
+      "description": "Ana Abiyedh Rouge by Lattafa Perfumes is a Woody Spicy fragrance for women and men. Ana Abiyedh Rouge was launched in 2016. Top notes are Nashi Pear, Kumquat and Bergamot; middle notes are Caramel and Geranium; base notes are Ambergris, Musk and Oakmoss.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "raghba",
+    "ok": true,
+    "data": {
+      "id": 25807,
+      "year": null,
+      "family": "Oriental Vanilla",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "vanilla",
+          "strength": 100
+        },
+        {
+          "name": "sweet",
+          "strength": 79
+        },
+        {
+          "name": "oud",
+          "strength": 65
+        },
+        {
+          "name": "amber",
+          "strength": 55
+        },
+        {
+          "name": "powdery",
+          "strength": 55
+        },
+        {
+          "name": "balsamic",
+          "strength": 50
+        }
+      ],
+      "top": [],
+      "heart": [],
+      "base": [],
+      "description": "Raghba by Lattafa Perfumes is a Oriental Vanilla fragrance for women and men. The fragrance features Vanilla, Sugar, Agarwood (Oud), Incense, Sandalwood and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "ramz-lattafa-gold",
+    "ok": true,
+    "data": {
+      "id": 70368,
+      "year": null,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "woody",
+          "strength": 74
+        },
+        {
+          "name": "white floral",
+          "strength": 66
+        },
+        {
+          "name": "rose",
+          "strength": 62
+        },
+        {
+          "name": "powdery",
+          "strength": 61
+        },
+        {
+          "name": "sweet",
+          "strength": 44
+        }
+      ],
+      "top": [
+        "Apple",
+        "Peach",
+        "Pear",
+        "Black Currant",
+        "Sweet Orange"
+      ],
+      "heart": [
+        "Rose",
+        "Jasmine Sambac",
+        "Orange Blossom"
+      ],
+      "base": [
+        "Sandalwood",
+        "White Musk",
+        "Vanilla",
+        "Patchouli"
+      ],
+      "description": "Ramz Lattafa (Gold) by Lattafa Perfumes is a fragrance for women and men. Top notes are Apple, Peach, Pear, Black Currant and Sweet Orange; middle notes are Rose, Jasmine Sambac and Orange Blossom; base notes are Sandalwood, White Musk, Vanilla and Patchouli.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "mayar",
+    "ok": true,
+    "data": {
+      "id": 84309,
+      "year": 2022,
+      "family": "Floral Fruity",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "rose",
+          "strength": 54
+        },
+        {
+          "name": "sweet",
+          "strength": 47
+        },
+        {
+          "name": "fresh",
+          "strength": 44
+        },
+        {
+          "name": "tropical",
+          "strength": 37
+        },
+        {
+          "name": "floral",
+          "strength": 36
+        }
+      ],
+      "top": [
+        "Litchi",
+        "Raspberry",
+        "Violet Leaf"
+      ],
+      "heart": [
+        "White Rose",
+        "Peony",
+        "Jasmine"
+      ],
+      "base": [
+        "Musk",
+        "Vanilla"
+      ],
+      "description": "Mayar by Lattafa Perfumes is a Floral Fruity fragrance for women. Mayar was launched in 2022. Top notes are Litchi, Raspberry and Violet Leaf; middle notes are White Rose, Peony and Jasmine; base notes are Musk and Vanilla.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "oud-mood",
+    "ok": true,
+    "data": {
+      "id": 46814,
+      "year": null,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "amber",
+          "strength": 100
+        },
+        {
+          "name": "oud",
+          "strength": 57
+        },
+        {
+          "name": "woody",
+          "strength": 56
+        },
+        {
+          "name": "warm spicy",
+          "strength": 56
+        },
+        {
+          "name": "caramel",
+          "strength": 46
+        },
+        {
+          "name": "balsamic",
+          "strength": 40
+        }
+      ],
+      "top": [
+        "Rose",
+        "Saffron",
+        "Pimento"
+      ],
+      "heart": [
+        "Agarwood (Oud)",
+        "Caramel",
+        "Floral Notes",
+        "Patchouli"
+      ],
+      "base": [
+        "Woody Notes",
+        "Amber",
+        "Resins",
+        "Incense",
+        "Musk"
+      ],
+      "description": "Oud Mood by Lattafa Perfumes is a fragrance for women and men. Top notes are Rose, Saffron and Pimento; middle notes are Agarwood (Oud), Caramel, Floral Notes and Patchouli; base notes are Woody Notes, Amber, Resins, Incense and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "velvet-oud",
+    "ok": true,
+    "data": {
+      "id": 60262,
+      "year": 2018,
+      "family": "Oriental Woody",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "leather",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 93
+        },
+        {
+          "name": "smoky",
+          "strength": 74
+        },
+        {
+          "name": "oud",
+          "strength": 66
+        },
+        {
+          "name": "animalic",
+          "strength": 65
+        },
+        {
+          "name": "citrus",
+          "strength": 43
+        }
+      ],
+      "top": [],
+      "heart": [],
+      "base": [],
+      "description": "Velvet Oud by Lattafa Perfumes is a Oriental Woody fragrance for women and men. Velvet Oud was launched in 2018. The fragrance features Leather, Agarwood (Oud), Incense, Amber, Citruses, Musk and Cinnamon.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "his-confession",
+    "ok": true,
+    "data": {
+      "id": 96866,
+      "year": 2024,
+      "family": "Oriental Woody",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "amber",
+          "strength": 100
+        },
+        {
+          "name": "vanilla",
+          "strength": 94
+        },
+        {
+          "name": "warm spicy",
+          "strength": 63
+        },
+        {
+          "name": "powdery",
+          "strength": 59
+        },
+        {
+          "name": "iris",
+          "strength": 56
+        },
+        {
+          "name": "woody",
+          "strength": 51
+        }
+      ],
+      "top": [
+        "Lavender",
+        "Cinnamon",
+        "Mandarin"
+      ],
+      "heart": [
+        "Iris",
+        "Benzoin",
+        "Cypress",
+        "Mahonial"
+      ],
+      "base": [
+        "Vanilla",
+        "Tonka",
+        "Amber",
+        "Incense",
+        "Cedarwood",
+        "Patchouli"
+      ],
+      "description": "His Confession by Lattafa Perfumes is a Oriental Woody fragrance for men. This is a new fragrance. His Confession was launched in 2024. Top notes are Lavender, Cinnamon and Mandarin; middle notes are Iris, Benzoin, Cypress and Mahonial; base notes are Vanilla, Tonka, Amber, Incense, Cedarwood and Patchouli.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "maahir",
+    "ok": true,
+    "data": {
+      "id": 64950,
+      "year": 2019,
+      "family": "Oriental Floral",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "powdery",
+          "strength": 100
+        },
+        {
+          "name": "woody",
+          "strength": 79
+        },
+        {
+          "name": "vanilla",
+          "strength": 73
+        },
+        {
+          "name": "musky",
+          "strength": 69
+        },
+        {
+          "name": "white floral",
+          "strength": 60
+        },
+        {
+          "name": "sweet",
+          "strength": 40
+        }
+      ],
+      "top": [
+        "Red Berries",
+        "Peach",
+        "Bergamot"
+      ],
+      "heart": [
+        "Jasmine",
+        "Peony",
+        "Red Lily"
+      ],
+      "base": [
+        "Sandalwood",
+        "Vanilla Flower",
+        "Musk"
+      ],
+      "description": "Maahir by Lattafa Perfumes is a Oriental Floral fragrance for women and men. Maahir was launched in 2019. Top notes are Red Berries, Peach and Bergamot; middle notes are Jasmine, Peony and Red Lily; base notes are Sandalwood, Vanilla Flower and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "maahir-legacy",
+    "ok": true,
+    "data": {
+      "id": 82727,
+      "year": 2023,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "aromatic",
+          "strength": 100
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 99
+        },
+        {
+          "name": "citrus",
+          "strength": 94
+        },
+        {
+          "name": "green",
+          "strength": 59
+        },
+        {
+          "name": "woody",
+          "strength": 38
+        },
+        {
+          "name": "amber",
+          "strength": 36
+        }
+      ],
+      "top": [
+        "Lime",
+        "Mint",
+        "Grapefruit",
+        "Lavender",
+        "Pineapple"
+      ],
+      "heart": [
+        "Black Pepper",
+        "Rosemary",
+        "juniper berry",
+        "Geranium",
+        "Frankincense"
+      ],
+      "base": [
+        "Ambroxan",
+        "Vetiver",
+        "Oakmoss",
+        "Tonka Bean",
+        "Cashmeran"
+      ],
+      "description": "Maahir Legacy by Lattafa Perfumes is a fragrance for men. Maahir Legacy was launched in 2023. Top notes are Lime, Mint, Grapefruit, Lavender and Pineapple; middle notes are Black Pepper, Rosemary, juniper berry, Geranium and Frankincense; base notes are Ambroxan, Vetiver, Oakmoss, Tonka Bean and Cashmeran.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "opulent-musk",
+    "ok": true,
+    "data": {
+      "id": 67940,
+      "year": 2019,
+      "family": "Oriental",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "musky",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 93
+        },
+        {
+          "name": "woody",
+          "strength": 89
+        },
+        {
+          "name": "powdery",
+          "strength": 68
+        },
+        {
+          "name": "warm spicy",
+          "strength": 61
+        },
+        {
+          "name": "white floral",
+          "strength": 55
+        }
+      ],
+      "top": [
+        "White Musk",
+        "Saffron",
+        "Lemon"
+      ],
+      "heart": [
+        "White Flowers",
+        "Jasmine"
+      ],
+      "base": [
+        "White Musk",
+        "Cedar",
+        "Amber",
+        "Resin",
+        "Fir Resin"
+      ],
+      "description": "Opulent Musk by Lattafa Perfumes is a Oriental fragrance for women. Opulent Musk was launched in 2019. Top notes are White Musk, Saffron and Lemon; middle notes are White Flowers and Jasmine; base notes are White Musk, Cedar, Amber, Resin and Fir Resin.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "qaed-al-fursan",
+    "ok": true,
+    "data": {
+      "id": 67996,
+      "year": 2016,
+      "family": "Oriental Woody",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "sweet",
+          "strength": 94
+        },
+        {
+          "name": "woody",
+          "strength": 56
+        },
+        {
+          "name": "tropical",
+          "strength": 56
+        },
+        {
+          "name": "fresh",
+          "strength": 47
+        },
+        {
+          "name": "amber",
+          "strength": 37
+        }
+      ],
+      "top": [
+        "Pineapple",
+        "Saffron"
+      ],
+      "heart": [
+        "Balsam Fir",
+        "Jasmine"
+      ],
+      "base": [
+        "Cedar",
+        "Amber",
+        "Agarwood (Oud)"
+      ],
+      "description": "Qaed Al Fursan by Lattafa Perfumes is a Oriental Woody fragrance for women and men. Qaed Al Fursan was launched in 2016. Top notes are Pineapple and Saffron; middle notes are Balsam Fir and Jasmine; base notes are Cedar, Amber and Agarwood (Oud).",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "qaed-al-fursan-unlimited",
+    "ok": true,
+    "data": {
+      "id": 82590,
+      "year": 2022,
+      "family": "Floral Fruity Gourmand",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "vanilla",
+          "strength": 78
+        },
+        {
+          "name": "coconut",
+          "strength": 76
+        },
+        {
+          "name": "tropical",
+          "strength": 60
+        },
+        {
+          "name": "powdery",
+          "strength": 45
+        },
+        {
+          "name": "floral",
+          "strength": 40
+        }
+      ],
+      "top": [
+        "Coconut",
+        "Pineapple",
+        "Citruses"
+      ],
+      "heart": [
+        "Ylang-Ylang",
+        "Frangipani",
+        "Jasmine"
+      ],
+      "base": [
+        "Vanilla",
+        "Musk",
+        "Sandalwood",
+        "Sweet Notes"
+      ],
+      "description": "Qaed Al Fursan Unlimited by Lattafa Perfumes is a Floral Fruity Gourmand fragrance for women and men. Qaed Al Fursan Unlimited was launched in 2022. Top notes are Coconut, Pineapple and Citruses; middle notes are Ylang-Ylang, Frangipani and Jasmine; base notes are Vanilla, Musk, Sandalwood and Sweet Notes.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "najdia",
+    "ok": true,
+    "data": {
+      "id": 66011,
+      "year": 2020,
+      "family": "Aromatic Aquatic",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "aromatic",
+          "strength": 71
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 60
+        },
+        {
+          "name": "aquatic",
+          "strength": 55
+        },
+        {
+          "name": "fresh",
+          "strength": 53
+        },
+        {
+          "name": "warm spicy",
+          "strength": 51
+        }
+      ],
+      "top": [
+        "Lemon",
+        "Apple",
+        "Cinnamon",
+        "Lemongrass",
+        "Bergamot"
+      ],
+      "heart": [
+        "Watery Notes",
+        "Lavender",
+        "Cardamom",
+        "Rosemary"
+      ],
+      "base": [
+        "Musk",
+        "Amber",
+        "Sandalwood",
+        "Cedar",
+        "Tobacco"
+      ],
+      "description": "Najdia by Lattafa Perfumes is a Aromatic Aquatic fragrance for women and men. Najdia was launched in 2020. Top notes are Lemon, Apple, Cinnamon, Lemongrass and Bergamot; middle notes are Watery Notes, Lavender, Cardamom and Rosemary; base notes are Musk, Amber, Sandalwood, Cedar and Tobacco.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "ajwad",
+    "ok": true,
+    "data": {
+      "id": 75099,
+      "year": 2021,
+      "family": "Woody Aromatic",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "rose",
+          "strength": 100
+        },
+        {
+          "name": "fruity",
+          "strength": 80
+        },
+        {
+          "name": "powdery",
+          "strength": 68
+        },
+        {
+          "name": "vanilla",
+          "strength": 68
+        },
+        {
+          "name": "musky",
+          "strength": 65
+        },
+        {
+          "name": "sweet",
+          "strength": 60
+        }
+      ],
+      "top": [
+        "Fruity Notes"
+      ],
+      "heart": [
+        "Rose",
+        "Jasmine"
+      ],
+      "base": [
+        "Vanilla",
+        "Musk",
+        "Amber",
+        "Cedar"
+      ],
+      "description": "Ajwad by Lattafa Perfumes is a Woody Aromatic fragrance for women and men. Ajwad was launched in 2021. Top note is Fruity Notes; middle notes are Rose and Jasmine; base notes are Vanilla, Musk, Amber and Cedar.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "haya",
+    "ok": true,
+    "data": {
+      "id": 85031,
+      "year": 2022,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "fruity",
+          "strength": 89
+        },
+        {
+          "name": "white floral",
+          "strength": 86
+        },
+        {
+          "name": "sweet",
+          "strength": 74
+        },
+        {
+          "name": "Champagne",
+          "strength": 48
+        },
+        {
+          "name": "aldehydic",
+          "strength": 38
+        }
+      ],
+      "top": [
+        "Champagne",
+        "Strawberry",
+        "Tangerine",
+        "Blood Orange",
+        "Rose"
+      ],
+      "heart": [
+        "Gardenia",
+        "Jasmine",
+        "Vanilla Orchid"
+      ],
+      "base": [
+        "Amber",
+        "Sandalwood",
+        "Chestnut"
+      ],
+      "description": "Haya by Lattafa Perfumes is a fragrance for women. Haya was launched in 2022. Top notes are Champagne, Strawberry, Tangerine, Blood Orange and Rose; middle notes are Gardenia, Jasmine and Vanilla Orchid; base notes are Amber, Sandalwood and Chestnut.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "nebras",
+    "ok": true,
+    "data": {
+      "id": 78560,
+      "year": 2022,
+      "family": "Oriental Vanilla",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "vanilla",
+          "strength": 100
+        },
+        {
+          "name": "sweet",
+          "strength": 94
+        },
+        {
+          "name": "cacao",
+          "strength": 48
+        },
+        {
+          "name": "warm spicy",
+          "strength": 36
+        },
+        {
+          "name": "amber",
+          "strength": 35
+        },
+        {
+          "name": "fruity",
+          "strength": 34
+        }
+      ],
+      "top": [
+        "Red Berries",
+        "Mandarin Orange"
+      ],
+      "heart": [
+        "Vanilla",
+        "Cacao",
+        "Rose"
+      ],
+      "base": [
+        "Sugar",
+        "Tonka Bean",
+        "Amber",
+        "Musk"
+      ],
+      "description": "Nebras by Lattafa Perfumes is a Oriental Vanilla fragrance for women and men. Nebras was launched in 2022. Top notes are Red Berries and Mandarin Orange; middle notes are Vanilla, Cacao and Rose; base notes are Sugar, Tonka Bean, Amber and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "teriaq",
+    "ok": true,
+    "data": {
+      "id": 89850,
+      "year": 2024,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "caramel",
+          "strength": 67
+        },
+        {
+          "name": "fruity",
+          "strength": 54
+        },
+        {
+          "name": "honey",
+          "strength": 51
+        },
+        {
+          "name": "leather",
+          "strength": 51
+        },
+        {
+          "name": "vanilla",
+          "strength": 43
+        }
+      ],
+      "top": [
+        "Caramel",
+        "Bitter Almond",
+        "Apricot",
+        "Pink Pepper"
+      ],
+      "heart": [
+        "Honey",
+        "Rhubarb",
+        "White Flowers",
+        "Rose"
+      ],
+      "base": [
+        "Leather",
+        "Vanilla",
+        "Musk",
+        "Labdanum",
+        "Vetiver"
+      ],
+      "description": "Teriaq by Lattafa Perfumes is a fragrance for women and men. Teriaq was launched in 2024. The nose behind this fragrance is Quentin Bisch. Top notes are Caramel, Bitter Almond, Apricot and Pink Pepper; middle notes are Honey, Rhubarb, White Flowers and Rose; base notes are Leather, Vanilla, Musk, Labdanum and Vetiver.",
+      "perfumer": "Quentin Bisch"
+    }
+  },
+  {
+    "slug": "badee-al-oud-sublime",
+    "ok": true,
+    "data": {
+      "id": 83309,
+      "year": 2023,
+      "family": "Woody Aromatic",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "fresh",
+          "strength": 44
+        },
+        {
+          "name": "tropical",
+          "strength": 24
+        },
+        {
+          "name": "rose",
+          "strength": 23
+        },
+        {
+          "name": "mossy",
+          "strength": 21
+        },
+        {
+          "name": "green",
+          "strength": 21
+        }
+      ],
+      "top": [
+        "Apple",
+        "Litchi",
+        "Rose"
+      ],
+      "heart": [
+        "Plum",
+        "Jasmine"
+      ],
+      "base": [
+        "Moss",
+        "Vanilla",
+        "Patchouli"
+      ],
+      "description": "Bade'e Al Oud Sublime by Lattafa Perfumes is a Woody Aromatic fragrance for women and men. Bade'e Al Oud Sublime was launched in 2023. Top notes are Apple, Litchi and Rose; middle notes are Plum and Jasmine; base notes are Moss, Vanilla and Patchouli.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "pride-al-nashama",
+    "ok": true,
+    "data": {
+      "id": 89762,
+      "year": 2024,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "sweet",
+          "strength": 61
+        },
+        {
+          "name": "soft spicy",
+          "strength": 55
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 48
+        },
+        {
+          "name": "amber",
+          "strength": 48
+        },
+        {
+          "name": "aromatic",
+          "strength": 46
+        }
+      ],
+      "top": [
+        "Pink Pepper",
+        "Sage",
+        "Bergamot"
+      ],
+      "heart": [
+        "Plum",
+        "Jasmine",
+        "Black Pepper"
+      ],
+      "base": [
+        "Saffiano Leather",
+        "Amber",
+        "Patchouli",
+        "Moss"
+      ],
+      "description": "Al Nashama by Lattafa Perfumes is a fragrance for women and men. Al Nashama was launched in 2024. Top notes are Pink Pepper, Sage and Bergamot; middle notes are Plum, Jasmine and Black Pepper; base notes are Saffiano Leather, Amber, Patchouli and Moss.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "eclaire",
+    "ok": true,
+    "data": {
+      "id": 93628,
+      "year": 2024,
+      "family": "Floral Fruity Gourmand",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "vanilla",
+          "strength": 58
+        },
+        {
+          "name": "caramel",
+          "strength": 49
+        },
+        {
+          "name": "lactonic",
+          "strength": 44
+        },
+        {
+          "name": "honey",
+          "strength": 21
+        },
+        {
+          "name": "powdery",
+          "strength": 20
+        }
+      ],
+      "top": [
+        "Caramel",
+        "Milk",
+        "Sugar"
+      ],
+      "heart": [
+        "Honey",
+        "White Flowers"
+      ],
+      "base": [
+        "Vanilla",
+        "Praline",
+        "Musk"
+      ],
+      "description": "Eclaire by Lattafa Perfumes is a Floral Fruity Gourmand fragrance for women. Eclaire was launched in 2024. Top notes are Caramel, Milk and Sugar; middle notes are Honey and White Flowers; base notes are Vanilla, Praline and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "hayaati",
+    "ok": true,
+    "data": {
+      "id": 75902,
+      "year": 2020,
+      "family": "Woody Aromatic",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "musky",
+          "strength": 93
+        },
+        {
+          "name": "cinnamon",
+          "strength": 92
+        },
+        {
+          "name": "powdery",
+          "strength": 74
+        },
+        {
+          "name": "warm spicy",
+          "strength": 74
+        },
+        {
+          "name": "citrus",
+          "strength": 73
+        }
+      ],
+      "top": [
+        "Apple",
+        "Bergamot"
+      ],
+      "heart": [
+        "Cinnamon",
+        "Woodsy Notes"
+      ],
+      "base": [
+        "Musk",
+        "Vanilla"
+      ],
+      "description": "Hayaati by Lattafa Perfumes is a Woody Aromatic fragrance for women and men. Hayaati was launched in 2020. Top notes are Apple and Bergamot; middle notes are Cinnamon and Woodsy Notes; base notes are Musk and Vanilla.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "club-de-nuit-sillage",
+    "ok": true,
+    "data": {
+      "id": 64105,
+      "year": 2020,
+      "family": "Floral Woody Musk",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "musky",
+          "strength": 44
+        },
+        {
+          "name": "woody",
+          "strength": 43
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 36
+        },
+        {
+          "name": "powdery",
+          "strength": 36
+        },
+        {
+          "name": "aromatic",
+          "strength": 31
+        }
+      ],
+      "top": [
+        "Bergamot",
+        "Lemon",
+        "Lime",
+        "Black Currant",
+        "Violet Leaf",
+        "Ginger"
+      ],
+      "heart": [
+        "Rose",
+        "Jasmine",
+        "Iris"
+      ],
+      "base": [
+        "Ambroxan",
+        "Musk",
+        "Sandalwood",
+        "Cedar"
+      ],
+      "description": "Club de Nuit Sillage by Armaf is a Floral Woody Musk fragrance for women and men. Club de Nuit Sillage was launched in 2020. Top notes are Bergamot, Lemon, Lime, Black Currant, Violet Leaf and Ginger; middle notes are Rose, Jasmine and Iris; base notes are Ambroxan, Musk, Sandalwood and Cedar.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "club-de-nuit-untold",
+    "ok": true,
+    "data": {
+      "id": 78476,
+      "year": 2022,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "woody",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 96
+        },
+        {
+          "name": "warm spicy",
+          "strength": 67
+        },
+        {
+          "name": "metallic",
+          "strength": 30
+        },
+        {
+          "name": "white floral",
+          "strength": 27
+        },
+        {
+          "name": "animalic",
+          "strength": 26
+        }
+      ],
+      "top": [
+        "Saffron",
+        "Jasmine"
+      ],
+      "heart": [
+        "Amberwood",
+        "Ambergris"
+      ],
+      "base": [
+        "Fir Resin",
+        "Cedar"
+      ],
+      "description": "Club de Nuit Untold by Armaf is a fragrance for women and men. Club de Nuit Untold was launched in 2022. Top notes are Saffron and Jasmine; middle notes are Amberwood and Ambergris; base notes are Fir Resin and Cedar.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "club-de-nuit-urban-man-elixir",
+    "ok": true,
+    "data": {
+      "id": 77860,
+      "year": 2022,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "amber",
+          "strength": 100
+        },
+        {
+          "name": "aromatic",
+          "strength": 74
+        },
+        {
+          "name": "citrus",
+          "strength": 63
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 61
+        },
+        {
+          "name": "musky",
+          "strength": 52
+        },
+        {
+          "name": "woody",
+          "strength": 50
+        }
+      ],
+      "top": [
+        "Bergamot",
+        "Pink Pepper",
+        "Orange Blossom",
+        "Jasmine"
+      ],
+      "heart": [
+        "Lavender",
+        "elemi",
+        "Geranium",
+        "Vetiver",
+        "Saffron",
+        "Marigold"
+      ],
+      "base": [
+        "Ambroxan",
+        "Amber",
+        "Cedar",
+        "Patchouli",
+        "Labdanum"
+      ],
+      "description": "Club De Nuit Urban Elixir by Armaf is a fragrance for men. Club De Nuit Urban Elixir was launched in 2022. Top notes are Bergamot, Pink Pepper, Orange Blossom and Jasmine; middle notes are Lavender, elemi, Geranium, Vetiver, Saffron and Marigold; base notes are Ambroxan, Amber, Cedar, Patchouli and Labdanum.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "club-de-nuit-woman",
+    "ok": true,
+    "data": {
+      "id": 27655,
+      "year": null,
+      "family": "Floral Fruity",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "patchouli",
+          "strength": 50
+        },
+        {
+          "name": "rose",
+          "strength": 48
+        },
+        {
+          "name": "woody",
+          "strength": 47
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 47
+        },
+        {
+          "name": "aromatic",
+          "strength": 42
+        }
+      ],
+      "top": [
+        "Orange",
+        "Bergamot",
+        "Grapefruit",
+        "Peach"
+      ],
+      "heart": [
+        "Rose",
+        "Jasmine",
+        "Litchi",
+        "Geranium"
+      ],
+      "base": [
+        "Patchouli",
+        "Musk",
+        "Vanilla",
+        "Vetiver"
+      ],
+      "description": "Club de Nuit Woman by Armaf is a Floral Fruity fragrance for women. Top notes are Orange, Bergamot, Grapefruit and Peach; middle notes are Rose, Jasmine, Litchi and Geranium; base notes are Patchouli, Musk, Vanilla and Vetiver.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "ventana",
+    "ok": true,
+    "data": {
+      "id": 50265,
+      "year": 2017,
+      "family": "Woody Aromatic",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "aromatic",
+          "strength": 82
+        },
+        {
+          "name": "woody",
+          "strength": 80
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 61
+        },
+        {
+          "name": "lavender",
+          "strength": 44
+        },
+        {
+          "name": "amber",
+          "strength": 27
+        }
+      ],
+      "top": [
+        "Grapefruit",
+        "Lemon",
+        "Mandarin Orange"
+      ],
+      "heart": [
+        "Lavender",
+        "Geranium",
+        "Vetiver",
+        "Patchouli"
+      ],
+      "base": [
+        "Cedar",
+        "Amber",
+        "Precious Woods"
+      ],
+      "description": "Ventana Pour Homme by Armaf is a Woody Aromatic fragrance for men. Ventana Pour Homme was launched in 2017. Top notes are Grapefruit, Lemon and Mandarin Orange; middle notes are Lavender, Geranium, Vetiver and Patchouli; base notes are Cedar, Amber and Precious Woods.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "derby-club-house",
+    "ok": true,
+    "data": {
+      "id": 27690,
+      "year": null,
+      "family": "Woody Aromatic",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "woody",
+          "strength": 100
+        },
+        {
+          "name": "lavender",
+          "strength": 98
+        },
+        {
+          "name": "vanilla",
+          "strength": 89
+        },
+        {
+          "name": "amber",
+          "strength": 73
+        },
+        {
+          "name": "aromatic",
+          "strength": 68
+        },
+        {
+          "name": "warm spicy",
+          "strength": 68
+        }
+      ],
+      "top": [
+        "Lavender",
+        "Bergamot"
+      ],
+      "heart": [
+        "Spicy Notes",
+        "Blackwood",
+        "Cedar",
+        "Patchouli"
+      ],
+      "base": [
+        "Vanilla",
+        "Tonka Bean",
+        "White Amber"
+      ],
+      "description": "Derby Club House by Armaf is a Woody Aromatic fragrance for men. Top notes are Lavender and Bergamot; middle notes are Spicy Notes, Blackwood, Cedar and Patchouli; base notes are Vanilla, Tonka Bean and White Amber.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "hunter-armaf",
+    "ok": true,
+    "data": {
+      "id": 27665,
+      "year": null,
+      "family": "Oriental Vanilla",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "white floral",
+          "strength": 91
+        },
+        {
+          "name": "woody",
+          "strength": 57
+        },
+        {
+          "name": "almond",
+          "strength": 53
+        },
+        {
+          "name": "nutty",
+          "strength": 45
+        },
+        {
+          "name": "soft spicy",
+          "strength": 44
+        }
+      ],
+      "top": [
+        "Green Almond",
+        "Jasmine"
+      ],
+      "heart": [
+        "Licorice",
+        "Praline",
+        "Gardenia"
+      ],
+      "base": [
+        "Sandalwood",
+        "Tonka Bean",
+        "Patchouli",
+        "Musk"
+      ],
+      "description": "Hunter by Armaf is a Oriental Vanilla fragrance for women. Top notes are Green Almond and Jasmine; middle notes are Licorice, Praline and Gardenia; base notes are Sandalwood, Tonka Bean, Patchouli and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "le-parfait",
+    "ok": true,
+    "data": {
+      "id": 45124,
+      "year": null,
+      "family": "Oriental",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "citrus",
+          "strength": 81
+        },
+        {
+          "name": "sweet",
+          "strength": 49
+        },
+        {
+          "name": "amber",
+          "strength": 46
+        },
+        {
+          "name": "musky",
+          "strength": 44
+        },
+        {
+          "name": "animalic",
+          "strength": 43
+        }
+      ],
+      "top": [
+        "Black Currant",
+        "Pineapple",
+        "Lemon",
+        "Bergamot"
+      ],
+      "heart": [
+        "Spicy Notes",
+        "Jasmine",
+        "Rose"
+      ],
+      "base": [
+        "Ambergris",
+        "Musk",
+        "Patchouli",
+        "Vanilla"
+      ],
+      "description": "Le Parfait Pour Homme by Armaf is a Oriental fragrance for men. Top notes are Black Currant, Pineapple, Lemon and Bergamot; middle notes are Spicy Notes, Jasmine and Rose; base notes are Ambergris, Musk, Patchouli and Vanilla.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "odyssey-mandarin-sky",
+    "ok": true,
+    "data": {
+      "id": 83132,
+      "year": 2023,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "caramel",
+          "strength": 65
+        },
+        {
+          "name": "sweet",
+          "strength": 62
+        },
+        {
+          "name": "amber",
+          "strength": 41
+        },
+        {
+          "name": "aromatic",
+          "strength": 35
+        },
+        {
+          "name": "vanilla",
+          "strength": 27
+        }
+      ],
+      "top": [
+        "Mandarin Orange",
+        "Orange",
+        "Saffron",
+        "Sage"
+      ],
+      "heart": [
+        "Caramel",
+        "Tonka Bean",
+        "Marigold"
+      ],
+      "base": [
+        "Ambroxan",
+        "Cedar",
+        "Vetiver"
+      ],
+      "description": "Odyssey Mandarin Sky by Armaf is a fragrance for men. Odyssey Mandarin Sky was launched in 2023. Top notes are Mandarin Orange, Orange, Saffron and Sage; middle notes are Caramel, Tonka Bean and Marigold; base notes are Ambroxan, Cedar and Vetiver.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "odyssey-aoud",
+    "ok": true,
+    "data": {
+      "id": 83136,
+      "year": 2023,
+      "family": "Woody Spicy",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "woody",
+          "strength": 100
+        },
+        {
+          "name": "oud",
+          "strength": 99
+        },
+        {
+          "name": "musky",
+          "strength": 87
+        },
+        {
+          "name": "warm spicy",
+          "strength": 86
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 85
+        },
+        {
+          "name": "amber",
+          "strength": 54
+        }
+      ],
+      "top": [
+        "Saffron",
+        "Nutmeg",
+        "Lavender"
+      ],
+      "heart": [
+        "Oud",
+        "Woody Notes"
+      ],
+      "base": [
+        "Ambroxan",
+        "Musk",
+        "Patchouli"
+      ],
+      "description": "Odyssey Aoud by Armaf is a Woody Spicy fragrance for men. Odyssey Aoud was launched in 2023. Top notes are Saffron, Nutmeg and Lavender; middle notes are Oud and Woody Notes; base notes are Ambroxan, Musk and Patchouli.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "bucephalus-xi",
+    "ok": true,
+    "data": {
+      "id": 64457,
+      "year": null,
+      "family": "Oriental Spicy",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "amber",
+          "strength": 100
+        },
+        {
+          "name": "fruity",
+          "strength": 97
+        },
+        {
+          "name": "vanilla",
+          "strength": 73
+        },
+        {
+          "name": "sweet",
+          "strength": 70
+        },
+        {
+          "name": "powdery",
+          "strength": 50
+        },
+        {
+          "name": "citrus",
+          "strength": 43
+        }
+      ],
+      "top": [
+        "Black Currant",
+        "Pineapple",
+        "Bergamot"
+      ],
+      "heart": [
+        "Myrrh",
+        "Jasmine",
+        "Rose"
+      ],
+      "base": [
+        "Vanilla",
+        "Amber",
+        "Oakmoss",
+        "Musk"
+      ],
+      "description": "Bucephalus XI by Armaf is a Oriental Spicy fragrance for women and men. Top notes are Black Currant, Pineapple and Bergamot; middle notes are Myrrh, Jasmine and Rose; base notes are Vanilla, Amber, Oakmoss and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "tag-him",
+    "ok": true,
+    "data": {
+      "id": 27708,
+      "year": null,
+      "family": "Woody Spicy",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 81
+        },
+        {
+          "name": "aromatic",
+          "strength": 66
+        },
+        {
+          "name": "woody",
+          "strength": 62
+        },
+        {
+          "name": "green",
+          "strength": 30
+        },
+        {
+          "name": "fresh",
+          "strength": 23
+        }
+      ],
+      "top": [
+        "Grapefruit",
+        "Lemon",
+        "Bergamot",
+        "Pink Pepper"
+      ],
+      "heart": [
+        "Ginger",
+        "Mint",
+        "Lavender",
+        "Nutmeg"
+      ],
+      "base": [
+        "Vetiver",
+        "Sandalwood",
+        "Patchouli",
+        "Cedar"
+      ],
+      "description": "Tag-Him by Armaf is a Woody Spicy fragrance for men. Top notes are Grapefruit, Lemon, Bergamot and Pink Pepper; middle notes are Ginger, Mint, Lavender and Nutmeg; base notes are Vetiver, Sandalwood, Patchouli and Cedar.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "barakkat-rouge-540",
+    "ok": true,
+    "data": {
+      "id": 107710,
+      "year": 2024,
+      "family": "Oriental Woody",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "woody",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 59
+        },
+        {
+          "name": "almond",
+          "strength": 59
+        },
+        {
+          "name": "warm spicy",
+          "strength": 50
+        },
+        {
+          "name": "animalic",
+          "strength": 42
+        },
+        {
+          "name": "musky",
+          "strength": 37
+        }
+      ],
+      "top": [
+        "Bitter Almond",
+        "Saffron"
+      ],
+      "heart": [
+        "Cedar",
+        "Jasmine"
+      ],
+      "base": [
+        "Woody Notes",
+        "Ambergris",
+        "Musk"
+      ],
+      "description": "Barakkat Rouge 540 Extrait de Parfum by Fragrance World is a Oriental Woody fragrance for women and men. Barakkat Rouge 540 Extrait de Parfum was launched in 2024. Top notes are Bitter Almond and Saffron; middle notes are Cedar and Jasmine; base notes are Woody Notes, Ambergris and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "barakkat-satin-oud",
+    "ok": true,
+    "data": {
+      "id": 107711,
+      "year": 2024,
+      "family": "Oriental Woody",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "rose",
+          "strength": 100
+        },
+        {
+          "name": "oud",
+          "strength": 92
+        },
+        {
+          "name": "amber",
+          "strength": 71
+        },
+        {
+          "name": "vanilla",
+          "strength": 58
+        },
+        {
+          "name": "powdery",
+          "strength": 56
+        },
+        {
+          "name": "violet",
+          "strength": 53
+        }
+      ],
+      "top": [
+        "Violet"
+      ],
+      "heart": [
+        "Bulgarian Rose",
+        "Turkish Rose",
+        "Laotian Oud"
+      ],
+      "base": [
+        "Agarwood",
+        "Vanilla",
+        "Amber",
+        "Benzoin"
+      ],
+      "description": "Barakkat Satin Oud by Fragrance World is a Oriental Woody fragrance for women and men. Barakkat Satin Oud was launched in 2024. Top note is Violet; middle notes are Bulgarian Rose, Turkish Rose and Laotian Oud; base notes are Agarwood, Vanilla, Amber and Benzoin.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "jean-lowe-immortal",
+    "ok": true,
+    "data": {
+      "id": 83666,
+      "year": 2023,
+      "family": "Oriental",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "fresh spicy",
+          "strength": 100
+        },
+        {
+          "name": "citrus",
+          "strength": 83
+        },
+        {
+          "name": "aromatic",
+          "strength": 64
+        },
+        {
+          "name": "amber",
+          "strength": 61
+        },
+        {
+          "name": "fresh",
+          "strength": 37
+        },
+        {
+          "name": "musky",
+          "strength": 25
+        }
+      ],
+      "top": [
+        "Ginger",
+        "Grapefruit",
+        "Bergamot"
+      ],
+      "heart": [
+        "Rosemary",
+        "Water Notes",
+        "Sage",
+        "Geranium"
+      ],
+      "base": [
+        "Ambroxan",
+        "Amber",
+        "Labdanum"
+      ],
+      "description": "Jean Lowe Immortal by Maison Alhambra is a Oriental fragrance for men. Jean Lowe Immortal was launched in 2023. Top notes are Ginger, Grapefruit and Bergamot; middle notes are Rosemary, Water Notes, Sage and Geranium; base notes are Ambroxan, Amber and Labdanum.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "salvo",
+    "ok": true,
+    "data": {
+      "id": 93538,
+      "year": 2022,
+      "family": "Oriental Fougere",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "fresh spicy",
+          "strength": 100
+        },
+        {
+          "name": "citrus",
+          "strength": 81
+        },
+        {
+          "name": "amber",
+          "strength": 56
+        },
+        {
+          "name": "lavender",
+          "strength": 54
+        },
+        {
+          "name": "aromatic",
+          "strength": 40
+        },
+        {
+          "name": "musky",
+          "strength": 34
+        }
+      ],
+      "top": [
+        "Bergamot"
+      ],
+      "heart": [
+        "Lavender",
+        "Sichuan Pepper",
+        "Star Anise",
+        "Nutmeg"
+      ],
+      "base": [
+        "Ambroxan",
+        "Vanilla"
+      ],
+      "description": "Salvo by Maison Alhambra is a Oriental Fougere fragrance for men. Salvo was launched in 2022. Top note is Bergamot; middle notes are Lavender, Sichuan Pepper, Star Anise and Nutmeg; base notes are Ambroxan and Vanilla.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "the-tux",
+    "ok": true,
+    "data": {
+      "id": 78559,
+      "year": 2022,
+      "family": "Oriental Floral",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "patchouli",
+          "strength": 100
+        },
+        {
+          "name": "warm spicy",
+          "strength": 95
+        },
+        {
+          "name": "vanilla",
+          "strength": 61
+        },
+        {
+          "name": "woody",
+          "strength": 60
+        },
+        {
+          "name": "amber",
+          "strength": 58
+        },
+        {
+          "name": "earthy",
+          "strength": 40
+        }
+      ],
+      "top": [],
+      "heart": [],
+      "base": [],
+      "description": "The Tux by Maison Alhambra is a Oriental Floral fragrance for women and men. The Tux was launched in 2022. The fragrance features Patchouli, Spicy Notes, Vanilla, Amber and Floral Notes.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "amber-oud-gold-edition",
+    "ok": true,
+    "data": {
+      "id": 51816,
+      "year": 2024,
+      "family": "Oriental Vanilla",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "fruity",
+          "strength": 90
+        },
+        {
+          "name": "ozonic",
+          "strength": 64
+        },
+        {
+          "name": "powdery",
+          "strength": 60
+        },
+        {
+          "name": "vanilla",
+          "strength": 60
+        },
+        {
+          "name": "musky",
+          "strength": 58
+        }
+      ],
+      "top": [
+        "Bergamot",
+        "Green Notes"
+      ],
+      "heart": [
+        "Melon",
+        "Pineapple",
+        "Amber",
+        "Gourmand Accord"
+      ],
+      "base": [
+        "Vanilla",
+        "Musk",
+        "Woody Notes"
+      ],
+      "description": "Amber Oud Gold Edition by Al Haramain Perfumes is a Oriental Vanilla fragrance for women and men. Amber Oud Gold Edition was launched in 2024. Top notes are Bergamot and Green Notes; middle notes are Melon, Pineapple, Amber and Gourmand Accord; base notes are Vanilla, Musk and Woody Notes.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "amber-oud-rouge-edition",
+    "ok": true,
+    "data": {
+      "id": 66100,
+      "year": 2019,
+      "family": "Oriental Floral",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "warm spicy",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 90
+        },
+        {
+          "name": "musky",
+          "strength": 79
+        },
+        {
+          "name": "woody",
+          "strength": 70
+        },
+        {
+          "name": "animalic",
+          "strength": 68
+        },
+        {
+          "name": "metallic",
+          "strength": 59
+        }
+      ],
+      "top": [
+        "Saffron"
+      ],
+      "heart": [
+        "Jasmine"
+      ],
+      "base": [
+        "Ambergris",
+        "Musk",
+        "White Cedar Extract"
+      ],
+      "description": "Amber Oud Rouge by Al Haramain Perfumes is a Oriental Floral fragrance for women and men. Amber Oud Rouge was launched in 2019. Top note is Saffron; middle note is Jasmine; base notes are Ambergris, Musk and White Cedar Extract.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "amber-oud-carbon-edition",
+    "ok": true,
+    "data": {
+      "id": 73207,
+      "year": 2022,
+      "family": "Woody Aromatic",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "aromatic",
+          "strength": 100
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 59
+        },
+        {
+          "name": "woody",
+          "strength": 41
+        },
+        {
+          "name": "citrus",
+          "strength": 33
+        },
+        {
+          "name": "marine",
+          "strength": 33
+        },
+        {
+          "name": "lavender",
+          "strength": 26
+        }
+      ],
+      "top": [
+        "Bergamot",
+        "Lavender",
+        "Rosemary"
+      ],
+      "heart": [
+        "Sea Notes",
+        "Geranium",
+        "Sage"
+      ],
+      "base": [
+        "Moss",
+        "Vetiver",
+        "Amber",
+        "Cedar"
+      ],
+      "description": "Amber Oud Carbon Edition by Al Haramain Perfumes is a Woody Aromatic fragrance for women and men. Amber Oud Carbon Edition was launched in 2022. Top notes are Bergamot, Lavender and Rosemary; middle notes are Sea Notes, Geranium and Sage; base notes are Moss, Vetiver, Amber and Cedar.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "laventure",
+    "ok": true,
+    "data": {
+      "id": 40405,
+      "year": 2016,
+      "family": "Chypre Fruity",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "aromatic",
+          "strength": 50
+        },
+        {
+          "name": "woody",
+          "strength": 49
+        },
+        {
+          "name": "musky",
+          "strength": 32
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 28
+        },
+        {
+          "name": "white floral",
+          "strength": 24
+        }
+      ],
+      "top": [
+        "Lemon",
+        "Bergamot",
+        "elemi"
+      ],
+      "heart": [
+        "Woody Notes",
+        "Jasmine",
+        "Lily-of-the-Valley"
+      ],
+      "base": [
+        "Musk",
+        "Patchouli",
+        "Amber"
+      ],
+      "description": "L'Aventure by Al Haramain Perfumes is a Chypre Fruity fragrance for men. L'Aventure was launched in 2016. Top notes are Lemon, Bergamot and elemi; middle notes are Woody Notes, Jasmine and Lily-of-the-Valley; base notes are Musk, Patchouli and Amber.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "laventure-knight",
+    "ok": true,
+    "data": {
+      "id": 51824,
+      "year": 2018,
+      "family": "Oriental Fougere",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "powdery",
+          "strength": 100
+        },
+        {
+          "name": "citrus",
+          "strength": 62
+        },
+        {
+          "name": "ozonic",
+          "strength": 42
+        },
+        {
+          "name": "iris",
+          "strength": 37
+        },
+        {
+          "name": "woody",
+          "strength": 36
+        },
+        {
+          "name": "amber",
+          "strength": 33
+        }
+      ],
+      "top": [
+        "Lemon Verbena",
+        "Bergamot",
+        "Tea"
+      ],
+      "heart": [
+        "Violet Leaf",
+        "Iris"
+      ],
+      "base": [
+        "Powdery Notes",
+        "Ambergris",
+        "Musk",
+        "Sandalwood"
+      ],
+      "description": "L'Aventure Knight by Al Haramain Perfumes is a Oriental Fougere fragrance for men. L'Aventure Knight was launched in 2018. Top notes are Lemon Verbena, Bergamot and Tea; middle notes are Violet Leaf and Iris; base notes are Powdery Notes, Ambergris, Musk and Sandalwood.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "junoon",
+    "ok": true,
+    "data": {
+      "id": 42649,
+      "year": 2016,
+      "family": "Floral",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "powdery",
+          "strength": 100
+        },
+        {
+          "name": "vanilla",
+          "strength": 45
+        },
+        {
+          "name": "iris",
+          "strength": 32
+        },
+        {
+          "name": "sweet",
+          "strength": 20
+        },
+        {
+          "name": "floral",
+          "strength": 19
+        },
+        {
+          "name": "musky",
+          "strength": 19
+        }
+      ],
+      "top": [
+        "Powdery Notes",
+        "Rose",
+        "Ylang-Ylang",
+        "Jasmine"
+      ],
+      "heart": [
+        "Iris",
+        "Tonka Bean",
+        "Rose",
+        "Jasmine"
+      ],
+      "base": [
+        "Heliotrope",
+        "Musk",
+        "Vanilla"
+      ],
+      "description": "Junoon by Al Haramain Perfumes is a Floral fragrance for women. Junoon was launched in 2016. The nose behind this fragrance is Christian Carbonnel. Top notes are Powdery Notes, Rose, Ylang-Ylang and Jasmine; middle notes are Iris, Tonka Bean, Rose and Jasmine; base notes are Heliotrope, Musk and Vanilla.",
+      "perfumer": "Christian Carbonnel"
+    }
+  },
+  {
+    "slug": "hawas-for-him",
+    "ok": true,
+    "data": {
+      "id": 46890,
+      "year": 2015,
+      "family": "Aromatic Aquatic",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "citrus",
+          "strength": 96
+        },
+        {
+          "name": "aquatic",
+          "strength": 81
+        },
+        {
+          "name": "fresh",
+          "strength": 71
+        },
+        {
+          "name": "warm spicy",
+          "strength": 50
+        },
+        {
+          "name": "amber",
+          "strength": 41
+        }
+      ],
+      "top": [
+        "Apple",
+        "Bergamot",
+        "Lemon",
+        "Cinnamon"
+      ],
+      "heart": [
+        "Watery Notes",
+        "Plum",
+        "Orange Blossom",
+        "Cardamon"
+      ],
+      "base": [
+        "Ambergris",
+        "Musk",
+        "Patchouli",
+        "Driftwood"
+      ],
+      "description": "Hawas for Him by Rasasi is a Aromatic Aquatic fragrance for men. Hawas for Him was launched in 2015. Top notes are Apple, Bergamot, Lemon and Cinnamon; middle notes are Watery Notes, Plum, Orange Blossom and Cardamon; base notes are Ambergris, Musk, Patchouli and Driftwood.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "hawas-ice",
+    "ok": true,
+    "data": {
+      "id": 89050,
+      "year": 2023,
+      "family": "Aromatic",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "citrus",
+          "strength": 93
+        },
+        {
+          "name": "sweet",
+          "strength": 39
+        },
+        {
+          "name": "fresh",
+          "strength": 35
+        },
+        {
+          "name": "aromatic",
+          "strength": 33
+        },
+        {
+          "name": "musky",
+          "strength": 30
+        }
+      ],
+      "top": [
+        "Apple",
+        "Italian Lemon",
+        "Sicilian Bergamot",
+        "Star Anise"
+      ],
+      "heart": [
+        "Plum",
+        "Orange Blossom",
+        "Cardamon"
+      ],
+      "base": [
+        "Musk",
+        "Amber",
+        "Driftwood",
+        "Moss"
+      ],
+      "description": "Hawas Ice by Rasasi is a Aromatic fragrance for men. Hawas Ice was launched in 2023. Top notes are Apple, Italian Lemon, Sicilian Bergamot and Star Anise; middle notes are Plum, Orange Blossom and Cardamon; base notes are Musk, Amber, Driftwood and Moss.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "hawas-for-her",
+    "ok": true,
+    "data": {
+      "id": 67146,
+      "year": 2015,
+      "family": "Floral",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "woody",
+          "strength": 100
+        },
+        {
+          "name": "sweet",
+          "strength": 85
+        },
+        {
+          "name": "fruity",
+          "strength": 59
+        },
+        {
+          "name": "earthy",
+          "strength": 53
+        },
+        {
+          "name": "citrus",
+          "strength": 52
+        },
+        {
+          "name": "patchouli",
+          "strength": 46
+        }
+      ],
+      "top": [
+        "Pomegranate",
+        "Apple",
+        "Grapefruit"
+      ],
+      "heart": [
+        "Iris",
+        "Jasmine Sambac",
+        "Citruses"
+      ],
+      "base": [
+        "Praline",
+        "Patchouli",
+        "Vetiver"
+      ],
+      "description": "Hawas for Her by Rasasi is a Floral fragrance for women. Hawas for Her was launched in 2015. Hawas for Her was created by Claire Liégent and Dominique Ropion. Top notes are Pomegranate, Apple and Grapefruit; middle notes are Iris, Jasmine Sambac and Citruses; base notes are Praline, Patchouli and Vetiver.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "daarej",
+    "ok": true,
+    "data": {
+      "id": 19688,
+      "year": null,
+      "family": "Oriental Spicy",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "vanilla",
+          "strength": 100
+        },
+        {
+          "name": "warm spicy",
+          "strength": 76
+        },
+        {
+          "name": "powdery",
+          "strength": 63
+        },
+        {
+          "name": "amber",
+          "strength": 56
+        },
+        {
+          "name": "aromatic",
+          "strength": 49
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 46
+        }
+      ],
+      "top": [
+        "Cumin",
+        "Cardamom",
+        "Artemisia"
+      ],
+      "heart": [
+        "Rose",
+        "Orris Root"
+      ],
+      "base": [
+        "Vanilla",
+        "Tonka Bean",
+        "Amber",
+        "Sandalwood",
+        "Patchouli",
+        "Musk"
+      ],
+      "description": "Daarej pour Homme by Rasasi is a Oriental Spicy fragrance for men. Top notes are Cumin, Cardamom and Artemisia; middle notes are Rose and Orris Root; base notes are Vanilla, Tonka Bean, Amber, Sandalwood, Patchouli and Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "la-yuqawam",
+    "ok": true,
+    "data": {
+      "id": 19668,
+      "year": 2012,
+      "family": "Oriental",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "leather",
+          "strength": 100
+        },
+        {
+          "name": "fruity",
+          "strength": 55
+        },
+        {
+          "name": "sweet",
+          "strength": 39
+        },
+        {
+          "name": "animalic",
+          "strength": 34
+        },
+        {
+          "name": "amber",
+          "strength": 29
+        },
+        {
+          "name": "woody",
+          "strength": 26
+        }
+      ],
+      "top": [
+        "Raspberry",
+        "Saffron",
+        "Thyme"
+      ],
+      "heart": [
+        "Olibanum",
+        "Jasmine",
+        "Artemisia"
+      ],
+      "base": [
+        "Leather",
+        "Suede",
+        "Woody Notes",
+        "Amber"
+      ],
+      "description": "La Yuqawam Homme by Rasasi is a Oriental fragrance for men. La Yuqawam Homme was launched in 2012. Top notes are Raspberry, Saffron and Thyme; middle notes are Olibanum, Jasmine and Artemisia; base notes are Leather, Suede, Woody Notes and Amber.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "shuhrah",
+    "ok": true,
+    "data": {
+      "id": 53578,
+      "year": null,
+      "family": "Woody Aromatic",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "aromatic",
+          "strength": 100
+        },
+        {
+          "name": "floral",
+          "strength": 90
+        },
+        {
+          "name": "woody",
+          "strength": 82
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 76
+        },
+        {
+          "name": "leather",
+          "strength": 75
+        },
+        {
+          "name": "rose",
+          "strength": 67
+        }
+      ],
+      "top": [
+        "Tomato Leaf",
+        "Rose",
+        "Freesia"
+      ],
+      "heart": [
+        "Rose",
+        "Sandalwood",
+        "Cedar",
+        "Jasmine"
+      ],
+      "base": [
+        "Leather",
+        "Agarwood (Oud)",
+        "Musk",
+        "Oakmoss",
+        "Amber"
+      ],
+      "description": "Shuhrah Pour Homme by Rasasi is a Woody Aromatic fragrance for men. Top notes are Tomato Leaf, Rose and Freesia; middle notes are Rose, Sandalwood, Cedar and Jasmine; base notes are Leather, Agarwood (Oud), Musk, Oakmoss and Amber.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "royale-blue",
+    "ok": true,
+    "data": {
+      "id": 22379,
+      "year": null,
+      "family": "Woody Floral Musk",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "aromatic",
+          "strength": 100
+        },
+        {
+          "name": "marine",
+          "strength": 92
+        },
+        {
+          "name": "powdery",
+          "strength": 65
+        },
+        {
+          "name": "woody",
+          "strength": 59
+        },
+        {
+          "name": "aquatic",
+          "strength": 58
+        },
+        {
+          "name": "citrus",
+          "strength": 58
+        }
+      ],
+      "top": [
+        "Sea Notes",
+        "Bergamot",
+        "Melon",
+        "Galbanum"
+      ],
+      "heart": [
+        "Lavender",
+        "Violet",
+        "Jasmine",
+        "Rose"
+      ],
+      "base": [
+        "Musk",
+        "Sandalwood",
+        "Cedar",
+        "Amber",
+        "Patchouli"
+      ],
+      "description": "Royale Blue by Rasasi is a Woody Floral Musk fragrance for men. Top notes are Sea Notes, Bergamot, Melon and Galbanum; middle notes are Lavender, Violet, Jasmine and Rose; base notes are Musk, Sandalwood, Cedar, Amber and Patchouli.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "9pm",
+    "ok": true,
+    "data": {
+      "id": 65414,
+      "year": 2020,
+      "family": "Oriental Vanilla",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "vanilla",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 47
+        },
+        {
+          "name": "warm spicy",
+          "strength": 43
+        },
+        {
+          "name": "fruity",
+          "strength": 38
+        },
+        {
+          "name": "cinnamon",
+          "strength": 36
+        },
+        {
+          "name": "sweet",
+          "strength": 36
+        }
+      ],
+      "top": [
+        "Apple",
+        "Cinnamon",
+        "Wild Lavender",
+        "Bergamot"
+      ],
+      "heart": [
+        "Orange Blossom",
+        "Lily-of-the-Valley"
+      ],
+      "base": [
+        "Vanilla",
+        "Tonka Bean",
+        "Amber",
+        "Patchouli"
+      ],
+      "description": "9pm by Afnan is a Oriental Vanilla fragrance for men. 9pm was launched in 2020. Top notes are Apple, Cinnamon, Wild Lavender and Bergamot; middle notes are Orange Blossom and Lily-of-the-Valley; base notes are Vanilla, Tonka Bean, Amber and Patchouli.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "9am",
+    "ok": true,
+    "data": {
+      "id": 70706,
+      "year": null,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "musky",
+          "strength": 47
+        },
+        {
+          "name": "aromatic",
+          "strength": 43
+        },
+        {
+          "name": "woody",
+          "strength": 43
+        },
+        {
+          "name": "warm spicy",
+          "strength": 35
+        },
+        {
+          "name": "lavender",
+          "strength": 31
+        }
+      ],
+      "top": [
+        "Lemon",
+        "Mandarin Orange",
+        "Cardamom",
+        "Pink Pepper"
+      ],
+      "heart": [
+        "Lavender",
+        "Orange Blossom",
+        "Green Apple",
+        "Rose"
+      ],
+      "base": [
+        "Musk",
+        "Moss",
+        "Cedar",
+        "Patchouli"
+      ],
+      "description": "9am by Afnan is a fragrance for women. Top notes are Lemon, Mandarin Orange, Cardamom and Pink Pepper; middle notes are Lavender, Orange Blossom, Green Apple and Rose; base notes are Musk, Moss, Cedar and Patchouli.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "9pm-femme",
+    "ok": true,
+    "data": {
+      "id": 78544,
+      "year": 2022,
+      "family": "Oriental Floral",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "woody",
+          "strength": 100
+        },
+        {
+          "name": "fruity",
+          "strength": 64
+        },
+        {
+          "name": "rose",
+          "strength": 62
+        },
+        {
+          "name": "floral",
+          "strength": 56
+        },
+        {
+          "name": "aromatic",
+          "strength": 50
+        },
+        {
+          "name": "powdery",
+          "strength": 49
+        }
+      ],
+      "top": [
+        "Raspberry",
+        "Violet",
+        "Apple",
+        "Orange"
+      ],
+      "heart": [
+        "Rose",
+        "Peony",
+        "Iris",
+        "Jasmine"
+      ],
+      "base": [
+        "Cypress",
+        "Pine",
+        "Amber",
+        "Cedar"
+      ],
+      "description": "9pm pour Femme by Afnan is a Oriental Floral fragrance for women. 9pm pour Femme was launched in 2022. Top notes are Raspberry, Violet, Apple and Orange; middle notes are Rose, Peony, Iris and Jasmine; base notes are Cypress, Pine, Amber and Cedar.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "supremacy-not-only-intense",
+    "ok": true,
+    "data": {
+      "id": 68271,
+      "year": 2021,
+      "family": "Oriental Spicy",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "mossy",
+          "strength": 80
+        },
+        {
+          "name": "woody",
+          "strength": 73
+        },
+        {
+          "name": "earthy",
+          "strength": 71
+        },
+        {
+          "name": "citrus",
+          "strength": 60
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 48
+        }
+      ],
+      "top": [
+        "Black Currant",
+        "Bergamot",
+        "Apple"
+      ],
+      "heart": [
+        "Oakmoss",
+        "Patchouli",
+        "Lavender"
+      ],
+      "base": [
+        "Ambergris",
+        "Musk",
+        "Saffron"
+      ],
+      "description": "Supremacy Not Only Intense by Afnan is a Oriental Spicy fragrance for men. Supremacy Not Only Intense was launched in 2021. The nose behind this fragrance is Imran Fazlani. Top notes are Black Currant, Bergamot and Apple; middle notes are Oakmoss, Patchouli and Lavender; base notes are Ambergris, Musk and Saffron.",
+      "perfumer": "Imran Fazlani"
+    }
+  },
+  {
+    "slug": "supremacy-silver",
+    "ok": true,
+    "data": {
+      "id": 27352,
+      "year": 2013,
+      "family": "Woody Floral Musk",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "leather",
+          "strength": 54
+        },
+        {
+          "name": "woody",
+          "strength": 53
+        },
+        {
+          "name": "sweet",
+          "strength": 49
+        },
+        {
+          "name": "smoky",
+          "strength": 43
+        },
+        {
+          "name": "citrus",
+          "strength": 35
+        }
+      ],
+      "top": [
+        "Pineapple",
+        "Black Currant",
+        "Bergamot",
+        "Apple"
+      ],
+      "heart": [
+        "Birch",
+        "Patchouli",
+        "Moroccan Jasmine",
+        "Rose"
+      ],
+      "base": [
+        "Musk",
+        "Oakmoss",
+        "Ambergris",
+        "Vanilla"
+      ],
+      "description": "Supremacy Silver by Afnan is a Woody Floral Musk fragrance for men. Supremacy Silver was launched in 2013. The nose behind this fragrance is Imran Fazlani. Top notes are Pineapple, Black Currant, Bergamot and Apple; middle notes are Birch, Patchouli, Moroccan Jasmine and Rose; base notes are Musk, Oakmoss, Ambergris and Vanilla.",
+      "perfumer": "Imran Fazlani"
+    }
+  },
+  {
+    "slug": "turathi-blue",
+    "ok": true,
+    "data": {
+      "id": 70839,
+      "year": 2021,
+      "family": "Aromatic Aquatic",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "citrus",
+          "strength": 100
+        },
+        {
+          "name": "musky",
+          "strength": 61
+        },
+        {
+          "name": "woody",
+          "strength": 52
+        },
+        {
+          "name": "fresh",
+          "strength": 50
+        },
+        {
+          "name": "amber",
+          "strength": 37
+        },
+        {
+          "name": "powdery",
+          "strength": 36
+        }
+      ],
+      "top": [
+        "Citruses"
+      ],
+      "heart": [
+        "Woodsy Notes",
+        "Amber"
+      ],
+      "base": [
+        "Musk",
+        "Spices",
+        "Patchouli"
+      ],
+      "description": "Turathi Blue by Afnan is a Aromatic Aquatic fragrance for men. Turathi Blue was launched in 2021. The nose behind this fragrance is Imran Fazlani. Top note is Citruses; middle notes are Woodsy Notes and Amber; base notes are Musk, Spices and Patchouli.",
+      "perfumer": "Imran Fazlani"
+    }
+  },
+  {
+    "slug": "rare-carbon",
+    "ok": true,
+    "data": {
+      "id": 66627,
+      "year": 2020,
+      "family": "Leather",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "leather",
+          "strength": 100
+        },
+        {
+          "name": "woody",
+          "strength": 79
+        },
+        {
+          "name": "powdery",
+          "strength": 62
+        },
+        {
+          "name": "ozonic",
+          "strength": 58
+        },
+        {
+          "name": "animalic",
+          "strength": 54
+        },
+        {
+          "name": "violet",
+          "strength": 54
+        }
+      ],
+      "top": [
+        "Leather",
+        "Violet Leaf",
+        "Nutmeg",
+        "Cinnamon"
+      ],
+      "heart": [
+        "Violet",
+        "Agarwood (Oud)",
+        "Rose",
+        "Cedar"
+      ],
+      "base": [
+        "Vetiver",
+        "Sandalwood",
+        "Amber"
+      ],
+      "description": "Rare Carbon by Afnan is a Leather fragrance for men. Rare Carbon was launched in 2020. Top notes are Leather, Violet Leaf, Nutmeg and Cinnamon; middle notes are Violet, Agarwood (Oud), Rose and Cedar; base notes are Vetiver, Sandalwood and Amber.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "shaghaf-oud",
+    "ok": true,
+    "data": {
+      "id": 50582,
+      "year": null,
+      "family": "Oriental",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "oud",
+          "strength": 97
+        },
+        {
+          "name": "vanilla",
+          "strength": 72
+        },
+        {
+          "name": "rose",
+          "strength": 69
+        },
+        {
+          "name": "warm spicy",
+          "strength": 42
+        },
+        {
+          "name": "lactonic",
+          "strength": 34
+        }
+      ],
+      "top": [
+        "Saffron"
+      ],
+      "heart": [
+        "Agarwood (Oud)",
+        "Rose"
+      ],
+      "base": [
+        "Agarwood (Oud)",
+        "Praline",
+        "Vanilla"
+      ],
+      "description": "Shaghaf Oud by Swiss Arabian is a Oriental fragrance for women and men. Top note is Saffron; middle notes are Agarwood (Oud) and Rose; base notes are Agarwood (Oud), Praline and Vanilla.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "layali",
+    "ok": true,
+    "data": {
+      "id": 56235,
+      "year": null,
+      "family": "Floral Fruity",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "white floral",
+          "strength": 60
+        },
+        {
+          "name": "sweet",
+          "strength": 55
+        },
+        {
+          "name": "yellow floral",
+          "strength": 38
+        },
+        {
+          "name": "oud",
+          "strength": 31
+        },
+        {
+          "name": "woody",
+          "strength": 30
+        }
+      ],
+      "top": [
+        "Plum",
+        "Black Currant",
+        "Orange Blossom"
+      ],
+      "heart": [
+        "Ylang-Ylang",
+        "Jasmine",
+        "Rose"
+      ],
+      "base": [
+        "Agarwood (Oud)",
+        "Amber"
+      ],
+      "description": "Layali by Swiss Arabian is a Floral Fruity fragrance for women. Top notes are Plum, Black Currant and Orange Blossom; middle notes are Ylang-Ylang, Jasmine and Rose; base notes are Agarwood (Oud) and Amber.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "musk-malaki",
+    "ok": true,
+    "data": {
+      "id": 54148,
+      "year": null,
+      "family": null,
+      "audience": null,
+      "accords": [
+        {
+          "name": "musky",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 92
+        },
+        {
+          "name": "animalic",
+          "strength": 70
+        },
+        {
+          "name": "white floral",
+          "strength": 52
+        },
+        {
+          "name": "powdery",
+          "strength": 50
+        },
+        {
+          "name": "fresh",
+          "strength": 31
+        }
+      ],
+      "top": [
+        "Lily-of-the-Valley"
+      ],
+      "heart": [
+        "White Musk"
+      ],
+      "base": [
+        "Musk",
+        "Ambergris"
+      ],
+      "description": "Musk Malaki by Swiss Arabian is a fragrance for women and men. Top note is Lily-of-the-Valley; middle note is White Musk; base notes are Musk and Ambergris.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "casablanca-sa",
+    "ok": true,
+    "data": {
+      "id": 42181,
+      "year": 2016,
+      "family": "Oriental",
+      "audience": "women and men",
+      "accords": [
+        {
+          "name": "fruity",
+          "strength": 100
+        },
+        {
+          "name": "caramel",
+          "strength": 74
+        },
+        {
+          "name": "woody",
+          "strength": 64
+        },
+        {
+          "name": "amber",
+          "strength": 61
+        },
+        {
+          "name": "sweet",
+          "strength": 53
+        },
+        {
+          "name": "musky",
+          "strength": 45
+        }
+      ],
+      "top": [
+        "Apple",
+        "Grapes"
+      ],
+      "heart": [
+        "White Woods",
+        "Iris",
+        "Patchouli"
+      ],
+      "base": [
+        "Caramel",
+        "Amber",
+        "Suede",
+        "Musk",
+        "Peru Balsam"
+      ],
+      "description": "Casablanca by Swiss Arabian is a Oriental fragrance for women and men. Casablanca was launched in 2016. Top notes are Apple and Grapes; middle notes are White Woods, Iris and Patchouli; base notes are Caramel, Amber, Suede, Musk and Peru Balsam.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "edge-sa",
+    "ok": true,
+    "data": {
+      "id": 22991,
+      "year": null,
+      "family": "Woody Aromatic",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "aromatic",
+          "strength": 100
+        },
+        {
+          "name": "woody",
+          "strength": 88
+        },
+        {
+          "name": "warm spicy",
+          "strength": 85
+        },
+        {
+          "name": "fresh spicy",
+          "strength": 61
+        },
+        {
+          "name": "powdery",
+          "strength": 61
+        },
+        {
+          "name": "rose",
+          "strength": 55
+        }
+      ],
+      "top": [
+        "Lavender",
+        "Mint",
+        "Geranium",
+        "Lemon"
+      ],
+      "heart": [
+        "Orchid",
+        "Rose",
+        "Cardamom",
+        "Cinnamon"
+      ],
+      "base": [
+        "Sandalwood",
+        "Cedar",
+        "White Musk"
+      ],
+      "description": "Edge by Swiss Arabian is a Woody Aromatic fragrance for men. Top notes are Lavender, Mint, Geranium and Lemon; middle notes are Orchid, Rose, Cardamom and Cinnamon; base notes are Sandalwood, Cedar and White Musk.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "mukhallat-malaki",
+    "ok": true,
+    "data": {
+      "id": 10849,
+      "year": null,
+      "family": "Oriental Woody",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "woody",
+          "strength": 100
+        },
+        {
+          "name": "rose",
+          "strength": 78
+        },
+        {
+          "name": "oud",
+          "strength": 78
+        },
+        {
+          "name": "warm spicy",
+          "strength": 77
+        },
+        {
+          "name": "amber",
+          "strength": 62
+        },
+        {
+          "name": "powdery",
+          "strength": 49
+        }
+      ],
+      "top": [],
+      "heart": [],
+      "base": [],
+      "description": "Mukhalat Malaki by Swiss Arabian is a Oriental Woody fragrance for men. The fragrance features Agarwood (Oud), Turkish Rose Oil, Saffron, Woodsy Notes, Amber, Musk and Sandalwood.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "jazzab-gold",
+    "ok": true,
+    "data": {
+      "id": 124587,
+      "year": null,
+      "family": "Floral Fruity Gourmand",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "floral",
+          "strength": 100
+        },
+        {
+          "name": "rose",
+          "strength": 85
+        },
+        {
+          "name": "sweet",
+          "strength": 80
+        },
+        {
+          "name": "fruity",
+          "strength": 77
+        },
+        {
+          "name": "citrus",
+          "strength": 71
+        },
+        {
+          "name": "musky",
+          "strength": 67
+        }
+      ],
+      "top": [
+        "Strawberry",
+        "Raspberry",
+        "Orange",
+        "Lemon"
+      ],
+      "heart": [
+        "Floral Notes",
+        "Rose",
+        "Spicy Notes",
+        "Cedarwood"
+      ],
+      "base": [
+        "Musk",
+        "Amber",
+        "Vanilla",
+        "Oud"
+      ],
+      "description": "Jazzab Gold by Ard Al Zaafaran is a Floral Fruity Gourmand fragrance for women. Top notes are Strawberry, Raspberry, Orange and Lemon; middle notes are Floral Notes, Rose, Spicy Notes and Cedarwood; base notes are Musk, Amber, Vanilla and Oud.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "romancea",
+    "ok": true,
+    "data": {
+      "id": 59147,
+      "year": null,
+      "family": "Oriental Woody",
+      "audience": "women",
+      "accords": [
+        {
+          "name": "warm spicy",
+          "strength": 100
+        },
+        {
+          "name": "amber",
+          "strength": 79
+        },
+        {
+          "name": "woody",
+          "strength": 69
+        },
+        {
+          "name": "oud",
+          "strength": 53
+        },
+        {
+          "name": "white floral",
+          "strength": 42
+        },
+        {
+          "name": "smoky",
+          "strength": 41
+        }
+      ],
+      "top": [
+        "Mandarin Orange",
+        "Black Currant",
+        "Bergamot"
+      ],
+      "heart": [
+        "Spicy Notes",
+        "Cinnamon",
+        "Gardenia",
+        "Ylang-Ylang",
+        "Jasmine"
+      ],
+      "base": [
+        "Agarwood (Oud)",
+        "Incense",
+        "Sandalwood",
+        "Amber",
+        "Patchouli"
+      ],
+      "description": "Oud Romancea by Ard Al Zaafaran is a Oriental Woody fragrance for women. Top notes are Mandarin Orange, Black Currant and Bergamot; middle notes are Spicy Notes, Cinnamon, Gardenia, Ylang-Ylang and Jasmine; base notes are Agarwood (Oud), Incense, Sandalwood, Amber and Patchouli.",
+      "perfumer": null
+    }
+  },
+  {
+    "slug": "liquid-brun",
+    "ok": true,
+    "data": {
+      "id": 94713,
+      "year": 2024,
+      "family": "Woody",
+      "audience": "men",
+      "accords": [
+        {
+          "name": "sweet",
+          "strength": 100
+        },
+        {
+          "name": "warm spicy",
+          "strength": 97
+        },
+        {
+          "name": "vanilla",
+          "strength": 95
+        },
+        {
+          "name": "cinnamon",
+          "strength": 70
+        },
+        {
+          "name": "white floral",
+          "strength": 46
+        },
+        {
+          "name": "powdery",
+          "strength": 44
+        }
+      ],
+      "top": [
+        "Cinnamon",
+        "Orange Blossom",
+        "Cardamom",
+        "Bergamot"
+      ],
+      "heart": [
+        "Bourbon Vanilla",
+        "elemi"
+      ],
+      "base": [
+        "Praline",
+        "Ambroxan",
+        "Guaiac Wood",
+        "Musk"
+      ],
+      "description": "Liquid Brun by French Avenue is a Woody fragrance for men. Liquid Brun was launched in 2024. Top notes are Cinnamon, Orange Blossom, Cardamom and Bergamot; middle notes are Bourbon Vanilla and elemi; base notes are Praline, Ambroxan, Guaiac Wood and Musk.",
+      "perfumer": null
+    }
+  }
+]

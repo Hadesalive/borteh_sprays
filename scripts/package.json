@@ -1,0 +1,15 @@
+{
+  "name": "borteh-image-loader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Downloads perfume images, removes backgrounds locally, uploads transparent PNGs to Supabase Storage, and links them to products.",
+  "scripts": {
+    "load-images": "node load-product-images.mjs"
+  },
+  "dependencies": {
+    "@imgly/background-removal-node": "^1.4.5",
+    "@supabase/supabase-js": "^2.45.0",
+    "ws": "^8.21.0"
+  }
+}

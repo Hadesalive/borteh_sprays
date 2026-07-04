@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Borteh Sprays",
+    "slug": "borteh-sprays",
+    "scheme": "borteh",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#FAF6F0",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bortehsprays.app"
+    },
+    "android": {
+      "package": "com.bortehsprays.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FAF6F0"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

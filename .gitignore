@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# env files — never commit secrets
+.env
+.env.*
+!.env.example
+
+# node
+node_modules/
+
+# build outputs
+.next/
+dist/
+build/
+out/
+
+# Expo
+.expo/
+
+# logs
+*.log
+
+# editor
+.vscode/
+.idea/
