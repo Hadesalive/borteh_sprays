@@ -1,10 +1,14 @@
 import {
-  EncodeSans_400Regular,
-  EncodeSans_500Medium,
-  EncodeSans_600SemiBold,
-  EncodeSans_700Bold,
+  Archivo_400Regular,
+  Archivo_500Medium,
+  Archivo_600SemiBold,
+  Archivo_700Bold,
   useFonts,
-} from "@expo-google-fonts/encode-sans";
+} from "@expo-google-fonts/archivo";
+import {
+  InstrumentSerif_400Regular,
+  InstrumentSerif_400Regular_Italic,
+} from "@expo-google-fonts/instrument-serif";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -20,10 +24,12 @@ const queryClient = new QueryClient({
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    EncodeSans_400Regular,
-    EncodeSans_500Medium,
-    EncodeSans_600SemiBold,
-    EncodeSans_700Bold,
+    Archivo_400Regular,
+    Archivo_500Medium,
+    Archivo_600SemiBold,
+    Archivo_700Bold,
+    InstrumentSerif_400Regular,
+    InstrumentSerif_400Regular_Italic,
   });
 
   useEffect(() => {
@@ -35,8 +41,8 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }}>
-          <Stack.Screen name="filter" options={{ presentation: "modal" }} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FAF8F5" } }}>
+          <Stack.Screen name="filter" options={{ presentation: "transparentModal", animation: "fade" }} />
           <Stack.Screen name="review" options={{ presentation: "modal" }} />
         </Stack>
         <QuickPeek />

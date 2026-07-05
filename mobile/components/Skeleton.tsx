@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import { AccessibilityInfo, Animated, type DimensionValue, StyleSheet, View } from "react-native";
-import { colors, radius, space } from "@/lib/theme";
+import { colors, space } from "@/lib/theme";
 
-/** A single pulsing placeholder block. */
-export function Skel({ w, h, r = 8, style }: { w?: DimensionValue; h: number; r?: number; style?: object }) {
+/** A single pulsing placeholder block — squared surface, no spinner. */
+export function Skel({ w, h, r = 0, style }: { w?: DimensionValue; h: number; r?: number; style?: object }) {
   const pulse = useRef(new Animated.Value(0.5)).current;
   useEffect(() => {
     let cancelled = false;
@@ -20,35 +20,30 @@ export function Skel({ w, h, r = 8, style }: { w?: DimensionValue; h: number; r?
       cancelled = true;
     };
   }, [pulse]);
-  return <Animated.View style={[{ width: w ?? "100%", height: h, borderRadius: r, backgroundColor: colors.field, opacity: pulse }, style]} />;
+  return <Animated.View style={[{ width: w ?? "100%", height: h, borderRadius: r, backgroundColor: colors.surface, opacity: pulse }, style]} />;
 }
 
-/** Home first-load skeleton — mirrors the real layout's rhythm. */
+/** Home first-load skeleton — mirrors the Maison layout's rhythm. */
 export function HomeSkeleton({ topInset, heroW }: { topInset: number; heroW: number }) {
   return (
-    <View style={{ paddingTop: topInset + space.sm }}>
+    <View style={{ paddingTop: topInset + space.md }}>
       <View style={s.header}>
-        <View>
-          <Skel w={150} h={22} r={6} />
-          <Skel w={110} h={12} r={4} style={{ marginTop: 8 }} />
-        </View>
-        <Skel w={44} h={44} r={22} />
+        <Skel w={200} h={26} />
+        <Skel w={32} h={32} r={16} />
+      </View>
+      <View style={{ marginTop: space.sm }}>
+        <Skel w={heroW} h={360} />
       </View>
       <View style={s.block}>
-        <Skel h={54} r={radius.md} />
-      </View>
-      <View style={[s.block, { marginTop: space.lg }]}>
-        <Skel w={heroW} h={240} r={radius.xl} />
-      </View>
-      <View style={s.block}>
-        <Skel w={140} h={18} r={5} style={{ marginTop: space["2xl"] }} />
+        <Skel w={220} h={32} style={{ marginTop: space["2xl"] }} />
+        <Skel w={120} h={16} style={{ marginTop: space.md }} />
       </View>
       <View style={s.rail}>
         {[0, 1, 2].map((i) => (
-          <View key={i} style={{ width: 168 }}>
-            <Skel h={200} r={radius.lg} />
-            <Skel w={120} h={14} r={4} style={{ marginTop: space.md }} />
-            <Skel w={80} h={14} r={4} style={{ marginTop: 8 }} />
+          <View key={i} style={{ width: 160 }}>
+            <Skel h={200} />
+            <Skel w={120} h={20} style={{ marginTop: space.sm }} />
+            <Skel w={90} h={14} style={{ marginTop: space.xs }} />
           </View>
         ))}
       </View>
@@ -57,7 +52,7 @@ export function HomeSkeleton({ topInset, heroW }: { topInset: number; heroW: num
 }
 
 const s = StyleSheet.create({
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: space.xl, marginBottom: space.lg },
-  block: { paddingHorizontal: space.xl },
-  rail: { flexDirection: "row", gap: space.md, paddingHorizontal: space.xl, marginTop: space.md },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: space.gutter },
+  block: { paddingHorizontal: space.gutter },
+  rail: { flexDirection: "row", gap: space.lg, paddingHorizontal: space.gutter, marginTop: space.lg },
 });

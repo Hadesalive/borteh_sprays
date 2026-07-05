@@ -2,14 +2,15 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Field } from "@/components/Field";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
+import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
+import { LinkLabel } from "@/components/ui";
 import { signUp } from "@/lib/auth";
-import { colors, font, radius, space } from "@/lib/theme";
+import { colors, space } from "@/lib/theme";
 
 export default function SignUp() {
   const router = useRouter();
@@ -20,13 +21,15 @@ export default function SignUp() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const passOk = password.length >= 6;
+
   const submit = async () => {
     if (busy) return;
     if (!name.trim() || !phone.trim() || !password) {
       setError("Fill in your name, phone and password.");
       return;
     }
-    if (password.length < 6) {
+    if (!passOk) {
       setError("Password must be at least 6 characters.");
       return;
     }
@@ -46,47 +49,49 @@ export default function SignUp() {
   };
 
   return (
-    <View style={s.fill}>
+    <View style={s.screen}>
       <StatusBar style="dark" />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.sm, paddingBottom: insets.bottom + space["3xl"], paddingHorizontal: space.xl }}>
-          <BackButton onPress={() => router.back()} style={{ marginBottom: space.sm }} />
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: space["3xl"], paddingHorizontal: space.gutter }}>
+          <BackButton onPress={() => router.back()} />
 
-          <View style={s.head}>
-            <AppText style={s.title}>Create account</AppText>
-            <AppText style={s.sub}>Save your details for faster checkout and order tracking.</AppText>
+          <View style={{ marginTop: space["2xl"] }}>
+            <AppText variant="display">Create your account.</AppText>
+            <AppText variant="bodySoft" style={{ marginTop: space.sm }}>Faster checkout, order tracking, and restock alerts.</AppText>
           </View>
 
           <View style={s.form}>
             <Field label="Full name" value={name} onChangeText={setName} placeholder="Aminata Kamara" autoCapitalize="words" returnKeyType="next" />
-            <Field label="Phone number" value={phone} onChangeText={setPhone} placeholder="077 123456" keyboardType="phone-pad" returnKeyType="next" />
-            <Field label="Password" value={password} onChangeText={setPassword} placeholder="At least 6 characters" secure returnKeyType="go" onSubmitEditing={submit} />
-            {error ? <AppText style={s.error}>{error}</AppText> : null}
-
-            <Button title={busy ? "Creating account…" : "Create account"} onPress={submit} disabled={busy} style={{ marginTop: space.lg }} />
+            <Field label="Phone number" value={phone} onChangeText={setPhone} placeholder="077 123 456" keyboardType="phone-pad" returnKeyType="next" />
+            <Field
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              placeholder="At least 6 characters"
+              secure
+              returnKeyType="go"
+              onSubmitEditing={submit}
+              helper={password.length > 0 && passOk ? "6+ characters ✓" : undefined}
+              error={error ?? undefined}
+            />
           </View>
-
-          <Pressable onPress={() => router.replace("/login")} style={s.altRow} hitSlop={8} accessibilityRole="button">
-            <AppText style={s.altTxt}>Already have an account? </AppText>
-            <AppText style={s.altLink}>Sign in</AppText>
-          </Pressable>
         </ScrollView>
+
+        <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
+          <Button title={busy ? "Creating account…" : "Create account"} onPress={submit} disabled={busy} />
+          <View style={s.altRow}>
+            <AppText variant="bodySoft">Already have an account?</AppText>
+            <LinkLabel label="Sign in" onPress={() => router.replace("/login")} />
+          </View>
+        </View>
       </KeyboardAvoidingView>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  fill: { flex: 1, backgroundColor: colors.bg },
-  back: { width: 44, height: 44, justifyContent: "center", marginLeft: -10 },
-  head: { marginTop: space["3xl"] },
-  title: { fontFamily: font.bold, fontSize: 32, lineHeight: 38, color: colors.ink, letterSpacing: -0.6 },
-  sub: { fontFamily: font.regular, fontSize: 14, lineHeight: 21, color: colors.inkSoft, marginTop: space.sm },
-  form: { gap: space.lg, marginTop: space["2xl"] },
-  error: { fontFamily: font.medium, fontSize: 13, color: colors.badge, marginTop: 2 },
-  cta: { height: 56, borderRadius: radius.pill, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center", marginTop: space.lg },
-  ctaTxt: { fontFamily: font.bold, fontSize: 16, color: colors.onAccent, letterSpacing: 0.2 },
-  altRow: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: space["4xl"] },
-  altTxt: { fontFamily: font.regular, fontSize: 14, color: colors.inkSoft },
-  altLink: { fontFamily: font.bold, fontSize: 14, color: colors.accentInk },
+  screen: { flex: 1, backgroundColor: colors.paper },
+  form: { gap: space.lg, marginTop: space["3xl"] },
+  footer: { paddingHorizontal: space.gutter, paddingTop: space.lg, gap: space.md, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
+  altRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm },
 });

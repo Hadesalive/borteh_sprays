@@ -6,13 +6,12 @@ import { Star, X } from "phosphor-react-native";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Field } from "@/components/Field";
 import { Button } from "@/components/Button";
-import { GlassCircle } from "@/components/Glass";
+import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
 import { useSession } from "@/lib/auth";
 import { submitReview } from "@/lib/reviews";
-import { colors, font, radius, space } from "@/lib/theme";
+import { colors, font, space } from "@/lib/theme";
 
 export default function WriteReview() {
   const router = useRouter();
@@ -50,61 +49,46 @@ export default function WriteReview() {
   };
 
   return (
-    <View style={s.fill}>
+    <View style={s.screen}>
       <StatusBar style="dark" />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.sm, paddingBottom: insets.bottom + space["3xl"], paddingHorizontal: space.xl }}>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space["3xl"], paddingHorizontal: space.gutter }}>
           <View style={s.topRow}>
-            <Pressable onPress={() => router.back()} style={s.iconBtn} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close">
-              <GlassCircle size={40}>
-                <X size={20} color={colors.ink} weight="bold" />
-              </GlassCircle>
+            <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
+              <X size={24} color={colors.ink} weight="regular" />
             </Pressable>
           </View>
 
-          <AppText style={s.title}>Write a review</AppText>
-          {productName ? (
-            <AppText style={s.sub} numberOfLines={1}>
-              {productName}
-            </AppText>
-          ) : null}
+          <AppText variant="display" style={{ marginTop: space.lg }}>Write a review.</AppText>
+          {productName ? <AppText variant="bodySoft" numberOfLines={1} style={{ marginTop: space.xs }}>{productName}</AppText> : null}
 
           <View style={s.stars}>
             {[1, 2, 3, 4, 5].map((n) => (
-              <Pressable
-                key={n}
-                onPress={() => {
-                  Haptics.selectionAsync();
-                  setRating(n);
-                }}
-                hitSlop={6}
-                accessibilityRole="button"
-                accessibilityLabel={`${n} star${n === 1 ? "" : "s"}`}
-              >
-                <Star size={38} color={n <= rating ? colors.rating : "#E2E2E2"} weight="fill" />
+              <Pressable key={n} onPress={() => { Haptics.selectionAsync(); setRating(n); }} hitSlop={6} accessibilityRole="button" accessibilityLabel={`${n} star${n === 1 ? "" : "s"}`}>
+                <Star size={32} color={n <= rating ? colors.ink : colors.ink40} weight={n <= rating ? "fill" : "regular"} />
               </Pressable>
             ))}
           </View>
 
           <View style={s.form}>
             <Field label="Title (optional)" value={title} onChangeText={setTitle} placeholder="Sum it up" autoCapitalize="sentences" />
-            <View style={{ gap: space.sm }}>
-              <AppText style={s.label}>Your review (optional)</AppText>
+            <View style={{ gap: space.xs }}>
+              <AppText variant="label" style={{ color: colors.ink60 }}>Your review (optional)</AppText>
               <TextInput
                 value={body}
                 onChangeText={setBody}
                 placeholder="How does it smell? How long does it last?"
-                placeholderTextColor={colors.placeholder}
+                placeholderTextColor={colors.ink40}
                 multiline
                 style={s.textarea}
                 textAlignVertical="top"
               />
             </View>
-            {error ? <AppText style={s.error}>{error}</AppText> : null}
+            {error ? <AppText variant="caption" style={{ color: colors.error }}>{error}</AppText> : null}
           </View>
 
           <Button title={busy ? "Submitting…" : "Submit review"} onPress={submit} disabled={busy} style={{ marginTop: space["2xl"] }} />
-          <AppText style={s.note}>Your review will appear on the fragrance right away.</AppText>
+          <AppText variant="caption" style={{ textAlign: "center", marginTop: space.md }}>Your review will appear on the fragrance right away.</AppText>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -112,17 +96,9 @@ export default function WriteReview() {
 }
 
 const s = StyleSheet.create({
-  fill: { flex: 1, backgroundColor: colors.bg },
+  screen: { flex: 1, backgroundColor: colors.paper },
   topRow: { flexDirection: "row", justifyContent: "flex-end" },
-  iconBtn: { width: 40, height: 40, alignItems: "center", justifyContent: "center", marginRight: -8 },
-  title: { fontFamily: font.bold, fontSize: 26, color: colors.ink, letterSpacing: -0.5, marginTop: space.sm },
-  sub: { fontFamily: font.regular, fontSize: 14, color: colors.inkSoft, marginTop: 4 },
-  stars: { flexDirection: "row", justifyContent: "center", gap: space.md, marginTop: space["2xl"] },
+  stars: { flexDirection: "row", gap: space.md, marginTop: space["2xl"] },
   form: { gap: space.lg, marginTop: space["2xl"] },
-  label: { fontFamily: font.semibold, fontSize: 13, color: colors.inkSoft, letterSpacing: 0.1 },
-  textarea: { minHeight: 120, borderRadius: radius.md, backgroundColor: colors.field, padding: space.lg, fontFamily: font.regular, fontSize: 15, color: colors.ink },
-  error: { fontFamily: font.medium, fontSize: 13, color: colors.badge },
-  cta: { height: 56, borderRadius: radius.pill, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center", marginTop: space["2xl"] },
-  ctaTxt: { fontFamily: font.bold, fontSize: 16, color: colors.onAccent, letterSpacing: 0.2 },
-  note: { fontFamily: font.regular, fontSize: 12, color: colors.inkMute, textAlign: "center", marginTop: space.md },
+  textarea: { minHeight: 120, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper, padding: space.lg, fontFamily: font.regular, fontSize: 16, color: colors.ink },
 });

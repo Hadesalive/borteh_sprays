@@ -1,5 +1,4 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -10,13 +9,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
+import { ListRow } from "@/components/ListRow";
 import { AppText } from "@/components/Text";
+import { LinkLabel } from "@/components/ui";
 import { useProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { cartTotalMinor, clearBag, useCart } from "@/lib/cart";
 import { formatLe } from "@/lib/format";
 import { placeOrder } from "@/lib/orders";
-import { colors, font, radius, space } from "@/lib/theme";
+import { colors, font, space } from "@/lib/theme";
 
 // Demo coupons — the owner can edit these (value is in minor units; Le 50 = 5000).
 const COUPONS: Record<string, { label: string; type: "pct" | "flat"; value: number }> = {
@@ -100,114 +101,81 @@ export default function Checkout() {
   };
 
   return (
-    <View style={s.fill}>
+    <View style={s.screen}>
       <StatusBar style="dark" />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingTop: insets.top + space.sm, paddingBottom: insets.bottom + 124, paddingHorizontal: space.xl }}
-        >
-          <BackButton onPress={() => router.back()} style={{ marginBottom: space.sm }} />
-          <AppText style={s.title}>Checkout</AppText>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + 120, paddingHorizontal: space.gutter }}>
+          <BackButton onPress={() => router.back()} />
+          <AppText variant="heading" style={{ marginTop: space.lg }}>Checkout</AppText>
 
           {/* Delivery */}
-          <AppText style={s.h2}>Delivery details</AppText>
-          <View style={s.form}>
-            <Field minimal label="Recipient name" value={name} onChangeText={setName} placeholder="Aminata Kamara" autoCapitalize="words" />
-            <Field minimal label="Phone number" value={phone} onChangeText={setPhone} placeholder="077 123456" keyboardType="phone-pad" />
-            <Field minimal label="Delivery landmark / area" value={landmark} onChangeText={setLandmark} placeholder="e.g. Lumley, near the petrol station" autoCapitalize="sentences" />
-            <Field minimal label="Notes (optional)" value={notes} onChangeText={setNotes} placeholder="Anything the rider should know" autoCapitalize="sentences" />
+          <AppText variant="label" style={s.eyebrow}>Delivery</AppText>
+          <View style={{ gap: space.md, marginTop: space.md }}>
+            <Field label="Recipient name" value={name} onChangeText={setName} placeholder="Aminata Kamara" autoCapitalize="words" />
+            <Field label="Phone number" value={phone} onChangeText={setPhone} placeholder="077 123 456" keyboardType="phone-pad" />
+            <Field label="Delivery landmark / area" value={landmark} onChangeText={setLandmark} placeholder="e.g. Lumley, near the petrol station" autoCapitalize="sentences" />
+            <Field label="Notes (optional)" value={notes} onChangeText={setNotes} placeholder="Anything the rider should know" autoCapitalize="sentences" />
           </View>
 
-          {/* Payment — text, no box */}
-          <AppText style={s.h2}>Payment</AppText>
-          <View style={s.payRow}>
-            <Money size={20} color={colors.ink} weight="regular" />
-            <View style={{ flex: 1 }}>
-              <AppText style={s.payTitle}>Cash on delivery</AppText>
-              <AppText style={s.paySub}>Pay the rider when your order arrives.</AppText>
-            </View>
-          </View>
-
-          {/* Coupon */}
-          <AppText style={s.h2}>Coupon</AppText>
-          {applied ? (
-            <View style={s.appliedRow}>
-              <Check size={17} color={colors.accentInk} weight="bold" />
-              <AppText style={s.appliedTxt}>
-                <AppText style={s.appliedCode}>{applied.code}</AppText> · {applied.label}
-              </AppText>
-              <Pressable onPress={() => setApplied(null)} hitSlop={8} accessibilityRole="button">
-                <AppText style={s.removeLink}>Remove</AppText>
-              </Pressable>
-            </View>
-          ) : (
-            <>
+          {/* Payment */}
+          <AppText variant="label" style={s.eyebrow}>Payment</AppText>
+          <View style={{ marginTop: space.xs }}>
+            <ListRow icon={<Money size={20} color={colors.ink} weight="regular" />} title="Cash on delivery" value="Pay the rider on arrival" arrow={false} borderTop />
+            {applied ? (
               <View style={s.couponRow}>
-                <Tag size={18} color={colors.inkMute} weight="regular" />
+                <Check size={20} color={colors.accent} weight="regular" />
+                <AppText variant="body" style={{ flex: 1 }}>
+                  <AppText variant="body" style={{ fontFamily: font.semibold }}>{applied.code}</AppText> · {applied.label}
+                </AppText>
+                <LinkLabel label="Remove" onPress={() => setApplied(null)} color={colors.ink60} />
+              </View>
+            ) : (
+              <View style={s.couponRow}>
+                <Tag size={20} color={colors.ink} weight="regular" />
                 <TextInput
                   value={coupon}
-                  onChangeText={(t) => {
-                    setCoupon(t);
-                    if (couponMsg) setCouponMsg(null);
-                  }}
-                  placeholder="Enter code"
-                  placeholderTextColor={colors.placeholder}
+                  onChangeText={(t) => { setCoupon(t); if (couponMsg) setCouponMsg(null); }}
+                  placeholder="Coupon code"
+                  placeholderTextColor={colors.ink40}
                   autoCapitalize="characters"
                   autoCorrect={false}
                   returnKeyType="done"
                   onSubmitEditing={applyCoupon}
                   style={s.couponInput}
                 />
-                <Pressable onPress={applyCoupon} hitSlop={8} disabled={!coupon.trim()} style={{ opacity: coupon.trim() ? 1 : 0.4 }} accessibilityRole="button">
-                  <AppText style={s.applyLink}>Apply</AppText>
-                </Pressable>
+                <LinkLabel label="Apply" onPress={applyCoupon} color={coupon.trim() ? colors.accent : colors.ink40} />
               </View>
-              {couponMsg ? <AppText style={s.couponMsg}>{couponMsg}</AppText> : null}
-            </>
-          )}
+            )}
+          </View>
+          {couponMsg ? <AppText variant="caption" style={{ color: colors.error, marginTop: space.sm }}>{couponMsg}</AppText> : null}
 
-          {/* Summary — text + one hairline */}
-          <AppText style={s.h2}>Order summary</AppText>
-          <View style={s.summary}>
+          {/* Summary */}
+          <AppText variant="label" style={s.eyebrow}>Summary</AppText>
+          <View style={{ marginTop: space.sm }}>
             {lines.map((l) => (
               <View key={l.variantId} style={s.sumRow}>
-                <AppText style={s.sumName} numberOfLines={1}>
-                  {l.qty}× {l.name} · {l.sizeMl} ml
-                </AppText>
-                <AppText style={s.sumVal}>{formatLe(l.priceMinor * l.qty)}</AppText>
+                <AppText variant="bodySoft" numberOfLines={1} style={{ flex: 1 }}>{l.qty}× {l.name} · {l.sizeMl} ml</AppText>
+                <AppText variant="body">{formatLe(l.priceMinor * l.qty)}</AppText>
               </View>
             ))}
-            <View style={s.divider} />
-            <View style={s.sumRow}>
-              <AppText style={s.sumMute}>Subtotal</AppText>
-              <AppText style={s.sumMuteVal}>{formatLe(subtotal)}</AppText>
-            </View>
             {applied ? (
               <View style={s.sumRow}>
-                <AppText style={s.discountLabel}>Discount ({applied.code})</AppText>
-                <AppText style={s.discountVal}>−{formatLe(discount)}</AppText>
+                <AppText variant="bodySoft" style={{ color: colors.accent }}>Discount ({applied.code})</AppText>
+                <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(discount)}</AppText>
               </View>
             ) : null}
-            <View style={s.sumRow}>
-              <AppText style={s.sumMute}>Delivery fee</AppText>
-              <AppText style={s.sumMute}>Confirmed after you order</AppText>
+            <View style={s.totalRow}>
+              <AppText variant="serif20">Total</AppText>
+              <AppText variant="serif20">{formatLe(total)}</AppText>
             </View>
-            <View style={s.divider} />
-            <View style={s.sumRow}>
-              <AppText style={s.totalLabel}>Total</AppText>
-              <AppText style={s.totalVal}>{formatLe(total)}</AppText>
-            </View>
+            <AppText variant="caption" style={{ marginTop: space.xs }}>Delivery fee confirmed by phone after you order.</AppText>
           </View>
 
-          {error ? <AppText style={s.error}>{error}</AppText> : null}
+          {error ? <AppText variant="caption" style={{ color: colors.error, marginTop: space.lg }}>{error}</AppText> : null}
         </ScrollView>
 
-        {/* Place order — gradient fade, no border */}
-        <View style={[s.footer, { paddingBottom: insets.bottom + space.md }]} pointerEvents="box-none">
-          <LinearGradient colors={["rgba(255,255,255,0)", colors.bg]} locations={[0, 0.45]} style={StyleSheet.absoluteFill} pointerEvents="none" />
-          <Button title={busy ? "Placing order…" : "Place order"} trailing={formatLe(total)} onPress={submit} disabled={busy || !items.length} />
+        <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
+          <Button title={busy ? "Placing order…" : "Place order"} trailing={busy ? undefined : formatLe(total)} onPress={submit} disabled={busy || !items.length} />
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -215,32 +183,11 @@ export default function Checkout() {
 }
 
 const s = StyleSheet.create({
-  fill: { flex: 1, backgroundColor: colors.bg },
-  title: { fontFamily: font.bold, fontSize: 28, color: colors.ink, letterSpacing: -0.5 },
-  h2: { fontFamily: font.bold, fontSize: 16, color: colors.ink, letterSpacing: -0.2, marginTop: space["2xl"] },
-  form: { gap: space.lg, marginTop: space.lg },
-  payRow: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space.md },
-  payTitle: { fontFamily: font.bold, fontSize: 15, color: colors.ink },
-  paySub: { fontFamily: font.regular, fontSize: 13, color: colors.inkSoft, marginTop: 1 },
-  couponRow: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space.md, paddingBottom: space.sm, borderBottomWidth: 1, borderBottomColor: colors.line },
-  couponInput: { flex: 1, fontFamily: font.semibold, fontSize: 15, color: colors.ink, letterSpacing: 0.4, padding: 0 },
-  applyLink: { fontFamily: font.bold, fontSize: 14, color: colors.accentInk },
-  couponMsg: { fontFamily: font.medium, fontSize: 13, color: colors.badge, marginTop: space.sm },
-  appliedRow: { flexDirection: "row", alignItems: "center", gap: space.sm, marginTop: space.md },
-  appliedTxt: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.inkSoft },
-  appliedCode: { fontFamily: font.bold, color: colors.ink },
-  removeLink: { fontFamily: font.semibold, fontSize: 13, color: colors.inkSoft },
-  summary: { marginTop: space.lg, gap: space.md },
-  sumRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.md },
-  sumName: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.inkSoft },
-  sumVal: { fontFamily: font.medium, fontSize: 14, color: colors.ink },
-  divider: { height: 1, backgroundColor: colors.line, marginVertical: space.xs },
-  sumMute: { fontFamily: font.regular, fontSize: 14, color: colors.inkSoft },
-  sumMuteVal: { fontFamily: font.medium, fontSize: 14, color: colors.ink },
-  discountLabel: { fontFamily: font.medium, fontSize: 14, color: colors.accentInk },
-  discountVal: { fontFamily: font.bold, fontSize: 14, color: colors.accentInk },
-  totalLabel: { fontFamily: font.bold, fontSize: 17, color: colors.ink, letterSpacing: -0.2 },
-  totalVal: { fontFamily: font.bold, fontSize: 17, color: colors.ink, letterSpacing: -0.2 },
-  error: { fontFamily: font.medium, fontSize: 13, color: colors.badge, marginTop: space.lg },
-  footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.xl, paddingTop: space["3xl"] },
+  screen: { flex: 1, backgroundColor: colors.paper },
+  eyebrow: { color: colors.ink60, marginTop: space["2xl"] },
+  couponRow: { flexDirection: "row", alignItems: "center", gap: space.md, height: 56, borderBottomWidth: 1, borderBottomColor: colors.line },
+  couponInput: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },
+  sumRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.md, paddingVertical: space.sm },
+  totalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: space.md, marginTop: space.sm, borderTopWidth: 1, borderTopColor: colors.line },
+  footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.gutter, paddingTop: space.lg, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
 });

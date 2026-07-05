@@ -1,22 +1,21 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { GenderFemale, GenderIntersex, GenderMale, SquaresFour, X } from "phosphor-react-native";
-import { type ComponentType, useEffect, useMemo, useState } from "react";
+import { X } from "phosphor-react-native";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ProductCard } from "@/components/ProductCard";
-import { TAB_BAR_BODY } from "@/components/TabBar";
 import { AppText } from "@/components/Text";
-import { CategoryChip, SearchBar } from "@/components/ui";
+import { Avatar, BellButton, LinkLabel, SearchBar } from "@/components/ui";
 import { discountPct, type Gender, type Product, useProducts } from "@/lib/api";
-import { colors, font, radius, space } from "@/lib/theme";
+import { useSession } from "@/lib/auth";
+import { colors, space } from "@/lib/theme";
 
-type Glyph = ComponentType<{ size?: number; color?: string; weight?: any }>;
-const CATS: { label: string; value: "all" | Gender; Icon: Glyph }[] = [
-  { label: "All", value: "all", Icon: SquaresFour },
-  { label: "Women", value: "female", Icon: GenderFemale },
-  { label: "Men", value: "male", Icon: GenderMale },
-  { label: "Unisex", value: "unisex", Icon: GenderIntersex },
+const CATS: { label: string; value: "all" | Gender }[] = [
+  { label: "All", value: "all" },
+  { label: "Women", value: "female" },
+  { label: "Men", value: "male" },
+  { label: "Unisex", value: "unisex" },
 ];
 const isGender = (v?: string): v is Gender => v === "male" || v === "female" || v === "unisex";
 const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1);
@@ -26,6 +25,7 @@ export default function Shop() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { data } = useProducts();
+  const session = useSession();
   const params = useLocalSearchParams<{ family?: string; gender?: string; sale?: string; brand?: string; collection?: string }>();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<"all" | Gender>(isGender(params.gender) ? params.gender : "all");
@@ -34,19 +34,10 @@ export default function Shop() {
   const [collection, setCollection] = useState<string | null>(params.collection ?? null);
   const sale = params.sale === "1";
 
-  // sync from deep-links (Home → Shop by scent / brand / collection, etc.)
-  useEffect(() => {
-    if (params.family !== undefined) setFamily(params.family || null);
-  }, [params.family]);
-  useEffect(() => {
-    if (params.brand !== undefined) setBrand(params.brand || null);
-  }, [params.brand]);
-  useEffect(() => {
-    if (params.collection !== undefined) setCollection(params.collection || null);
-  }, [params.collection]);
-  useEffect(() => {
-    if (isGender(params.gender)) setCat(params.gender);
-  }, [params.gender]);
+  useEffect(() => { if (params.family !== undefined) setFamily(params.family || null); }, [params.family]);
+  useEffect(() => { if (params.brand !== undefined) setBrand(params.brand || null); }, [params.brand]);
+  useEffect(() => { if (params.collection !== undefined) setCollection(params.collection || null); }, [params.collection]);
+  useEffect(() => { if (isGender(params.gender)) setCat(params.gender); }, [params.gender]);
 
   const term = q.trim().toLowerCase();
   const products = useMemo(() => {
@@ -62,98 +53,78 @@ export default function Shop() {
 
   const brandName = (data ?? []).find((p) => p.brandSlug === brand)?.brand ?? brand;
   const collectionName = (data ?? []).find((p) => p.collection === collection)?.collectionName ?? collection;
+  const displayName = (session?.user?.user_metadata?.display_name as string | undefined)?.trim() || undefined;
+  const initials = displayName?.split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("") || undefined;
 
-  const GUTTER = space.xl;
-  const COL_GAP = space.md;
-  const cardW = Math.floor((width - GUTTER * 2 - COL_GAP) / 2);
-  const imgH = Math.round(cardW * 1.28);
-  const left = products.filter((_, i) => i % 2 === 0);
-  const right = products.filter((_, i) => i % 2 === 1);
+  const cardW = Math.floor((width - space.gutter * 2 - space.lg) / 2);
+  const imgH = Math.round(cardW * 1.3);
+  const activeFilters = [
+    sale && { key: "sale", label: "On sale", clear: () => router.setParams({ sale: "" }) },
+    brand && { key: "brand", label: brandName ?? "", clear: () => setBrand(null) },
+    collection && { key: "collection", label: collectionName ?? "", clear: () => setCollection(null) },
+    family && { key: "family", label: cap(family), clear: () => setFamily(null) },
+  ].filter(Boolean) as { key: string; label: string; clear: () => void }[];
+  const clearAll = () => { setBrand(null); setCollection(null); setFamily(null); router.setParams({ sale: "" }); };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <View style={s.screen}>
       <StatusBar style="dark" />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        keyboardDismissMode="on-drag"
-        contentContainerStyle={{ paddingTop: insets.top + space.sm, paddingBottom: insets.bottom + TAB_BAR_BODY + space["3xl"] }}
-      >
-        <View style={s.head}>
-          <AppText variant="name">Shop</AppText>
-          <AppText variant="greeting" style={{ marginTop: 3 }}>
+      <ScrollView showsVerticalScrollIndicator={false} keyboardDismissMode="on-drag" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: space["3xl"] }}>
+        <View style={s.gutter}>
+          <View style={s.headerRow}>
+            <AppText variant="heading">Shop</AppText>
+            <View style={s.actions}>
+              <BellButton onPress={() => router.push("/orders")} />
+              <Pressable onPress={() => router.push("/profile")} accessibilityRole="button" accessibilityLabel="Account">
+                <Avatar initials={initials} />
+              </Pressable>
+            </View>
+          </View>
+          <AppText variant="caption" style={{ marginTop: space.xs }}>
             {products.length} {products.length === 1 ? "fragrance" : "fragrances"}
           </AppText>
+          <View style={{ marginTop: space.lg }}>
+            <SearchBar value={q} onChangeText={setQ} onFilter={() => router.push({ pathname: "/filter", params: { family: family ?? "" } })} />
+          </View>
         </View>
 
-        <View style={s.block}>
-          <SearchBar value={q} onChangeText={setQ} onFilter={() => router.push({ pathname: "/filter", params: { family: family ?? "" } })} />
-        </View>
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={s.cats}>
+        {/* gender tabs */}
+        <View style={s.tabs}>
           {CATS.map((c) => {
             const active = cat === c.value;
             return (
-              <CategoryChip
-                key={c.value}
-                label={c.label}
-                active={active}
-                onPress={() => setCat(c.value)}
-                icon={<c.Icon size={15} color={active ? colors.onInk : colors.ink} weight="regular" />}
-              />
+              <Pressable key={c.value} onPress={() => setCat(c.value)} style={[s.tab, active && s.tabOn]} accessibilityRole="button" accessibilityState={{ selected: active }}>
+                <AppText variant="label" style={{ color: active ? colors.ink : colors.ink40 }}>
+                  {c.label}
+                </AppText>
+              </Pressable>
             );
           })}
-        </ScrollView>
+        </View>
 
-        {family || sale || brand || collection ? (
-          <View style={s.activeRow}>
-            {sale ? (
-              <Pressable style={s.activeChip} onPress={() => router.setParams({ sale: "" })} accessibilityRole="button" accessibilityLabel="Clear on sale filter">
-                <AppText style={s.activeChipTxt}>On sale</AppText>
-                <X size={13} color={colors.onInk} weight="bold" />
+        {/* applied filters */}
+        {activeFilters.length > 0 ? (
+          <View style={[s.gutter, s.filterRow]}>
+            {activeFilters.map((f) => (
+              <Pressable key={f.key} onPress={f.clear} style={s.filterChip} accessibilityRole="button" accessibilityLabel={`Clear ${f.label}`}>
+                <AppText variant="label">{f.label}</AppText>
+                <X size={16} color={colors.ink} weight="regular" />
               </Pressable>
-            ) : null}
-            {brand ? (
-              <Pressable style={s.activeChip} onPress={() => setBrand(null)} accessibilityRole="button" accessibilityLabel={`Clear ${brandName} filter`}>
-                <AppText style={s.activeChipTxt}>{brandName}</AppText>
-                <X size={13} color={colors.onInk} weight="bold" />
-              </Pressable>
-            ) : null}
-            {collection ? (
-              <Pressable style={s.activeChip} onPress={() => setCollection(null)} accessibilityRole="button" accessibilityLabel={`Clear ${collectionName} filter`}>
-                <AppText style={s.activeChipTxt}>{collectionName}</AppText>
-                <X size={13} color={colors.onInk} weight="bold" />
-              </Pressable>
-            ) : null}
-            {family ? (
-              <Pressable style={s.activeChip} onPress={() => setFamily(null)} accessibilityRole="button" accessibilityLabel={`Clear ${family} filter`}>
-                <AppText style={s.activeChipTxt}>{cap(family)}</AppText>
-                <X size={13} color={colors.onInk} weight="bold" />
-              </Pressable>
-            ) : null}
+            ))}
+            <LinkLabel label="Clear all" onPress={clearAll} color={colors.accent} />
           </View>
         ) : null}
 
         {products.length === 0 ? (
           <View style={s.empty}>
-            <AppText variant="label" style={{ textAlign: "center" }}>
-              No fragrances found
-            </AppText>
-            <AppText variant="body" style={{ textAlign: "center", marginTop: 4 }}>
-              Try another search or filter.
-            </AppText>
+            <AppText variant="heading" style={{ textAlign: "center" }}>Nothing on the shelf for that.</AppText>
+            <AppText variant="bodySoft" style={{ textAlign: "center", marginTop: space.sm }}>Try another search or clear a filter.</AppText>
           </View>
         ) : (
-          <View style={[s.grid, { paddingHorizontal: GUTTER, gap: COL_GAP }]}>
-            <View style={{ width: cardW, gap: space.xl }}>
-              {left.map((p) => (
-                <ProductCard key={p.id} product={p} width={cardW} imageHeight={imgH} />
-              ))}
-            </View>
-            <View style={{ width: cardW, gap: space.xl, marginTop: 28 }}>
-              {right.map((p) => (
-                <ProductCard key={p.id} product={p} width={cardW} imageHeight={imgH} />
-              ))}
-            </View>
+          <View style={[s.grid, { marginTop: space.lg }]}>
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} width={cardW} imageHeight={imgH} />
+            ))}
           </View>
         )}
       </ScrollView>
@@ -162,12 +133,15 @@ export default function Shop() {
 }
 
 const s = StyleSheet.create({
-  head: { paddingHorizontal: space.xl, marginBottom: space.lg },
-  block: { paddingHorizontal: space.xl },
-  cats: { paddingHorizontal: space.xl, gap: space.sm, paddingVertical: space.lg },
-  activeRow: { paddingHorizontal: space.xl, marginBottom: space.md, flexDirection: "row", gap: space.sm },
-  activeChip: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: colors.accent, paddingHorizontal: space.md, height: 34, borderRadius: radius.pill },
-  activeChipTxt: { fontFamily: font.semibold, fontSize: 12, color: colors.onInk },
-  grid: { flexDirection: "row", justifyContent: "space-between" },
-  empty: { paddingTop: space["3xl"], paddingHorizontal: space.xl, alignItems: "center" },
+  screen: { flex: 1, backgroundColor: colors.paper },
+  gutter: { paddingHorizontal: space.gutter },
+  headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  actions: { flexDirection: "row", alignItems: "center", gap: space.lg },
+  tabs: { flexDirection: "row", gap: space["2xl"], paddingHorizontal: space.gutter, marginTop: space["2xl"], borderBottomWidth: 1, borderBottomColor: colors.line },
+  tab: { paddingBottom: space.md },
+  tabOn: { borderBottomWidth: 1, borderBottomColor: colors.ink, marginBottom: -1 },
+  filterRow: { flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: space.sm, marginTop: space.lg },
+  filterChip: { flexDirection: "row", alignItems: "center", gap: space.sm, borderWidth: 1, borderColor: colors.ink, paddingHorizontal: space.md, paddingVertical: space.sm },
+  grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", paddingHorizontal: space.gutter, rowGap: space["2xl"] },
+  empty: { paddingTop: space["4xl"], paddingHorizontal: space.gutter, alignItems: "center" },
 });

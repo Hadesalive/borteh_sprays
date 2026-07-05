@@ -1,45 +1,49 @@
 import * as Haptics from "expo-haptics";
 import { type ReactNode, useRef } from "react";
 import { Animated, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
-import { colors, font, radius, shadow, space } from "@/lib/theme";
-import { GlassFill } from "./Glass";
-import { AppText } from "./Text";
+import { colors, font, label as labelToken, space } from "@/lib/theme";
 
+// Maison variants. primary = ink fill / paper label, secondary = 1px ink border,
+// ghost = underlined label. Legacy "outline"/"tonal" map onto these.
 type Variant = "primary" | "secondary" | "ghost" | "outline" | "tonal";
 
-/** The one button. primary = amber fill, secondary = soft tonal, ghost = hairline outline,
- *  outline = bold ink border, tonal = amber-soft fill.
- *  Handles the press-spring, haptic, disabled dim, optional leading icon and trailing value. */
+/** The one button — h52, squared, one primary per screen. A price rides in the
+ *  label via `trailing`: "Add to bag — Le 680". Keeps the press-spring + haptic. */
 export function Button({
   title,
   onPress,
   variant = "primary",
-  size = "lg",
   icon,
   trailing,
   disabled = false,
-  elevated = false,
-  glass = false,
   full = true,
   haptic = true,
   style,
+  // accepted-but-ignored legacy props (Maison has no glass / elevation / sizes)
+  size,
+  elevated,
+  glass,
 }: {
   title: string;
   onPress: () => void;
   variant?: Variant;
-  size?: "lg" | "md";
   icon?: ReactNode;
   trailing?: string;
   disabled?: boolean;
-  elevated?: boolean;
-  glass?: boolean;
   full?: boolean;
   haptic?: boolean;
   style?: StyleProp<ViewStyle>;
+  size?: "lg" | "md";
+  elevated?: boolean;
+  glass?: boolean;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
   const spring = (to: number) => Animated.spring(scale, { toValue: to, useNativeDriver: true, speed: 40, bounciness: 0 }).start();
-  const txtColor = variant === "primary" ? colors.onAccent : variant === "tonal" ? colors.accentInk : colors.ink;
+
+  const kind: "primary" | "secondary" | "ghost" = variant === "outline" ? "secondary" : variant === "tonal" ? "primary" : variant;
+  const labelColor = kind === "primary" ? colors.onInk : colors.ink;
+  const composed = trailing ? `${title} — ${trailing}` : title;
+
   return (
     <Pressable
       onPress={() => {
@@ -47,53 +51,36 @@ export function Button({
         if (haptic) Haptics.selectionAsync();
         onPress();
       }}
-      onPressIn={() => !disabled && spring(0.97)}
+      onPressIn={() => !disabled && spring(0.98)}
       onPressOut={() => spring(1)}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityLabel={title}
+      accessibilityLabel={composed}
       style={[full && { alignSelf: "stretch" }, style]}
     >
-      <Animated.View
-        style={[
-          s.base,
-          size === "md" ? s.md : s.lg,
-          glass ? s.glassBase : s[variant],
-          elevated && shadow.nav,
-          disabled && { opacity: 0.55 },
-          { transform: [{ scale }] },
-        ]}
-      >
-        {glass ? (
-          <>
-            <GlassFill radius={radius.pill} tint={variant === "primary" ? "light" : "dark"} tintColor={variant === "primary" ? "rgba(154,91,45,0.4)" : "rgba(18,18,20,0.5)"} />
-            <View style={[StyleSheet.absoluteFillObject, { borderRadius: radius.pill, backgroundColor: variant === "primary" ? "rgba(154,91,45,0.66)" : "rgba(18,18,20,0.45)" }]} pointerEvents="none" />
-          </>
-        ) : null}
+      <Animated.View style={[s.base, s[kind], disabled && { opacity: 0.45 }, { transform: [{ scale }] }]}>
         {icon ? <View>{icon}</View> : null}
-        <AppText style={[size === "md" ? s.txtMd : s.txt, { color: txtColor }]}>{title}</AppText>
-        {trailing ? (
-          <>
-            <View style={[s.sep, { backgroundColor: variant === "primary" ? "rgba(255,255,255,0.3)" : colors.line }]} />
-            <AppText style={[size === "md" ? s.txtMd : s.txt, { color: txtColor }]}>{trailing}</AppText>
-          </>
-        ) : null}
+        <View style={kind === "ghost" ? s.underline : undefined}>
+          <Animated.Text
+            maxFontSizeMultiplier={1.3}
+            style={[styles.label, { color: labelColor }]}
+          >
+            {composed}
+          </Animated.Text>
+        </View>
       </Animated.View>
     </Pressable>
   );
 }
 
 const s = StyleSheet.create({
-  base: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm, borderRadius: radius.pill, paddingHorizontal: space.xl },
-  lg: { height: 56 },
-  md: { height: 48 },
-  primary: { backgroundColor: colors.accent },
-  secondary: { backgroundColor: colors.field },
-  ghost: { borderWidth: 1, borderColor: colors.line, backgroundColor: "transparent" },
-  outline: { borderWidth: 1.5, borderColor: colors.ink, backgroundColor: colors.bg },
-  tonal: { backgroundColor: colors.accentSoft },
-  glassBase: { backgroundColor: "transparent" },
-  txt: { fontFamily: font.bold, fontSize: 16, letterSpacing: 0.2 },
-  txtMd: { fontFamily: font.bold, fontSize: 14, letterSpacing: 0.1 },
-  sep: { width: 1, height: 18, marginHorizontal: 2 },
+  base: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm, height: 52, paddingHorizontal: space.lg },
+  primary: { backgroundColor: colors.ink },
+  secondary: { borderWidth: 1, borderColor: colors.ink, backgroundColor: "transparent" },
+  ghost: { backgroundColor: "transparent" },
+  underline: { borderBottomWidth: 1, borderBottomColor: colors.ink, paddingBottom: 2 },
+});
+
+const styles = StyleSheet.create({
+  label: { ...labelToken, fontFamily: font.semibold },
 });

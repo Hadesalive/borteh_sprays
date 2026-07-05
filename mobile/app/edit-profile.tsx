@@ -2,14 +2,14 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Field } from "@/components/Field";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
+import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
 import { updateProfile, useSession } from "@/lib/auth";
-import { colors, font, radius, space } from "@/lib/theme";
+import { colors, space } from "@/lib/theme";
 
 export default function EditProfile() {
   const router = useRouter();
@@ -42,27 +42,25 @@ export default function EditProfile() {
   };
 
   return (
-    <View style={s.fill}>
+    <View style={s.screen}>
       <StatusBar style="dark" />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.sm, paddingBottom: insets.bottom + space["3xl"], paddingHorizontal: space.xl }}>
-          <BackButton onPress={() => router.back()} style={{ marginBottom: space.sm }} />
-          <AppText style={s.title}>Edit profile</AppText>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space["3xl"], paddingHorizontal: space.gutter }}>
+          <BackButton onPress={() => router.back()} />
+          <AppText variant="heading" style={{ marginTop: space.lg }}>Edit profile</AppText>
 
           <View style={s.form}>
-            <Field label="Full name" value={name} onChangeText={setName} placeholder="Aminata Kamara" autoCapitalize="words" returnKeyType="done" onSubmitEditing={submit} />
+            <Field label="Full name" value={name} onChangeText={setName} placeholder="Aminata Kamara" autoCapitalize="words" returnKeyType="done" onSubmitEditing={submit} error={error ?? undefined} />
 
-            <View style={{ gap: space.sm }}>
-              <AppText style={s.label}>Phone number</AppText>
+            <View style={{ gap: space.xs }}>
+              <AppText variant="label" style={{ color: colors.ink60 }}>Phone number</AppText>
               <View style={s.readonly}>
-                <AppText style={s.readonlyTxt}>{phone || "—"}</AppText>
+                <AppText variant="bodyLg" style={{ color: colors.ink40 }}>{phone || "—"}</AppText>
               </View>
-              <AppText style={s.hint}>Your phone is your login — contact us if you need to change it.</AppText>
+              <AppText variant="caption">Your phone is your login — contact us if you need to change it.</AppText>
             </View>
 
-            {error ? <AppText style={s.error}>{error}</AppText> : null}
-
-            <Button title={busy ? "Saving…" : "Save changes"} onPress={submit} disabled={busy} style={{ marginTop: space.lg }} />
+            <Button title={busy ? "Saving…" : "Save changes"} onPress={submit} disabled={busy} style={{ marginTop: space.sm }} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -71,15 +69,7 @@ export default function EditProfile() {
 }
 
 const s = StyleSheet.create({
-  fill: { flex: 1, backgroundColor: colors.bg },
-  back: { width: 44, height: 44, justifyContent: "center", marginLeft: -10, marginBottom: space.sm },
-  title: { fontFamily: font.bold, fontSize: 28, color: colors.ink, letterSpacing: -0.5 },
+  screen: { flex: 1, backgroundColor: colors.paper },
   form: { gap: space.lg, marginTop: space["2xl"] },
-  label: { fontFamily: font.semibold, fontSize: 13, color: colors.inkSoft, letterSpacing: 0.1 },
-  readonly: { height: 54, borderRadius: radius.md, backgroundColor: colors.field, justifyContent: "center", paddingHorizontal: space.lg, opacity: 0.7 },
-  readonlyTxt: { fontFamily: font.medium, fontSize: 15, color: colors.ink },
-  hint: { fontFamily: font.regular, fontSize: 12, color: colors.inkMute },
-  error: { fontFamily: font.medium, fontSize: 13, color: colors.badge },
-  cta: { height: 56, borderRadius: radius.pill, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center", marginTop: space.lg },
-  ctaTxt: { fontFamily: font.bold, fontSize: 16, color: colors.onAccent, letterSpacing: 0.2 },
+  readonly: { height: 52, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, justifyContent: "center", paddingHorizontal: space.lg },
 });

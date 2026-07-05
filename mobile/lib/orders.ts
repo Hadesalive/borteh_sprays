@@ -18,13 +18,24 @@ export type Order = {
 };
 
 export const STATUS_LABEL: Record<OrderStatus, string> = {
-  pending_payment: "Pending",
+  pending_payment: "Awaiting confirmation",
   confirmed: "Confirmed",
   preparing: "Preparing",
   out_for_delivery: "On the way",
   delivered: "Delivered",
   cancelled: "Cancelled",
   returned: "Returned",
+};
+
+/** Badge tone per status — semantic tint only (delivered reads neutral). */
+export const STATUS_TONE: Record<OrderStatus, "muted" | "success" | "warning" | "error"> = {
+  pending_payment: "warning",
+  confirmed: "warning",
+  preparing: "warning",
+  out_for_delivery: "warning",
+  delivered: "muted",
+  cancelled: "error",
+  returned: "error",
 };
 
 /** Place a cash-on-delivery order via the server RPC (atomic order + items + stock hold). */

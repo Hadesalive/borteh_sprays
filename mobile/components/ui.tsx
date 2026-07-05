@@ -1,14 +1,57 @@
-import { MagnifyingGlass, SlidersHorizontal, User } from "phosphor-react-native";
+import { Bell, MagnifyingGlass, SlidersHorizontal, User } from "phosphor-react-native";
 import { type ReactNode } from "react";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
-import { colors, font, radius, space } from "@/lib/theme";
+import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
+import { colors, font, label as labelToken, space } from "@/lib/theme";
 import { AppText } from "./Text";
 
+/** Underlined ink label — the Maison inline action ("Shop the edit", "View all", "Explore"). */
+export function LinkLabel({ label, onPress, color = colors.ink }: { label: string; onPress?: () => void; color?: string }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={8} disabled={!onPress} accessibilityRole="button" accessibilityLabel={label}>
+      <View style={{ alignSelf: "flex-start", borderBottomWidth: 1, borderBottomColor: color, paddingBottom: 2 }}>
+        <AppText variant="label" style={{ color }}>
+          {label}
+        </AppText>
+      </View>
+    </Pressable>
+  );
+}
+
+/** Serif section head + optional underlined trailing link. */
+export function SectionHeader({ title, trailing, onPressTrailing }: { title: string; trailing?: string; onPressTrailing?: () => void }) {
+  return (
+    <View style={s.section}>
+      <AppText variant="heading">{title}</AppText>
+      {trailing ? <LinkLabel label={trailing} onPress={onPressTrailing} /> : null}
+    </View>
+  );
+}
+
+/** Monogram avatar; falls back to a user glyph. */
+export function Avatar({ initials, size = 32 }: { initials?: string; size?: number }) {
+  return (
+    <View style={[s.avatar, { width: size, height: size, borderRadius: size / 2 }]}>
+      {initials ? <AppText style={s.avatarTxt}>{initials}</AppText> : <User size={Math.round(size * 0.52)} color={colors.ink40} />}
+    </View>
+  );
+}
+
+/** Bell with an optional bronze notification dot. */
+export function BellButton({ onPress, dot }: { onPress?: () => void; dot?: boolean }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel="Notifications">
+      <Bell size={24} color={colors.ink} weight="regular" />
+      {dot ? <View style={s.dot} /> : null}
+    </Pressable>
+  );
+}
+
+/** Squared search field with leading glass icon + trailing filter. Editable. */
 export function SearchBar({
   value,
   onChangeText,
   onFilter,
-  placeholder = "Search fragrances…",
+  placeholder = "Search fragrances, notes, brands",
 }: {
   value: string;
   onChangeText: (t: string) => void;
@@ -16,93 +59,64 @@ export function SearchBar({
   placeholder?: string;
 }) {
   return (
-    <View style={s.searchRow}>
-      <View style={s.search}>
-        <MagnifyingGlass size={19} color={colors.inkMute} />
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor={colors.placeholder}
-          style={s.input}
-          returnKeyType="search"
-          autoCorrect={false}
-        />
-      </View>
-      <Pressable onPress={onFilter} style={s.filter} accessibilityRole="button" accessibilityLabel="Filters">
-        <SlidersHorizontal size={20} color={colors.onInk} />
-      </Pressable>
-    </View>
-  );
-}
-
-export function CategoryChip({
-  label,
-  icon,
-  active,
-  onPress,
-}: {
-  label: string;
-  icon?: ReactNode;
-  active?: boolean;
-  onPress?: () => void;
-}) {
-  return (
-    <Pressable onPress={onPress} style={[s.chip, active ? s.chipActive : s.chipIdle]}>
-      {icon}
-      <AppText variant="chip" style={{ color: active ? colors.onInk : colors.ink }}>
-        {label}
-      </AppText>
-    </Pressable>
-  );
-}
-
-export function Avatar({ size = 44 }: { size?: number }) {
-  return (
-    <View style={[s.avatar, { width: size, height: size, borderRadius: size / 2 }]}>
-      <User size={Math.round(size * 0.5)} color={colors.inkMute} />
-    </View>
-  );
-}
-
-export function SectionHeader({ title, trailing, onPressTrailing }: { title: string; trailing?: string; onPressTrailing?: () => void }) {
-  return (
-    <View style={s.section}>
-      <AppText variant="title">{title}</AppText>
-      {trailing ? (
-        <Pressable onPress={onPressTrailing} hitSlop={8} disabled={!onPressTrailing}>
-          <AppText variant="label" style={{ color: colors.accent }}>
-            {trailing}
-          </AppText>
+    <View style={s.field}>
+      <MagnifyingGlass size={20} color={colors.ink40} />
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={colors.ink40}
+        style={s.input}
+        returnKeyType="search"
+        autoCorrect={false}
+      />
+      {onFilter ? (
+        <Pressable onPress={onFilter} hitSlop={8} accessibilityRole="button" accessibilityLabel="Filters">
+          <SlidersHorizontal size={20} color={colors.ink} />
         </Pressable>
       ) : null}
     </View>
   );
 }
 
-/** Looks like the search field but acts as a button — used on Home to jump to Shop. */
-export function SearchButton({ onPress, placeholder = "Search fragrances…" }: { onPress: () => void; placeholder?: string }) {
+/** Looks like the search field but acts as a button — used on Shop to jump to Search. */
+export function SearchButton({ onPress, onFilter, placeholder = "Search fragrances, notes, brands" }: { onPress: () => void; onFilter?: () => void; placeholder?: string }) {
   return (
-    <Pressable style={s.searchRow} onPress={onPress} accessibilityRole="button" accessibilityLabel="Search fragrances">
-      <View style={s.search}>
-        <MagnifyingGlass size={19} color={colors.inkMute} />
-        <AppText numberOfLines={1} style={s.searchPlaceholder}>
+    <View style={s.field}>
+      <MagnifyingGlass size={20} color={colors.ink40} />
+      <Pressable style={{ flex: 1 }} onPress={onPress} accessibilityRole="button" accessibilityLabel="Search fragrances">
+        <AppText numberOfLines={1} style={s.placeholder}>
           {placeholder}
         </AppText>
-      </View>
-      <View style={s.filter}>
-        <SlidersHorizontal size={20} color={colors.onInk} />
-      </View>
+      </Pressable>
+      {onFilter ? (
+        <Pressable onPress={onFilter} hitSlop={8} accessibilityRole="button" accessibilityLabel="Filters">
+          <SlidersHorizontal size={20} color={colors.ink} />
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
+/** Squared toggle chip — ink fill when active, 1px line when idle. */
+export function CategoryChip({ label, icon, active, onPress }: { label: string; icon?: ReactNode; active?: boolean; onPress?: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={[s.chip, active ? s.chipActive : s.chipIdle]}>
+      {icon}
+      <AppText variant="label" style={{ color: active ? colors.onInk : colors.ink }}>
+        {label}
+      </AppText>
     </Pressable>
   );
 }
 
-export function ScentTile({ label, count, onPress }: { label: string; count?: number; onPress?: () => void }) {
+/** Squared surface tile for a labelled category. */
+export function ScentTile({ label, count, onPress, style }: { label: string; count?: number; onPress?: () => void; style?: StyleProp<ViewStyle> }) {
   return (
-    <Pressable onPress={onPress} style={s.scentTile} accessibilityRole="button" accessibilityLabel={`Shop ${label} scents`}>
-      <AppText variant="cardTitle">{label}</AppText>
+    <Pressable onPress={onPress} style={[s.scentTile, style]} accessibilityRole="button" accessibilityLabel={`Shop ${label}`}>
+      <AppText variant="serif20">{label}</AppText>
       {count != null ? (
-        <AppText variant="small" style={{ marginTop: 2 }}>
+        <AppText variant="caption" style={{ marginTop: 2 }}>
           {count} {count === 1 ? "scent" : "scents"}
         </AppText>
       ) : null}
@@ -111,26 +125,15 @@ export function ScentTile({ label, count, onPress }: { label: string; count?: nu
 }
 
 const s = StyleSheet.create({
-  searchRow: { flexDirection: "row", gap: space.md },
-  search: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: space.sm,
-    height: 54,
-    paddingHorizontal: space.lg,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.surface,
-  },
+  section: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", paddingHorizontal: space.gutter },
+  avatar: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  avatarTxt: { fontFamily: font.semibold, fontSize: 12, color: colors.ink },
+  dot: { position: "absolute", top: 0, right: 0, width: 8, height: 8, borderRadius: 999, backgroundColor: colors.accent },
+  field: { flexDirection: "row", alignItems: "center", gap: space.md, height: 52, paddingHorizontal: space.lg, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper },
   input: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },
-  filter: { width: 54, height: 54, borderRadius: radius.md, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center" },
-  chip: { flexDirection: "row", alignItems: "center", gap: 6, height: 42, paddingHorizontal: space.lg, borderRadius: radius.pill },
-  chipActive: { backgroundColor: colors.accent },
-  chipIdle: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
-  avatar: { backgroundColor: colors.field, alignItems: "center", justifyContent: "center", overflow: "hidden" },
-  section: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: space.xl, marginTop: space.lg, marginBottom: space.md },
-  searchPlaceholder: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.placeholder },
-  scentTile: { width: 132, height: 88, borderRadius: radius.lg, backgroundColor: colors.plinth, paddingHorizontal: space.lg, justifyContent: "center" },
+  placeholder: { fontFamily: font.regular, fontSize: 14, color: colors.ink40 },
+  chip: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: space.md, paddingVertical: space.sm },
+  chipActive: { backgroundColor: colors.ink, borderWidth: 1, borderColor: colors.ink },
+  chipIdle: { backgroundColor: "transparent", borderWidth: 1, borderColor: colors.line },
+  scentTile: { minHeight: 72, backgroundColor: colors.surface, paddingHorizontal: space.lg, paddingVertical: space.md, justifyContent: "center" },
 });

@@ -1,82 +1,97 @@
-# Borteh Sprays — Mobile Design Direction
+# Borteh Mobile — Design Direction ("Maison")
 
-The language we converged on building the product page. Start new screens from these rules so
-they land at "nearly right" instead of being relitigated from scratch.
+The language for the mobile storefront. Start every screen from these rules so it lands at
+"nearly right" instead of being relitigated. Tokens live in `lib/theme.ts`; the source of truth
+for the look is the Claude Design canvas *Borteh Mobile Redesign* (imported 2026-07).
 
 ## Direction
-**Warm-boutique, light, editorial, type-led.** Monochrome base + one warm accent. Photo-led,
-restrained chrome. The product and the type do the work — not decoration. If a screen could be
-mistaken for a generic shopping-app template, it's wrong; rework the premise, not the spacing.
+**Editorial restraint — premium perfume retail (Aesop / Le Labo / SSENSE).** Paper base, near-black
+ink, one bronze accent. Squared, quiet, type-led. The photography and the serif do the work; chrome
+recedes. If a screen could be mistaken for a generic shopping-app template, it's wrong — rework the
+premise, not the spacing.
 
-## Typography
-- **One family: Encode Sans** (`font.regular / medium / semibold / bold`). No serif — Fraunces was
-  tried and removed; the app reads as one voice.
-- Hierarchy by **size + weight**, not decoration. Primary leads (e.g. product name ~27 bold),
-  price is clearly secondary (~22), supporting section headers are **quiet** (15 semibold) so they
-  don't compete with the hero cluster.
-- **No uppercase tracked eyebrows on every section** — that "kicker above each block" is an AI tell.
-- Guard fixed-height text with `maxFontSizeMultiplier` (≈1.2–1.3) so Dynamic Type can't shatter
-  buttons/steppers.
+## Color — `lib/theme.ts` (no gradients, anywhere)
+| Token | Value | Use |
+|---|---|---|
+| `paper` | #FAF8F5 | app background |
+| `surface` | #F2EEE7 | image beds, fills, skeletons |
+| `ink` | #221E19 | text, primary buttons, active nav |
+| `ink60` | #6F675C | secondary text |
+| `ink40` | #A39A8D | tertiary, inactive icons, placeholders |
+| `line` | #E4DFD6 | 1px borders & separators (used **instead of** shadows) |
+| `accent` | #8A5327 | bronze — links, active selection, **one moment per screen** |
+| `success` | #33714D | functional only (in stock, order placed) |
+| `error` | #A63A2B | functional only (errors, destructive, sign-out) |
+| `warning` | #94620D | functional only (low stock, awaiting confirmation) |
 
-## Color (tokens in `lib/theme.ts`)
-- Base: `bg`/`surface` white, `ink` text, `inkSoft` secondary, `inkMute` tertiary, `line` hairlines.
-- **One warm accent**: `accent` #9A5B2D (fills/CTAs), `accentInk` #7E3F1E (text on light/tint),
-  `accentSoft` tint. Used sparingly — CTAs, active states, the amber dots.
-- Status colors are darkened for AA on white (in-stock green `#1E8E4E`, low `#B26A12`, out `#B0413E`).
-- Product stage is **near-white `#F6F5F3`**, not grey — so white-studio bottle photos blend instead
-  of reading as a box.
+Bronze is spent **once per screen** — the active choice or the single link. Never decoration.
 
-## Chrome — keep it minimal
-- **Fills over borders.** Avoid stacking many outlined elements.
-- **No boxes around information** — e.g. concentration is plain type next to the price, not a pill.
-- **No chips for content.** Selection controls (size pills) are fine; don't wrap facts/notes in pills.
-- **No decorative flourishes** — no `BRAND ——— ◆` rule lines, no fake drag handles (an affordance
-  that doesn't do anything is worse than none).
-- **No shadow on a sheet that ends mid-scroll** — the blur leaks past the bottom edge and reads as a
-  cut-off line. Separate layers with color contrast + rounded corners instead.
+## Typography — exactly two faces
+- **Display: Instrument Serif** 400 (`font.serif`) — screen titles, section heads, product names,
+  prices ≥ 20px. Italic (`font.serifItalic`) is available but rare.
+- **UI / body: Archivo** 400 / 500 / 600 (`font.regular / medium / semibold`).
+- **Scale (size / line), nothing outside it:** 12/16 · 14/20 · 16/24 · 20/26 (serif) · 24/30 (serif)
+  · 32/38 (serif). Use `AppText` variants — don't hand-roll sizes.
+- **Label:** Archivo 600, 12px, uppercase, 0.08em tracking (`label` token). The one treatment for
+  buttons, eyebrows, tab labels, tags. Not an eyebrow on *every* section — it's a deliberate accent.
 
-## Layout patterns (product page is the reference)
-- **Full-bleed image on the near-white stage, scrolls *with* the content** (not pinned) so it pushes
-  up as you scroll. Back/wishlist stay fixed so you can always get out.
-- **White rounded sheet pulls up over the stage**, `flexGrow:1` so it always fills to the bottom
-  (one seamless white surface). No drop shadow.
-- **Floating CTA**: transparent footer (`pointerEvents="box-none"`) + a transparent→white
-  `LinearGradient` fade behind the pill so content dissolves under it. The pill hovers.
-- **Quantity belongs with configuration** (next to size selection), not buried in the buy bar.
-- Multi-item info (accords, details) → **even 2-column dot lists** (amber dots), which scale cleanly
-  from 1–7 items; short note lists → a single flowing ` · ` line.
+## Spacing · radius · elevation · icons
+- **4px grid:** 4 / 8 / 12 / 16 / 24 / 32 / 48. Screen gutter = 24.
+- **Radius 0 — squared everything.** The only round things are avatars, notification dots, and
+  toggle knobs (`radius.circle`).
+- **Elevation: none.** No drop shadows, no blur, no glass. 1px `line` borders separate layers.
+- **Icons: Phosphor `regular`** weight (`weight="regular"`), 20px inline · 24px nav/actions. Active
+  tab and a saved heart use `weight="fill"`. No emoji.
 
-## Motion
-- Built-in **`Animated` + `LayoutAnimation`** (no native rebuild). `react-native-reanimated` is NOT
-  installed — a true card→detail shared-element transition needs it.
-- Patterns in use: sheet **rise + fade** on mount, quantity **pop** on change, heart **pop** on
-  toggle, CTA **press-spring** (scale in/out), **animated layout** on read-more / stock swaps.
-- Ease-out, subtle, **no bounce/elastic**. Motion is part of the build, not an afterthought.
+## Components — screens compose ONLY these (`components/`)
+- **Button** — h52, squared, one primary per screen. Primary: ink bg / paper label. Secondary: 1px
+  ink border. Ghost: underlined label. Label is 12px uppercase tracked. A price rides in the label:
+  "Add to bag — Le 680".
+- **Input / Field** — h52, paper bg, 1px `line` border, squared; label above in 12px uppercase
+  `ink60`. Error: `error` border + `error` helper line beneath.
+- **ProductCard** — 3:4 image on a `surface` bed, `ph-heart` (24) top-right; below: serif 20 name,
+  12px `ink60` "brand · notes", 14/500 price. **Flat** — no border, no shadow on the card.
+- **ListRow** — h56, 1px `line` separators, optional left icon (20), trailing value + `ph-arrow-right`
+  (20). The workhorse for menus, info rows, orders.
+- **Badge** — squared, 1px border, 12px uppercase; tinted only for semantic states (in stock / low /
+  out / awaiting).
+- **TabBar** — full-width, paper bg, 1px top border; 4 items (Home · Shop · Saved · Bag), icon 24 +
+  12px label; active `ink` (fill icon), inactive `ink40`.
+- **Header** — back (`ph-arrow-left` 24) at the gutter, serif 24 title below, always left-aligned.
+- **EmptyState / Skeleton** — `surface` blocks, **no spinners**.
+
+## Motion (kept from the build ethos)
+- Built-in **`Animated` + `LayoutAnimation`** — `react-native-reanimated` is NOT installed.
+- Subtle and ease-out, **no bounce/elastic**: sheet rise + fade on mount, quantity pop, heart pop,
+  CTA press-spring. Motion is part of the build, not decoration.
 - Pair state changes with **haptics** (`Haptics.selectionAsync` on selects, `notificationAsync` on
   success). Tap targets ≥ 44pt.
 
 ## Edge cases (non-negotiable)
-- Every state has a **way back** — loading and error screens render the back button too.
-- **Skeletons, not bare "Loading…"** (pulsing placeholder blocks).
+- Every state has a **way back** — loading and error screens render the back control too.
+- **Skeletons, not "Loading…"** — pulsing `surface` blocks.
 - **Out of stock** swaps the CTA to "Notify me when back in stock" and hides quantity.
-- **Honest affordances** — controls reflect real, persisted state (wishlist heart → `lib/wishlist.ts`,
+- **Honest affordances** — controls reflect real, persisted state (wishlist → `lib/wishlist.ts`,
   cart → `lib/cart.ts`).
-- "Read more" uses **true line-count** (hidden measurer), not a char-count guess, and offers "Read less".
+- Guard fixed-height text with `maxFontSizeMultiplier` (≈1.2–1.3) so Dynamic Type can't shatter
+  buttons/steppers.
 
 ## Responsiveness
-- Use **`useWindowDimensions()`**, never module-load `Dimensions.get()` (no rotation/iPad/foldable
-  reactivity). **Clamp** proportional sizes (e.g. hero height `clamp(260, 46%, 460)`).
+- Use **`useWindowDimensions()`**, never module-load `Dimensions.get()`. **Clamp** proportional
+  sizes (e.g. hero height between a floor and ceiling).
 
 ## Anti-AI checklist (run before shipping a screen)
-- [ ] Not the default white + single-sans stacked template
-- [ ] No chip grids, no stat-row "label-over-value" columns
-- [ ] No gradient slabs, no glassmorphism-by-default
-- [ ] No eyebrow/flourish on every section
-- [ ] Hierarchy is intentional (one thing leads), spacing rhythm is varied, not metronomic
+- [ ] Squared, paper/ink, two faces — not the default white + single-sans template
+- [ ] Bronze appears **once**; no gradient slabs, no glass, no drop shadows
+- [ ] Hierarchy is intentional (one thing leads); the serif carries the display, Archivo the rest
+- [ ] Labels are used deliberately, not stamped above every block
 - [ ] Motion present and purposeful; haptics on key actions
 - [ ] Contrast ≥ AA for text
 
+## Auth note
+Login is **phone + password, no OTP** (SMS is too costly) — admin-assisted recovery. The redesign's
+"Verification / OTP" screen is intentionally **not** built. Signup is phone-first (email optional).
+
 ## Data note
-Richer perfume detail (year, scent family, accords, descriptions) is pulled from Fragrantica via the
-jina reader proxy — `scripts/enrich-from-fragrantica.mjs` → `supabase/seed_fragrantica.sql`. Bottle
-images load via `scripts/load-product-images.mjs` (optional background-removal cutout).
+Screens read live from Supabase via React Query (`lib/api.ts`, `lib/*`). The redesign is a reskin +
+restructure over that data layer — presentation changes, the data plumbing stays.

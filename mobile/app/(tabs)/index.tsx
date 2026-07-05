@@ -1,183 +1,243 @@
-import { useRouter } from "expo-router";
+import { Image } from "expo-image";
+import { Redirect, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ArrowRight, GenderFemale, GenderIntersex, GenderMale, SquaresFour } from "phosphor-react-native";
-import { type ComponentType, useMemo } from "react";
+import { ArrowRight } from "phosphor-react-native";
+import { useMemo } from "react";
 import { Pressable, RefreshControl, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BrandBand } from "@/components/BrandBand";
-import { CollectionBand } from "@/components/CollectionBand";
-import { DiscountBanner } from "@/components/DiscountBanner";
-import { HomeHero } from "@/components/HomeHero";
 import { ProductCard } from "@/components/ProductCard";
-import { Reveal } from "@/components/Reveal";
-import { ScentBand } from "@/components/ScentBand";
 import { HomeSkeleton } from "@/components/Skeleton";
-import { TAB_BAR_BODY } from "@/components/TabBar";
 import { AppText } from "@/components/Text";
-import { Avatar, CategoryChip, SearchButton, SectionHeader } from "@/components/ui";
-import { discountPct, type Gender, type Product, useProducts } from "@/lib/api";
-import { useRecentlyViewed } from "@/lib/recentlyViewed";
-import { colors, font, radius, space } from "@/lib/theme";
+import { Avatar, BellButton, LinkLabel, SectionHeader } from "@/components/ui";
+import { useFeaturedCollections, useHomeCarousel, useProducts, useScentFamilies } from "@/lib/api";
+import { useSession } from "@/lib/auth";
+import { useOnboarded } from "@/lib/onboarding";
+import { imageUrl } from "@/lib/supabase";
+import { colors, space } from "@/lib/theme";
 
-type Glyph = ComponentType<{ size?: number; color?: string; weight?: any }>;
-const GENDERS: { label: string; gender?: Gender; Icon: Glyph }[] = [
-  { label: "All", Icon: SquaresFour },
-  { label: "Women", gender: "female", Icon: GenderFemale },
-  { label: "Men", gender: "male", Icon: GenderMale },
-  { label: "Unisex", gender: "unisex", Icon: GenderIntersex },
-];
+// Local art shown until the owner curates the home in the admin (mirrors the bands' fallbacks).
+const HERO_FALLBACK = require("../../assets/home/hero-gold.jpg");
+const SCENT_FALLBACK: Record<string, number> = {
+  woody: require("../../assets/home/scent/woody.jpg"),
+  floral: require("../../assets/home/scent/floral.jpg"),
+  oriental: require("../../assets/home/scent/oriental.jpg"),
+  spicy: require("../../assets/home/scent/spicy.jpg"),
+  citrus: require("../../assets/home/scent/citrus.jpg"),
+  sweet: require("../../assets/home/scent/sweet.jpg"),
+};
+const COLLECTION_FALLBACK: Record<string, number> = {
+  summer: require("../../assets/home/collections/summer.jpg"),
+  "date-night": require("../../assets/home/collections/date-night.jpg"),
+  "gourmand-sweet": require("../../assets/home/collections/gourmand.jpg"),
+  office: require("../../assets/home/collections/office.jpg"),
+  signature: require("../../assets/home/collections/signature.jpg"),
+};
+
+function greeting(name?: string) {
+  const h = new Date().getHours();
+  const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+  return name ? `${part}, ${name}` : part;
+}
+
+function initialsOf(name?: string) {
+  if (!name) return undefined;
+  const parts = name.trim().split(/\s+/).slice(0, 2);
+  return parts.map((p) => p[0]?.toUpperCase() ?? "").join("") || undefined;
+}
 
 export default function Home() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { width } = useWindowDimensions();
+  const session = useSession();
+  const onboarded = useOnboarded();
+
   const { data, isLoading, refetch, isRefetching } = useProducts();
-  const recentSlugs = useRecentlyViewed();
+  const { data: carousel } = useHomeCarousel();
+  const { data: families } = useScentFamilies();
+  const { data: collections } = useFeaturedCollections();
 
   const products = data ?? [];
   const best = useMemo(() => products.slice(0, 8), [products]); // query already sorts by popularity
-  const topRated = useMemo(() => [...products].sort((a, b) => b.rating - a.rating).slice(0, 8), [products]);
-  const newArrivals = useMemo(
-    () => [...products].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? "") || (b.releaseYear ?? 0) - (a.releaseYear ?? 0)).slice(0, 8),
-    [products],
-  );
-  const recent = useMemo(
-    () => recentSlugs.map((sl) => products.find((p) => p.slug === sl)).filter((p): p is Product => !!p).slice(0, 8),
-    [recentSlugs, products],
-  );
-  const maxOff = useMemo(() => products.reduce((m, p) => Math.max(m, discountPct(p)), 0), [products]);
 
-  const heroW = width - space.xl * 2;
-  const railW = Math.round(width * 0.46);
-  const railH = Math.round(railW * 1.2);
+  const displayName = (session?.user?.user_metadata?.display_name as string | undefined)?.trim() || undefined;
+  const firstName = displayName?.split(/\s+/)[0];
 
-  const toShop = () => router.push("/shop");
+  const heroH = Math.min(420, Math.max(300, Math.round(width * 0.9)));
 
-  // First cold load — show a skeleton instead of an empty feed
+  // Hero content = first curated slide (admin) or a calm editorial fallback.
+  const heroSlide = carousel?.[0];
+  const heroSource = heroSlide?.imagePath ? { uri: imageUrl(heroSlide.imagePath)! } : HERO_FALLBACK;
+  const heroLabel = heroSlide?.label || "The signature edit";
+  const heroTitle = heroSlide?.title || "Scents that stay with you.";
+  const heroCta = heroSlide?.cta || "Shop the edit";
+  const heroTo = (heroSlide?.link as any) || "/shop";
+
+  // Scent families with a best-effort product count.
+  const noteRows = useMemo(() => {
+    const list = families?.length ? families : [];
+    return list.map((f) => {
+      const key = f.family.toLowerCase();
+      const count = products.filter(
+        (p) =>
+          (p.scentFamily ?? "").toLowerCase().includes(key) ||
+          p.accords.some((a) => a.toLowerCase().includes(key)) ||
+          p.notes.some((n) => (n.family ?? "").toLowerCase() === key),
+      ).length;
+      const source = f.imagePath ? { uri: imageUrl(f.imagePath)! } : SCENT_FALLBACK[f.family];
+      return { family: f.family, label: f.label, count, source };
+    });
+  }, [families, products]);
+
+  const collection = collections?.[0];
+  const collectionCount = collection ? products.filter((p) => p.collection === collection.slug).length : 0;
+  const collectionSource = collection?.coverPath
+    ? { uri: imageUrl(collection.coverPath)! }
+    : collection
+      ? COLLECTION_FALLBACK[collection.slug]
+      : undefined;
+
+  if (onboarded === false) return <Redirect href="/onboarding" />;
+
   if (isLoading && products.length === 0) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <View style={s.screen}>
         <StatusBar style="dark" />
-        <HomeSkeleton topInset={insets.top} heroW={heroW} />
+        <HomeSkeleton topInset={insets.top} heroW={width} />
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <View style={s.screen}>
       <StatusBar style="dark" />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: insets.top + space.sm, paddingBottom: insets.bottom + TAB_BAR_BODY + space["3xl"] }}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.inkMute} colors={[colors.accent]} />}
+        contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: space["3xl"] }}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.ink40} colors={[colors.accent]} />}
       >
         {/* header */}
         <View style={s.header}>
-          <View>
-            <AppText variant="name">Borteh Sprays</AppText>
-            <AppText variant="greeting" style={{ marginTop: 3 }}>
-              Perfume house · Freetown
-            </AppText>
+          <AppText variant="heading" numberOfLines={1} style={{ flex: 1 }}>
+            {greeting(firstName)}
+          </AppText>
+          <View style={s.actions}>
+            <BellButton onPress={() => router.push("/orders")} />
+            <Pressable onPress={() => router.push("/profile")} accessibilityRole="button" accessibilityLabel="Account">
+              <Avatar initials={initialsOf(displayName)} />
+            </Pressable>
           </View>
-          <Pressable onPress={() => router.push("/profile")} accessibilityRole="button" accessibilityLabel="Account">
-            <Avatar />
-          </Pressable>
         </View>
 
-        <Reveal delay={0} style={s.block}>
-          <SearchButton onPress={() => router.push("/search")} />
-        </Reveal>
+        {/* hero image */}
+        <Pressable onPress={() => router.push(heroTo)} accessibilityRole="button" accessibilityLabel={heroCta}>
+          <View style={[s.hero, { height: heroH }]}>
+            <Image source={heroSource} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" transition={300} />
+          </View>
+        </Pressable>
 
-        <Reveal delay={70} style={{ marginTop: space.lg }}>
-          <HomeHero width={heroW} />
-        </Reveal>
+        {/* editorial block */}
+        <View style={s.editorial}>
+          <AppText variant="label" style={{ color: colors.ink60 }}>
+            {heroLabel}
+          </AppText>
+          <AppText variant="display" style={{ marginTop: space.sm }}>
+            {heroTitle}
+          </AppText>
+          <View style={{ marginTop: space.md }}>
+            <LinkLabel label={heroCta} onPress={() => router.push(heroTo)} />
+          </View>
+        </View>
 
-        {/* ORIENT — quick entry by who it's for */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={s.chips}>
-          {GENDERS.map((g) => (
-            <CategoryChip
-              key={g.label}
-              label={g.label}
-              icon={<g.Icon size={15} color={colors.ink} weight="regular" />}
-              onPress={() => router.push(g.gender ? { pathname: "/shop", params: { gender: g.gender } } : "/shop")}
-            />
-          ))}
-        </ScrollView>
-
-        {/* CONVERT — deals first, then lead with social proof, then freshness */}
-        {maxOff > 0 ? <DiscountBanner percent={maxOff} /> : null}
-
+        {/* best sellers */}
         {best.length > 0 ? (
-          <Reveal delay={140}>
-            <SectionHeader title="Best sellers" trailing="See all" onPressTrailing={toShop} />
+          <View style={{ marginTop: space["5xl"] }}>
+            <SectionHeader title="Best sellers" trailing="View all" onPressTrailing={() => router.push("/shop")} />
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.rail}>
               {best.map((p) => (
-                <ProductCard key={p.id} product={p} width={railW} imageHeight={railH} />
+                <ProductCard key={p.id} product={p} width={160} imageHeight={200} />
               ))}
             </ScrollView>
-          </Reveal>
+          </View>
         ) : null}
 
-        {newArrivals.length > 0 ? (
-          <>
-            <SectionHeader title="New arrivals" trailing="See all" onPressTrailing={toShop} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.rail}>
-              {newArrivals.map((p) => (
-                <ProductCard key={p.id} product={p} width={railW} imageHeight={railH} />
+        {/* shop by note */}
+        {noteRows.length > 0 ? (
+          <View style={{ marginTop: space["5xl"] }}>
+            <View style={s.gutter}>
+              <AppText variant="heading">Shop by note</AppText>
+            </View>
+            <View style={[s.gutter, { marginTop: space.sm }]}>
+              {noteRows.map((n) => (
+                <Pressable
+                  key={n.family}
+                  onPress={() => router.push({ pathname: "/shop", params: { family: n.family } })}
+                  style={s.noteRow}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Shop ${n.label}`}
+                >
+                  <View style={s.noteThumb}>{n.source ? <Image source={n.source} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" /> : null}</View>
+                  <AppText variant="bodyLg" style={{ flex: 1 }}>
+                    {n.label}
+                  </AppText>
+                  {n.count > 0 ? <AppText variant="caption">{n.count} scents</AppText> : null}
+                  <ArrowRight size={20} color={colors.ink} weight="regular" />
+                </Pressable>
               ))}
-            </ScrollView>
-          </>
+            </View>
+          </View>
         ) : null}
 
-        {/* EXPLORE — the ways to shop, grouped */}
-        <SectionHeader title="Shop by scent" />
-        <ScentBand />
-
-        <SectionHeader title="Collections" />
-        <CollectionBand />
-
-        <SectionHeader title="Shop by brand" />
-        <BrandBand />
-
-        {/* CONTINUE — personalization, then secondary proof */}
-        {recent.length > 0 ? (
-          <>
-            <SectionHeader title="Recently viewed" />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.rail}>
-              {recent.map((p) => (
-                <ProductCard key={p.id} product={p} width={railW} imageHeight={railH} />
-              ))}
-            </ScrollView>
-          </>
+        {/* collection */}
+        {collection ? (
+          <View style={{ marginTop: space["5xl"] }}>
+            <Pressable
+              onPress={() => router.push({ pathname: "/shop", params: { collection: collection.slug } })}
+              accessibilityRole="button"
+              accessibilityLabel={`Shop ${collection.name}`}
+            >
+              <View style={s.collectionImg}>{collectionSource ? <Image source={collectionSource} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" transition={200} /> : null}</View>
+            </Pressable>
+            <View style={[s.gutter, { marginTop: space.lg }]}>
+              <AppText variant="label" style={{ color: colors.ink60 }}>
+                Collection
+              </AppText>
+              <View style={s.collectionRow}>
+                <AppText variant="heading">{collection.name}</AppText>
+                <LinkLabel label="Explore" onPress={() => router.push({ pathname: "/shop", params: { collection: collection.slug } })} />
+              </View>
+              {collectionCount > 0 ? (
+                <AppText variant="bodySoft" style={{ marginTop: space.xs }}>
+                  {collectionCount} {collectionCount === 1 ? "fragrance" : "fragrances"} in the edit.
+                </AppText>
+              ) : null}
+            </View>
+          </View>
         ) : null}
 
-        {topRated.length > 0 ? (
-          <>
-            <SectionHeader title="Top rated" trailing="See all" onPressTrailing={toShop} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.rail}>
-              {topRated.map((p) => (
-                <ProductCard key={p.id} product={p} width={railW} imageHeight={railH} />
-              ))}
-            </ScrollView>
-          </>
+        {/* browse all */}
+        {products.length > 0 ? (
+          <Pressable style={[s.gutter, s.browse]} onPress={() => router.push("/shop")} accessibilityRole="button" accessibilityLabel="Browse all fragrances">
+            <AppText variant="body">Browse all {products.length} fragrances</AppText>
+            <ArrowRight size={20} color={colors.ink} weight="regular" />
+          </Pressable>
         ) : null}
-
-        {/* end of feed — quiet catch-all into Shop */}
-        <Pressable style={s.browse} onPress={toShop} accessibilityRole="button" accessibilityLabel="Browse all fragrances">
-          <AppText style={s.browseTxt}>Browse all fragrances</AppText>
-          <ArrowRight size={17} color={colors.inkSoft} weight="bold" />
-        </Pressable>
       </ScrollView>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: space.xl, marginBottom: space.lg },
-  block: { paddingHorizontal: space.xl },
-  chips: { paddingHorizontal: space.xl, gap: space.sm, paddingVertical: space.lg },
-  rail: { paddingHorizontal: space.xl, gap: space.md },
-  browse: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, marginHorizontal: space.xl, marginTop: space["2xl"], height: 54, borderRadius: radius.md, backgroundColor: colors.field },
-  browseTxt: { fontFamily: font.semibold, fontSize: 15, color: colors.ink },
+  screen: { flex: 1, backgroundColor: colors.paper },
+  header: { flexDirection: "row", alignItems: "center", gap: space.md, paddingHorizontal: space.gutter, paddingVertical: space.md },
+  actions: { flexDirection: "row", alignItems: "center", gap: space.lg },
+  hero: { backgroundColor: colors.surface, marginTop: space.sm },
+  editorial: { paddingHorizontal: space.gutter, marginTop: space["2xl"] },
+  rail: { paddingHorizontal: space.gutter, gap: space.lg, paddingTop: space.lg },
+  gutter: { paddingHorizontal: space.gutter },
+  noteRow: { flexDirection: "row", alignItems: "center", gap: space.lg, height: 64, borderBottomWidth: 1, borderBottomColor: colors.line },
+  noteThumb: { width: 44, height: 44, backgroundColor: colors.surface, overflow: "hidden" },
+  collectionImg: { height: 240, backgroundColor: colors.surface },
+  collectionRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", marginTop: space.sm },
+  browse: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: space["5xl"], paddingVertical: space.lg, borderTopWidth: 1, borderTopColor: colors.line },
 });
-

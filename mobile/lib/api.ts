@@ -159,7 +159,13 @@ export async function fetchProducts(): Promise<Product[]> {
 export const topNotes = (p: Product) => p.notes.filter((n) => n.position === "top");
 
 /** The scent signature line, e.g. "Bergamot · Amber · Oud". */
-export const noteLine = (p: Product) => p.notes.map((n) => n.name).join("  ·  ");
+export const noteLine = (p: Product) => p.notes.map((n) => n.name).join(" · ");
+
+/** "Brand · note, note" — the one-line sub-title under a product name (cards, saved, results). */
+export const productSubline = (p: Product) => {
+  const notes = (p.accords.length ? p.accords : p.notes.map((n) => n.name)).slice(0, 3).join(", ");
+  return [p.brand, notes].filter(Boolean).join(" · ");
+};
 
 /** Whole-percent discount off the "from" price, or 0 when not on sale. */
 export const discountPct = (p: Product) =>

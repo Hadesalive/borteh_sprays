@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "backgroundColor": "#FAF6F0",
+      "backgroundColor": "#FAF8F5",
       "resizeMode": "contain"
     },
     "assetBundlePatterns": [
@@ -21,7 +21,7 @@
     "android": {
       "package": "com.bortehsprays.app",
       "adaptiveIcon": {
-        "backgroundColor": "#FAF6F0"
+        "backgroundColor": "#FAF8F5"
       }
     },
     "plugins": [
