@@ -10,6 +10,7 @@ export type StoreValues = {
   name: string;
   code: string;
   address: string;
+  phone: string;
 };
 
 const inputClass =
@@ -29,6 +30,7 @@ export function StoreForm({ initial }: { initial: StoreValues }) {
   const router = useRouter();
   const [name, setName] = useState(initial.name);
   const [address, setAddress] = useState(initial.address);
+  const [phone, setPhone] = useState(initial.phone);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, start] = useTransition();
@@ -37,7 +39,7 @@ export function StoreForm({ initial }: { initial: StoreValues }) {
     setError(null);
     setSaved(false);
     start(async () => {
-      const res = await updateStore(initial.id, { name, address });
+      const res = await updateStore(initial.id, { name, address, phone });
       if (res.ok) {
         setSaved(true);
         router.refresh();
@@ -81,6 +83,19 @@ export function StoreForm({ initial }: { initial: StoreValues }) {
             setSaved(false);
           }}
           placeholder="Street, area, landmark — what a rider needs to find you."
+        />
+      </Field>
+
+      <Field label="WhatsApp number" hint="customers reach you here from the app">
+        <input
+          className={inputClass}
+          value={phone}
+          onChange={(e) => {
+            setPhone(e.target.value);
+            setSaved(false);
+          }}
+          placeholder="+232 77 123 456"
+          inputMode="tel"
         />
       </Field>
 

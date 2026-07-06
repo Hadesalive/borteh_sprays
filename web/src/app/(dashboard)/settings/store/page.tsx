@@ -10,7 +10,7 @@ export default async function StorePage() {
   const db = createServerClient();
   const { data } = await db
     .from("store_location")
-    .select("id, name, code, address_text, type")
+    .select("id, name, code, address_text, phone, type")
     .eq("is_default", true)
     .maybeSingle();
 
@@ -19,6 +19,7 @@ export default async function StorePage() {
     name: string | null;
     code: string | null;
     address_text: string | null;
+    phone: string | null;
     type: string | null;
   } | null;
 
@@ -40,6 +41,7 @@ export default async function StorePage() {
             name: store.name ?? "",
             code: store.code ?? "",
             address: store.address_text ?? "",
+            phone: store.phone ?? "",
           }}
         />
       ) : (

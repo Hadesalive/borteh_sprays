@@ -31,19 +31,23 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
   const { data: customer } = await db
     .from("app_user")
-    .select("id, display_name, phone, email, role, is_blocked, created_at")
+    .select("id, display_name, phone, email, role, is_blocked, created_at, referral_code, referred_by")
     .eq("id", id)
     .maybeSingle();
   if (!customer) notFound();
 
   const name = (customer.display_name as string)?.trim() || "Unnamed customer";
 
-  const [ordersRes, acctRes, tiersRes, couponsRes, ledgerRes] = await Promise.all([
+  const [ordersRes, acctRes, tiersRes, couponsRes, ledgerRes, referredRes, referrerRes] = await Promise.all([
     db.from("order").select("id, order_number, status, total_minor, created_at").eq("user_id", id).order("created_at", { ascending: false }),
     db.from("loyalty_account").select("points_balance, current_tier_id").eq("user_id", id).maybeSingle(),
     db.from("loyalty_tier").select("id, name, discount_percent").eq("is_active", true).order("rank", { ascending: true }),
     db.from("promo_code").select("code, discount_value, is_active").eq("description", `Issued to ${name}`).order("created_at", { ascending: false }),
     db.from("loyalty_ledger").select("delta, type, reason, created_at").eq("user_id", id).order("created_at", { ascending: false }).limit(8),
+    db.from("app_user").select("id, display_name, created_at").eq("referred_by", id).order("created_at", { ascending: false }),
+    customer.referred_by
+      ? db.from("app_user").select("display_name").eq("id", customer.referred_by as string).maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const orders = (ordersRes.data ?? []) as Array<{ id: string; order_number: string; status: string; total_minor: number; created_at: string }>;
@@ -53,6 +57,16 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const tiers = (tiersRes.data ?? []).map((t) => ({ id: t.id as string, name: t.name as string, discount: Number(t.discount_percent ?? 0) }));
   const coupons = (couponsRes.data ?? []).map((c) => ({ code: c.code as string, discount: c.discount_value as number, active: c.is_active as boolean }));
   const ledger = (ledgerRes.data ?? []) as Array<{ delta: number; type: string; reason: string | null; created_at: string }>;
+
+  // Referrals: who they brought in (+ rewarded state via the ledger's idempotency
+  // keys — queried in full, the 8-row ledger above is just a preview), who brought them.
+  const referred = (referredRes.data ?? []) as Array<{ id: string; display_name: string | null; created_at: string }>;
+  const { data: rewardRows } = referred.length
+    ? await db.from("loyalty_ledger").select("reason").eq("user_id", id).like("reason", "referral:%")
+    : { data: [] };
+  const rewardedIds = new Set((rewardRows ?? []).map((l) => (l.reason as string).slice("referral:".length)));
+  const referrerName = (referrerRes.data?.display_name as string | null) ?? null;
+  const referralCode = (customer.referral_code as string | null) ?? null;
 
   const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
@@ -128,6 +142,36 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
         <div className="space-y-6">
           <CustomerLoyalty userId={customer.id as string} points={points} currentTierId={currentTierId} tiers={tiers} />
           <CustomerCoupons userId={customer.id as string} customerName={name} coupons={coupons} />
+
+          {/* Referrals — read-only: the loop is customer-driven; the reward amount lives in Settings → Loyalty */}
+          <div className="rounded-xl border border-border bg-card p-5">
+            <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Referrals</h2>
+            <dl className="mt-3 space-y-1.5 text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <dt className="text-muted-foreground">Their code</dt>
+                <dd className="nums font-medium">{referralCode ?? "Not generated yet"}</dd>
+              </div>
+              {referrerName ? (
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-muted-foreground">Referred by</dt>
+                  <dd className="font-medium">{referrerName}</dd>
+                </div>
+              ) : null}
+            </dl>
+            <ul className="mt-3 divide-y divide-border">
+              {referred.map((r) => (
+                <li key={r.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                  <Link href={`/customers/${r.id}`} className="truncate font-medium transition-colors hover:text-foreground/80">
+                    {(r.display_name ?? "Unnamed").trim() || "Unnamed"}
+                  </Link>
+                  <StatusPill tone={rewardedIds.has(r.id) ? "success" : "neutral"}>
+                    {rewardedIds.has(r.id) ? "Rewarded" : "Awaiting first delivery"}
+                  </StatusPill>
+                </li>
+              ))}
+              {referred.length === 0 ? <li className="py-2 text-sm text-muted-foreground">No one referred yet.</li> : null}
+            </ul>
+          </div>
         </div>
       </div>
     </>

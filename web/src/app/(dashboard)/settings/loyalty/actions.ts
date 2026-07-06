@@ -21,10 +21,10 @@ export async function setLoyaltyFlag(
 
 export async function updateLoyaltyRates(
   id: number,
-  input: { pointsPerUnit: number; pointValueLe: number; expiryDays: number },
+  input: { pointsPerUnit: number; pointValueLe: number; expiryDays: number; referralPoints: number },
 ): Promise<ActionResult> {
-  const { pointsPerUnit, pointValueLe, expiryDays } = input;
-  if (![pointsPerUnit, pointValueLe, expiryDays].every((n) => Number.isFinite(n) && n >= 0)) {
+  const { pointsPerUnit, pointValueLe, expiryDays, referralPoints } = input;
+  if (![pointsPerUnit, pointValueLe, expiryDays, referralPoints].every((n) => Number.isFinite(n) && n >= 0)) {
     return { ok: false, error: "Enter non-negative numbers." };
   }
   const { error } = await createAdminClient()
@@ -33,6 +33,7 @@ export async function updateLoyaltyRates(
       points_per_currency_unit: pointsPerUnit,
       point_value_minor: Math.round(pointValueLe * 100),
       points_expiry_days: Math.round(expiryDays),
+      referral_points: Math.round(referralPoints),
     })
     .eq("id", id);
   if (error) return { ok: false, error: error.message };

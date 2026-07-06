@@ -23,6 +23,7 @@ export default async function LoyaltyPage() {
     points_per_currency_unit: number;
     point_value_minor: number;
     points_expiry_days: number;
+    referral_points: number | null;
   } | null;
 
   const tiers = (tiersData ?? []) as Array<{
@@ -70,6 +71,7 @@ export default async function LoyaltyPage() {
               pointsPerUnit={config.points_per_currency_unit}
               pointValueMinor={config.point_value_minor}
               expiryDays={config.points_expiry_days}
+              referralPoints={config.referral_points ?? 0}
             />
           </section>
         ) : null}

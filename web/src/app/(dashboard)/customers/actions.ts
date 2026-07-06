@@ -90,6 +90,7 @@ export async function issueCoupon(userId: string, customerName: string, percent:
     discount_type: "percent",
     discount_value: pct,
     description: `Issued to ${customerName}`,
+    issued_to_user_id: userId, // powers the customer's coupon wallet (RLS: only they see it)
     per_user_limit: 1,
     is_active: true,
   });

@@ -13,17 +13,20 @@ export function LoyaltyRates({
   pointsPerUnit,
   pointValueMinor,
   expiryDays,
+  referralPoints,
 }: {
   id: number;
   pointsPerUnit: number;
   pointValueMinor: number;
   expiryDays: number;
+  referralPoints: number;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [perUnit, setPerUnit] = useState(String(pointsPerUnit ?? 0));
   const [valueLe, setValueLe] = useState((Number(pointValueMinor ?? 0) / 100).toFixed(2));
   const [expiry, setExpiry] = useState(String(expiryDays ?? 0));
+  const [referral, setReferral] = useState(String(referralPoints ?? 0));
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   function save() {
@@ -33,6 +36,7 @@ export function LoyaltyRates({
         pointsPerUnit: parseFloat(perUnit),
         pointValueLe: parseFloat(valueLe),
         expiryDays: parseInt(expiry, 10),
+        referralPoints: parseInt(referral, 10),
       });
       if (res.ok) { setMsg({ ok: true, text: "Saved" }); router.refresh(); }
       else setMsg({ ok: false, text: res.error });
@@ -49,6 +53,9 @@ export function LoyaltyRates({
       </Row>
       <Row label="Expiry" suffix="days (0 = never)">
         <input type="number" min={0} value={expiry} onChange={(e) => setExpiry(e.target.value)} className={inputClass} />
+      </Row>
+      <Row label="Referral reward" suffix="points per friend's first delivery (0 = off)">
+        <input type="number" min={0} value={referral} onChange={(e) => setReferral(e.target.value)} className={inputClass} />
       </Row>
       <div className="flex items-center gap-3 pt-1">
         <button
