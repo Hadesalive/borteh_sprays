@@ -4,6 +4,7 @@ import {
   Truck,
   Barcode,
   Package,
+  Drop,
   Stack,
   Sparkle,
   DeviceMobile,
@@ -31,6 +32,7 @@ export const primaryNav: NavItem[] = [
 
 // Catalog & merchandising — what the shop sells and how the app shows it.
 export const catalogNav: NavItem[] = [
+  { title: "Products", href: "/products", icon: Drop },
   { title: "Inventory", href: "/inventory", icon: Package, badge: 4 },
   { title: "Collections", href: "/collections", icon: Stack },
   { title: "Brands", href: "/brands", icon: Sparkle },

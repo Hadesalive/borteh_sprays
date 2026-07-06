@@ -11,8 +11,14 @@ type VariantRow = {
   size_ml: number | null;
   concentration: string | null;
   price_minor: number | null;
+  availability_signal: { band: string } | { band: string }[] | null;
   product: { name: string | null; brand: { name: string | null } | null } | null;
 } | null;
+
+/** availability_signal comes back as an object (1:1) or a single-element array. */
+function one<T>(v: T | T[] | null | undefined): T | null {
+  return Array.isArray(v) ? v[0] ?? null : v ?? null;
+}
 
 type InventoryRecord = {
   id: string;
@@ -24,9 +30,12 @@ type InventoryRecord = {
   product_variant: VariantRow;
 };
 
-function stockStatus(available: number, reorderPoint: number): { label: string; tone: Tone } {
-  if (available <= 0) return { label: "Out", tone: "danger" };
-  if (available <= reorderPoint) return { label: "Low", tone: "warning" };
+// Read the authoritative band from availability_signal (fn_recompute_band owns it);
+// fall back to the available/reorder heuristic only if the signal row is somehow missing.
+function bandStatus(band: string | null, available: number, reorderPoint: number): { label: string; tone: Tone } {
+  const b = band ?? (available <= 0 ? "out" : available <= reorderPoint ? "low" : "in_stock");
+  if (b === "out") return { label: "Out", tone: "danger" };
+  if (b === "low") return { label: "Low", tone: "warning" };
   return { label: "In stock", tone: "success" };
 }
 
@@ -35,7 +44,7 @@ export default async function InventoryPage() {
   const [invRes, restockRes] = await Promise.all([
     db
       .from("inventory_item")
-      .select("id, variant_id, qty_on_hand, qty_reserved, qty_available, reorder_point, product_variant(sku, size_ml, concentration, price_minor, product(name, brand(name)))")
+      .select("id, variant_id, qty_on_hand, qty_reserved, qty_available, reorder_point, product_variant(sku, size_ml, concentration, price_minor, availability_signal(band), product(name, brand(name)))")
       .order("qty_available", { ascending: true }),
     db.from("restock_subscription").select("id", { count: "exact", head: true }).eq("status", "active"),
   ]);
@@ -46,7 +55,8 @@ export default async function InventoryPage() {
   const rows: InvRow[] = records.map((it) => {
     const v = it.product_variant;
     const available = it.qty_available ?? 0;
-    const status = stockStatus(available, it.reorder_point ?? 0);
+    const band = one(v?.availability_signal)?.band ?? null;
+    const status = bandStatus(band, available, it.reorder_point ?? 0);
     const meta = [v?.product?.brand?.name, v?.size_ml != null ? `${v.size_ml} ml` : null, v?.concentration]
       .filter(Boolean)
       .join(" · ");
@@ -67,8 +77,9 @@ export default async function InventoryPage() {
 
   const unitsOnHand = rows.reduce((s, r) => s + r.onHand, 0);
   const stockValue = rows.reduce((s, r) => s + r.onHand * (r.priceMinor ?? 0), 0);
-  const low = rows.filter((r) => r.available > 0 && r.available <= r.reorderPoint).length;
-  const out = rows.filter((r) => r.available <= 0).length;
+  // Counts follow the authoritative band shown in each row's chip.
+  const low = rows.filter((r) => r.statusLabel === "Low").length;
+  const out = rows.filter((r) => r.statusLabel === "Out").length;
 
   const summary: SummaryStat[] = [
     { n: formatInt(rows.length), label: "SKUs", tone: "text-foreground" },
