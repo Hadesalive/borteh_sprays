@@ -1,6 +1,7 @@
 import type { Session } from "@supabase/supabase-js";
 import { useSyncExternalStore } from "react";
 import { supabase } from "./supabase";
+import { mergeAnonEvents } from "./track";
 
 // Phone + password auth (no OTP — SMS is too costly, ADR-004). Supabase needs an email/password
 // pair, so we map the phone to a synthetic, non-deliverable email; the real phone lives in
@@ -19,9 +20,12 @@ supabase.auth.getSession().then(({ data }) => {
   ready = true;
   emit();
 });
-supabase.auth.onAuthStateChange((_event, s) => {
+supabase.auth.onAuthStateChange((event, s) => {
   session = s;
   emit();
+  // On a real sign-in (login / signup / password-reset auto-signin), claim this device's
+  // anonymous events for the user. Idempotent, so repeat fires are harmless.
+  if (event === "SIGNED_IN") mergeAnonEvents();
 });
 
 const subscribe = (l: () => void) => {

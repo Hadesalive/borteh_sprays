@@ -24,3 +24,6 @@ out/
 # editor
 .vscode/
 .idea/
+
+# supabase CLI temp
+supabase/.temp/

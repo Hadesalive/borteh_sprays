@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "./supabase";
+import { track } from "./track";
 
 export type Review = {
   id: string;
@@ -61,4 +62,5 @@ export async function submitReview(input: { productId: string; rating: number; t
     { onConflict: "user_id,product_id" },
   );
   if (error) throw error;
+  track("review", { productId: input.productId, metadata: { rating: input.rating } });
 }

@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
+import { track } from "./track";
 
 // Local-only bag. Online-first app (ADR), but the bag lives on the device so a tap to "Add"
 // is instant and survives a reload. We persist only the durable facts (which variant, the
@@ -11,6 +12,7 @@ export type CartItem = {
   sizeMl: number;
   priceMinor: number;
   qty: number;
+  productId?: string; // carried for recs event attribution; optional so old persisted carts still load
 };
 
 const KEY = "borteh.cart.v1";
@@ -57,6 +59,7 @@ export function addToBag(item: Omit<CartItem, "qty">, qty = 1) {
     ? items.map((i) => (i.variantId === item.variantId ? { ...i, qty: i.qty + qty } : i))
     : [...items, { ...item, qty }];
   emit();
+  track("add_to_bag", { productId: item.productId, metadata: { variantId: item.variantId, slug: item.slug, qty, priceMinor: item.priceMinor } });
 }
 
 export function setQty(variantId: string, qty: number) {
@@ -65,8 +68,10 @@ export function setQty(variantId: string, qty: number) {
 }
 
 export function removeFromBag(variantId: string) {
+  const removed = items.find((i) => i.variantId === variantId);
   items = items.filter((i) => i.variantId !== variantId);
   emit();
+  if (removed) track("remove_from_bag", { productId: removed.productId, metadata: { variantId, slug: removed.slug } });
 }
 
 export function clearBag() {

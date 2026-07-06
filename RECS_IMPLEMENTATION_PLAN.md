@@ -1,20 +1,29 @@
 # Borteh Sprays — Personalized Home Feed: Full ML Implementation Plan
 
 End-to-end plan for the recommendation system powering the mobile app home screen.
-Stack assumptions: Supabase (Postgres + pgvector), Node/Payload backend, React Native mobile app, Python for ML services. Execute phases in order — each phase ships something working on its own.
+Stack assumptions: Supabase (Postgres + pgvector), Next.js admin (`web/`) reading Supabase directly, React Native/Expo mobile app, Python for later ML jobs. Execute phases in order — each phase ships something working on its own.
+
+> **Repo reality & Session-1 adaptations (agreed 2026-07-05) — applies throughout.**
+> - **No Payload CMS.** The admin is Next.js (`web/`) reading Supabase directly; any "CMS hook/pin" below means a Postgres/Next mechanism, decided in Sessions 3–4.
+> - **Singular product schema:** `public.product` (not `products`); price on `public.product_variant.price_minor`; notes via `public.product_scent_note` → `public.scent_note` (`position` ∈ top/heart/base); family on `public.product.scent_family`.
+> - **Dedicated `recs` schema, NOT exposed to PostgREST.** All ML tables live there. Tunables live in **`recs.config`** (key / jsonb value), not a public `recs_config`.
+> - **Sole client write path:** `public.fn_track_events(jsonb)` — SECURITY DEFINER, forces `user_id := auth.uid()`. Clients never touch `recs.events`; RLS is defense-in-depth.
+> - **`events.user_id` is nullable** with `check (user_id is not null or anon_id is not null)` for pre-sign-in anon events.
 
 ---
 
-## Phase 0 — Foundations (½ day)
+## Phase 0 — Foundations (½ day) — ✅ DONE (Session 1)
 
 **Goal:** the ground the whole system stands on.
 
-1. Enable pgvector on Supabase: `create extension if not exists vector;`
-2. Create a dedicated schema `recs` so ML tables stay separate from app tables.
-3. Confirm product data quality: every product MUST have fragrance family, top/heart/base notes, brand, description, price, and active status. The content model is only as good as this data — audit and backfill gaps in the CMS before anything else.
-4. Create a `recs_config` table (key/value) for tunables: recency half-life days, module toggles, feed length, blend weights. Everything tunable lives here, nothing hardcoded.
+1. `create extension if not exists vector;` (pgvector).
+2. Dedicated `recs` schema (unexposed in PostgREST) so ML tables stay separate from app tables.
+3. **Catalog audit gate:** every ACTIVE `public.product` MUST have `scent_family`, top+heart+base `product_scent_note`s, a brand, a `description`, and a priced active `product_variant`. Script `scripts/recs-audit-products.mjs` (anon REST, exits non-zero on any gap). BLOCKING — backfill gaps in the admin before anything else.
+4. `recs.config` (key / jsonb value / description) holds every tunable: recency half-life, feed length, blend weights, module toggles, and the Phase 1.2 feedback weights. Nothing hardcoded.
 
-**Done when:** pgvector enabled, product catalog audit passes with zero products missing notes/family.
+**Done when:** pgvector enabled, `recs.config` seeded, catalog audit passes with zero products missing notes/family.
+
+_Files: `supabase/migrations/20260705090013_recs_foundations.sql`, `scripts/recs-audit-products.mjs`._
 
 ---
 
@@ -22,32 +31,44 @@ Stack assumptions: Supabase (Postgres + pgvector), Node/Payload backend, React N
 
 **Goal:** clean first-party interaction data flowing from day one.
 
-### 1.1 Schema
+### 1.1 Schema — ✅ DONE (Session 1)
+
+`recs.events` — append-only, in the unexposed `recs` schema. As-built:
 
 ```sql
 create table recs.events (
-  id bigint generated always as identity primary key,
-  user_id uuid not null,
-  anon_id text,                          -- device id before sign-in, merged on auth
-  event_type text not null check (event_type in
+  id          bigint generated always as identity primary key,
+  user_id     uuid,                                  -- forced to auth.uid() by the RPC; nullable for anon
+  anon_id     text,                                  -- device id before sign-in; merged on auth
+  event_type  text not null check (event_type in
     ('view','dwell','search','filter','add_to_bag','remove_from_bag',
      'purchase','wishlist_add','wishlist_remove','notify_subscribe',
      'review','not_interested','module_impression','module_tap')),
-  product_id uuid,
-  module text,                           -- which home module served it (context!)
-  position int,                          -- rank position within the module
-  metadata jsonb default '{}',           -- dwell_ms, search query, filter values
-  created_at timestamptz not null default now()
+  product_id  uuid,                                  -- bare uuid (no FK): append-only log survives soft-deletes
+  module      text,                                  -- which home module served it (context!)
+  position    int,                                   -- rank within that module
+  metadata    jsonb not null default '{}',
+  created_at  timestamptz not null default now(),
+  constraint events_actor_present   check (user_id is not null or anon_id is not null),
+  constraint events_surface_context check (
+    event_type not in ('module_impression','module_tap')
+    or (module is not null and position is not null)   -- context mandatory on every impression/tap
+  )
 );
 create index on recs.events (user_id, created_at desc);
 create index on recs.events (product_id, event_type);
+create index on recs.events (anon_id, created_at desc) where anon_id is not null;
 ```
 
-RLS: users can insert only their own events; no client read access; service role reads for training.
+**RLS (defense-in-depth):** authenticated may INSERT only rows where `user_id = auth.uid()`; no client SELECT/UPDATE/DELETE; `service_role` reads for training. Clients never reach this table (schema unexposed) — the only write path is `public.fn_track_events(jsonb)` (SECURITY DEFINER; forces `user_id := auth.uid()`, batches inserts, clamps `created_at ≤ now()`, skips typeless rows). Proof: `supabase/tests/recs_events_rls.sql` (own-insert ✓ / cross-user ✗ / client read ✗ / service-role read ✓).
 
-### 1.2 Implicit feedback weights (store in recs_config)
+_Files: `supabase/migrations/20260705090014_recs_events.sql`, `supabase/tests/recs_events_rls.sql`._
+
+### 1.2 Implicit feedback weights (stored in `recs.config`) — ✅ DONE (Session 1)
 
 view=1, dwell>10s=2, wishlist_add=3, add_to_bag=4, purchase=5, notify_subscribe=3, review=4, not_interested=-3, remove/wishlist_remove=-1.
+
+Seeded under `recs.config` key `feedback.weights` (+ `feedback.dwell_threshold_ms = 10000` for the ">10s" rule). `search`, `filter`, `module_impression`, `module_tap` carry no implicit weight — they are context/eval signals only.
 
 ### 1.3 Mobile client instrumentation
 
@@ -165,8 +186,8 @@ Build 0→2 now and ship; they deliver visible personalization immediately and s
 
 ## Claude Code session map
 
-1. Phase 0 + 1.1–1.2 (SQL migrations, RLS, config)
-2. Phase 1.3 (mobile event batching + instrumentation)
+1. ✅ Phase 0 + 1.1–1.2 (SQL migrations, RLS, config) — **DONE.** Files: `supabase/migrations/20260705090013_recs_foundations.sql`, `20260705090014_recs_events.sql`, `scripts/recs-audit-products.mjs`, `supabase/tests/recs_events_rls.sql`. ⚠️ Session 2 must first run the catalog audit gate against live data.
+2. Phase 1.3 (mobile event batching + instrumentation) → calls `public.fn_track_events(jsonb)` (already built); assigns each device a persistent `anon_id`.
 3. Phase 1.4 + 2.1–2.2 (rollup, embedding job, similar scents live)
 4. Phase 2.3–2.4 (taste vectors, quiz, feed assembly v1)
 5. Phase 3 (ALS job + blend + guardrails)

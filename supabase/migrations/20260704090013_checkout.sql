@@ -1,4 +1,6 @@
--- 20260621090008_checkout.sql
+-- 20260704090013_checkout.sql
+-- (Renumbered from a duplicate 20260621090010 that collided with category_kind and was
+--  never recorded on remote; content is idempotent so re-applying under this version is safe.)
 -- Cash-on-delivery checkout. Customers can't INSERT orders directly (RLS: "insert via
 -- service-role checkout"), so order creation goes through a SECURITY DEFINER RPC that
 -- validates the caller, prices the basket server-side, writes the order + items, and
