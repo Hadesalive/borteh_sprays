@@ -13,6 +13,7 @@ export function Button({
   title,
   onPress,
   variant = "primary",
+  tone = "default",
   icon,
   trailing,
   disabled = false,
@@ -27,6 +28,7 @@ export function Button({
   title: string;
   onPress: () => void;
   variant?: Variant;
+  tone?: "default" | "destructive";
   icon?: ReactNode;
   trailing?: string;
   disabled?: boolean;
@@ -41,7 +43,8 @@ export function Button({
   const spring = (to: number) => Animated.spring(scale, { toValue: to, useNativeDriver: true, speed: 40, bounciness: 0 }).start();
 
   const kind: "primary" | "secondary" | "ghost" = variant === "outline" ? "secondary" : variant === "tonal" ? "primary" : variant;
-  const labelColor = kind === "primary" ? colors.onInk : colors.ink;
+  const destructive = tone === "destructive";
+  const labelColor = kind === "primary" ? colors.onInk : destructive ? colors.error : colors.ink;
   const composed = trailing ? `${title} — ${trailing}` : title;
 
   return (
@@ -58,9 +61,18 @@ export function Button({
       accessibilityLabel={composed}
       style={[full && { alignSelf: "stretch" }, style]}
     >
-      <Animated.View style={[s.base, s[kind], disabled && { opacity: 0.45 }, { transform: [{ scale }] }]}>
+      <Animated.View
+        style={[
+          s.base,
+          s[kind],
+          destructive && kind === "secondary" && { borderColor: colors.error },
+          destructive && kind === "primary" && { backgroundColor: colors.error },
+          disabled && { opacity: 0.45 },
+          { transform: [{ scale }] },
+        ]}
+      >
         {icon ? <View>{icon}</View> : null}
-        <View style={kind === "ghost" ? s.underline : undefined}>
+        <View style={kind === "ghost" ? [s.underline, destructive && { borderBottomColor: colors.error }] : undefined}>
           <Animated.Text
             maxFontSizeMultiplier={1.3}
             style={[styles.label, { color: labelColor }]}

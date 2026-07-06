@@ -2,13 +2,14 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
+import { applyReferral, checkReferral } from "@/lib/account";
 import { signUp } from "@/lib/auth";
 import { colors, space } from "@/lib/theme";
 
@@ -18,6 +19,8 @@ export default function SignUp() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [refCode, setRefCode] = useState("");
+  const [refErr, setRefErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,8 +38,26 @@ export default function SignUp() {
     }
     setBusy(true);
     setError(null);
+    setRefErr(null);
     try {
+      // Validate the referral BEFORE creating the account — a bad code should
+      // never fail silently after the fact.
+      if (refCode.trim()) {
+        try {
+          await checkReferral(refCode);
+        } catch (e: any) {
+          setRefErr(e?.message ?? "That referral code isn't valid.");
+          setBusy(false);
+          return;
+        }
+      }
       await signUp({ name, phone, password });
+      if (refCode.trim()) {
+        // Account exists either way — but if the apply fails now, SAY so.
+        await applyReferral(refCode).catch((e: any) =>
+          Alert.alert("Referral not applied", e?.message ?? "The code couldn't be applied."),
+        );
+      }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch (e: any) {
@@ -69,10 +90,22 @@ export default function SignUp() {
               onChangeText={setPassword}
               placeholder="At least 6 characters"
               secure
-              returnKeyType="go"
-              onSubmitEditing={submit}
+              returnKeyType="next"
               helper={password.length > 0 && passOk ? "6+ characters ✓" : undefined}
               error={error ?? undefined}
+            />
+            <Field
+              label="Referral code · optional"
+              value={refCode}
+              onChangeText={(t) => {
+                setRefCode(t);
+                if (refErr) setRefErr(null);
+              }}
+              placeholder="BOR-XXXXX"
+              autoCapitalize="characters"
+              returnKeyType="go"
+              onSubmitEditing={submit}
+              error={refErr ?? undefined}
             />
           </View>
         </ScrollView>

@@ -3,7 +3,7 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Check, Money, Tag } from "phosphor-react-native";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
@@ -11,7 +11,8 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { ListRow } from "@/components/ListRow";
 import { AppText } from "@/components/Text";
-import { HeaderActions, LinkLabel } from "@/components/ui";
+import { HeaderActions, LinkLabel, ToggleSwitch } from "@/components/ui";
+import { takePendingCoupon, tierFor, useLoyalty, useLoyaltyConfig, useLoyaltyTiers, validatePromo } from "@/lib/account";
 import { useProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { cartTotalMinor, clearBag, useCart } from "@/lib/cart";
@@ -19,12 +20,6 @@ import { formatLe } from "@/lib/format";
 import { placeOrder } from "@/lib/orders";
 import { colors, font, space } from "@/lib/theme";
 import { track } from "@/lib/track";
-
-// Demo coupons — the owner can edit these (value is in minor units; Le 50 = 5000).
-const COUPONS: Record<string, { label: string; type: "pct" | "flat"; value: number }> = {
-  BORTEH10: { label: "10% off", type: "pct", value: 10 },
-  WELCOME: { label: "Le 50 off", type: "flat", value: 5000 },
-};
 
 export default function Checkout() {
   const router = useRouter();
@@ -39,34 +34,62 @@ export default function Checkout() {
   const [landmark, setLandmark] = useState("");
   const [notes, setNotes] = useState("");
   const [coupon, setCoupon] = useState("");
-  const [applied, setApplied] = useState<{ code: string; label: string; type: "pct" | "flat"; value: number } | null>(null);
+  const [applied, setApplied] = useState<{ code: string; label: string; discountMinor: number } | null>(null);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
+  const [usePoints, setUsePoints] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { data: loyalty } = useLoyalty();
+  const { data: loyaltyCfg } = useLoyaltyConfig();
+  const { data: tiers } = useLoyaltyTiers();
+
   const subtotal = cartTotalMinor(items);
-  const discount = applied ? (applied.type === "pct" ? Math.round((subtotal * applied.value) / 100) : Math.min(applied.value, subtotal)) : 0;
-  const total = Math.max(0, subtotal - discount);
+  // The loyalty-card perk is automatic ("N% off every order") — server-applied
+  // in fn_place_order; this preview mirrors the same rule via tierFor().
+  const tier = tierFor(loyalty, tiers, loyaltyCfg?.tiersEnabled ?? false);
+  const tierDiscount = tier ? Math.floor((subtotal * tier.discountPercent) / 100) : 0;
+  const promoDiscount = applied?.discountMinor ?? 0;
+  const discount = Math.min(tierDiscount + promoDiscount, subtotal); // combined, capped — matches the server
+  // Points preview mirrors the server's rules exactly: capped by balance AND by
+  // what's left after the discounts (fn_place_order re-enforces both).
+  const pointValue = loyaltyCfg?.pointValueMinor ?? 0;
+  const canRedeem = (loyaltyCfg?.enabled ?? false) && pointValue > 0 && (loyalty?.points ?? 0) > 0;
+  const redeemPoints = usePoints && canRedeem ? Math.min(loyalty?.points ?? 0, Math.floor((subtotal - discount) / pointValue)) : 0;
+  const redeemValue = redeemPoints * pointValue;
+  const total = Math.max(0, subtotal - discount - redeemValue);
+  // Split the combined discount back out for the summary (tier is applied first).
+  const shownTier = Math.min(tierDiscount, subtotal);
+  const shownPromo = Math.max(0, discount - shownTier);
   const lines = useMemo(
     () => items.map((it) => ({ ...it, name: (products ?? []).find((p) => p.slug === it.slug)?.name ?? it.slug })),
     [items, products],
   );
 
-  const applyCoupon = () => {
-    const code = coupon.trim().toUpperCase();
+  // Coupons are validated + priced SERVER-side (fn_validate_promo) — the same
+  // rules fn_place_order enforces, so the preview can't drift from the charge.
+  const applyCoupon = async (raw?: string) => {
+    const code = (raw ?? coupon).trim().toUpperCase();
     if (!code) return;
-    const found = COUPONS[code];
-    if (!found) {
+    try {
+      const res = await validatePromo(code, subtotal);
+      setApplied({ code, label: res.label, discountMinor: res.discountMinor });
+      setCoupon("");
+      setCouponMsg(null);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e: any) {
       setApplied(null);
-      setCouponMsg("That code isn't valid.");
+      setCouponMsg(e?.message ?? "That code isn't valid.");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return;
     }
-    setApplied({ code, ...found });
-    setCoupon("");
-    setCouponMsg(null);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
+
+  // A coupon staged from the wallet ("Use at checkout") applies itself.
+  useEffect(() => {
+    const staged = takePendingCoupon();
+    if (staged && subtotal > 0) applyCoupon(staged);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subtotal > 0]);
 
   const submit = async () => {
     if (busy) return;
@@ -81,13 +104,14 @@ export default function Checkout() {
     setBusy(true);
     setError(null);
     try {
-      const orderNotes = applied ? `${notes}${notes ? " — " : ""}Coupon ${applied.code} (${applied.label})` : notes;
       const { orderId } = await placeOrder({
         items: items.map((it) => ({ variant_id: it.variantId, qty: it.qty })),
         landmark,
         phone,
         recipientName: name,
-        notes: orderNotes,
+        notes,
+        promoCode: applied?.code ?? null, // re-validated + priced by the server
+        redeemPoints, // balance-checked + capped by the server
       });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       // recs: strongest signal — one purchase event per product, before the bag is cleared.
@@ -96,6 +120,8 @@ export default function Checkout() {
       }
       clearBag();
       qc.invalidateQueries({ queryKey: ["orders"] });
+      qc.invalidateQueries({ queryKey: ["loyalty"] });
+      qc.invalidateQueries({ queryKey: ["loyalty-ledger"] });
       router.replace({ pathname: "/order/[id]", params: { id: orderId, placed: "1" } });
     } catch (e: any) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -148,14 +174,35 @@ export default function Checkout() {
                   autoCapitalize="characters"
                   autoCorrect={false}
                   returnKeyType="done"
-                  onSubmitEditing={applyCoupon}
+                  onSubmitEditing={() => applyCoupon()}
                   style={s.couponInput}
                 />
-                <LinkLabel label="Apply" onPress={applyCoupon} color={coupon.trim() ? colors.accent : colors.ink40} />
+                <LinkLabel label="Apply" onPress={() => applyCoupon()} color={coupon.trim() ? colors.accent : colors.ink40} />
               </View>
             )}
           </View>
           {couponMsg ? <AppText variant="caption" style={{ color: colors.error, marginTop: space.sm }}>{couponMsg}</AppText> : null}
+
+          {/* points — shown only when there's something real to spend */}
+          {canRedeem ? (
+            <View style={s.pointsRow}>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <AppText variant="body">Use my points</AppText>
+                <AppText variant="caption" style={{ marginTop: 2 }}>
+                  {usePoints && redeemPoints > 0
+                    ? `${redeemPoints} points — ${formatLe(redeemValue)} off`
+                    : `${loyalty?.points ?? 0} points ≈ ${formatLe((loyalty?.points ?? 0) * pointValue)}`}
+                </AppText>
+              </View>
+              <ToggleSwitch
+                value={usePoints}
+                onToggle={(v) => {
+                  Haptics.selectionAsync();
+                  setUsePoints(v);
+                }}
+              />
+            </View>
+          ) : null}
 
           {/* Summary */}
           <AppText variant="label" style={s.eyebrow}>Summary</AppText>
@@ -166,10 +213,22 @@ export default function Checkout() {
                 <AppText variant="body">{formatLe(l.priceMinor * l.qty)}</AppText>
               </View>
             ))}
-            {applied ? (
+            {shownTier > 0 && tier ? (
+              <View style={s.sumRow}>
+                <AppText variant="bodySoft" style={{ color: colors.accent }}>{tier.name} ({tier.discountPercent}%)</AppText>
+                <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(shownTier)}</AppText>
+              </View>
+            ) : null}
+            {applied && shownPromo > 0 ? (
               <View style={s.sumRow}>
                 <AppText variant="bodySoft" style={{ color: colors.accent }}>Discount ({applied.code})</AppText>
-                <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(discount)}</AppText>
+                <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(shownPromo)}</AppText>
+              </View>
+            ) : null}
+            {redeemPoints > 0 ? (
+              <View style={s.sumRow}>
+                <AppText variant="bodySoft" style={{ color: colors.accent }}>Points ({redeemPoints})</AppText>
+                <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(redeemValue)}</AppText>
               </View>
             ) : null}
             <View style={s.totalRow}>
@@ -195,6 +254,7 @@ const s = StyleSheet.create({
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   eyebrow: { color: colors.ink60, marginTop: space["2xl"] },
   couponRow: { flexDirection: "row", alignItems: "center", gap: space.md, height: 56, borderBottomWidth: 1, borderBottomColor: colors.line },
+  pointsRow: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.line },
   couponInput: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },
   sumRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.md, paddingVertical: space.sm },
   totalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: space.md, marginTop: space.sm, borderTopWidth: 1, borderTopColor: colors.line },

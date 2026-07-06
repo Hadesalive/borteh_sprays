@@ -79,6 +79,9 @@ Bronze is spent **once per screen** — the active choice or the single link. Ne
   CTA press-spring. Motion is part of the build, not decoration.
 - Pair state changes with **haptics** (`Haptics.selectionAsync` on selects, `notificationAsync` on
   success). Tap targets ≥ 44pt.
+- **One sanctioned celebration:** the order-placed screen fires a `Confetti` burst + haptic roll +
+  check-pop. Confetti uses the Maison palette only (ink/bronze/lighter-bronze/success — never
+  rainbow) and built-in `Animated`. Reserved for that single high moment; don't scatter it elsewhere.
 
 ## Edge cases (non-negotiable)
 - Every state has a **way back** — loading and error screens render the back control too.

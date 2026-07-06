@@ -9,11 +9,13 @@ import { SortSheet } from "@/components/SortSheet";
 import { AppText } from "@/components/Text";
 import { HeaderActions, LinkLabel, SearchBar } from "@/components/ui";
 import { discountPct, type Gender, type Product, useProducts } from "@/lib/api";
+import { useShopRanked } from "@/lib/feed";
 import { formatLe } from "@/lib/format";
 import {
   activeFilterCount,
   buildFacets,
   filterProducts,
+  isRelevanceSort,
   resetFilters,
   searchProducts,
   setFilters,
@@ -37,6 +39,7 @@ export default function Shop() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { data } = useProducts();
+  const shopRanked = useShopRanked();
   const params = useLocalSearchParams<{ family?: string; gender?: string; sale?: string; brand?: string; collection?: string }>();
   const filters = useFilters();
   const [q, setQ] = useState("");
@@ -71,10 +74,19 @@ export default function Shop() {
     if (term) {
       const ranked = searchProducts(list, term);
       // relevance order for the default sort; explicit sorts still win
-      return filters.sort === "featured" ? ranked : sortProducts(ranked, filters.sort);
+      return isRelevanceSort(filters.sort) ? ranked : sortProducts(ranked, filters.sort);
+    }
+    // "For you" default with no narrowing → personalized order from fn_shop_ranked. Any explicit
+    // sort, filter, gender, collection or search drops back to the client path (intent always wins).
+    const noNarrowing = cat === "all" && !collection && !sale && activeFilterCount(filters) === 0;
+    if (filters.sort === "for_you" && noNarrowing && shopRanked.data?.length) {
+      const byId = new Map(list.map((p) => [p.id, p]));
+      const ranked = shopRanked.data.map((id) => byId.get(id)).filter((p): p is Product => !!p);
+      const seen = new Set(ranked.map((p) => p.id));
+      return [...ranked, ...list.filter((p) => !seen.has(p.id))]; // any un-ranked product tails the list
     }
     return sortProducts(list, filters.sort);
-  }, [data, cat, collection, sale, filters, term]);
+  }, [data, cat, collection, sale, filters, term, shopRanked.data]);
 
   const brandName = (slug: string) => facets.brands.find((b) => b.slug === slug)?.name ?? slug;
   const collectionName = (data ?? []).find((p) => p.collection === collection)?.collectionName ?? collection;

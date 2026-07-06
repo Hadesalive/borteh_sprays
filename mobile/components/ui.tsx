@@ -41,7 +41,7 @@ export function Avatar({ initials, size = 32 }: { initials?: string; size?: numb
 }
 
 /** Bell with an unread-count badge (bronze — the header's one accent). */
-export function BellButton({ onPress, count = 0 }: { onPress?: () => void; count?: number }) {
+export function BellButton({ onPress, count = 0, light = false }: { onPress?: () => void; count?: number; light?: boolean }) {
   return (
     <Pressable
       onPress={onPress}
@@ -49,7 +49,7 @@ export function BellButton({ onPress, count = 0 }: { onPress?: () => void; count
       accessibilityRole="button"
       accessibilityLabel={count > 0 ? `Notifications, ${count} unread` : "Notifications"}
     >
-      <Bell size={24} color={colors.ink} weight="regular" />
+      <Bell size={24} color={light ? "rgba(250,248,245,0.96)" : colors.ink} weight="regular" />
       {count > 0 ? (
         <View style={s.bellBadge}>
           <AppText style={s.bellBadgeTxt} maxFontSizeMultiplier={1}>
@@ -63,7 +63,7 @@ export function BellButton({ onPress, count = 0 }: { onPress?: () => void; count
 
 /** The standard header cluster (bell + avatar) — one source for every screen's top-right.
  *  Resolves the session monogram itself so screens don't repeat it. */
-export function HeaderActions() {
+export function HeaderActions({ light = false }: { light?: boolean } = {}) {
   const router = useRouter();
   const session = useSession();
   const unread = useUnreadCount();
@@ -71,7 +71,7 @@ export function HeaderActions() {
   const initials = name?.split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("") || undefined;
   return (
     <View style={s.headerActions}>
-      <BellButton onPress={() => router.push("/notifications")} count={unread} />
+      <BellButton onPress={() => router.push("/notifications")} count={unread} light={light} />
       <Pressable onPress={() => router.push("/profile")} accessibilityRole="button" accessibilityLabel="Account">
         <Avatar initials={initials} />
       </Pressable>

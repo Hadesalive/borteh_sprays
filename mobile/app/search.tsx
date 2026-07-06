@@ -6,18 +6,20 @@ import { useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ProductCard } from "@/components/ProductCard";
+import { Skel } from "@/components/Skeleton";
 import { SortSheet } from "@/components/SortSheet";
 import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
 import { type Product, productSubline, useProducts } from "@/lib/api";
+import { useSearchResults } from "@/lib/feed";
 import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
 import {
   activeFilterCount,
   addRecentSearch,
   filterProducts,
+  isRelevanceSort,
   removeRecentSearch,
-  searchProducts,
   setFilters,
   sortLabel,
   sortProducts,
@@ -54,11 +56,17 @@ export default function Search() {
   const [sortOpen, setSortOpen] = useState(false);
 
   const term = q.trim();
+  // Hybrid NL search runs server-side (fn_search_products → ordered ids); we map onto the loaded
+  // catalog and apply any explicit filter/sort on top. Empty query → no request.
+  const searchIds = useSearchResults(term);
   const results = useMemo(() => {
     if (!term) return [] as Product[];
-    const ranked = searchProducts(filterProducts(data ?? [], filters), term);
-    return filters.sort === "featured" ? ranked : sortProducts(ranked, filters.sort);
-  }, [data, term, filters]);
+    const byId = new Map((data ?? []).map((p) => [p.id, p]));
+    const ranked = (searchIds.data ?? []).map((id) => byId.get(id)).filter((p): p is Product => !!p);
+    const filtered = filterProducts(ranked, filters);
+    return isRelevanceSort(filters.sort) ? filtered : sortProducts(filtered, filters.sort);
+  }, [data, term, filters, searchIds.data]);
+  const loadingResults = !!term && searchIds.isLoading;
 
   const trending = useMemo(() => (data ?? []).slice(0, 6), [data]);
   const filterCount = activeFilterCount(filters);
@@ -72,7 +80,7 @@ export default function Search() {
     addRecentSearch(v);
     if (lastLogged.current === v.toLowerCase()) return; // submit + result-tap = one event
     lastLogged.current = v.toLowerCase();
-    track("search", { metadata: { query: v, results: searchProducts(filterProducts(data ?? [], filters), v).length } });
+    track("search", { metadata: { query: v, results: results.length } });
   };
 
   return (
@@ -153,6 +161,18 @@ export default function Search() {
               ))}
             </ScrollView>
           </>
+        ) : loadingResults ? (
+          <View style={s.gutter}>
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <View key={i} style={s.skelRow}>
+                <Skel w={56} h={64} />
+                <View style={{ flex: 1, gap: space.sm }}>
+                  <Skel w={160} h={20} />
+                  <Skel w={110} h={14} />
+                </View>
+              </View>
+            ))}
+          </View>
         ) : results.length === 0 ? (
           <View style={s.gutter}>
             <AppText variant="heading" style={{ marginTop: space["2xl"] }}>Nothing on the shelf for that.</AppText>
@@ -210,4 +230,5 @@ const s = StyleSheet.create({
   sortBtn: { flexDirection: "row", alignItems: "center", gap: space.sm },
   result: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.line },
   resultThumb: { width: 56, height: 64, backgroundColor: colors.surface, overflow: "hidden" },
+  skelRow: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingVertical: space.md, marginTop: space.sm },
 });

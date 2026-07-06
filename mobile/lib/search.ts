@@ -8,9 +8,10 @@ import type { Product } from "./api";
 
 // ── Sort ────────────────────────────────────────────────────────────────────
 
-export type SortKey = "featured" | "price_asc" | "price_desc" | "rating" | "newest";
+export type SortKey = "for_you" | "featured" | "price_asc" | "price_desc" | "rating" | "newest";
 
 export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "for_you", label: "For you" },
   { key: "featured", label: "Best selling" },
   { key: "price_asc", label: "Price: low to high" },
   { key: "price_desc", label: "Price: high to low" },
@@ -18,7 +19,11 @@ export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "newest", label: "Newest" },
 ];
 
-export const sortLabel = (k: SortKey) => SORT_OPTIONS.find((o) => o.key === k)?.label ?? "Best selling";
+export const sortLabel = (k: SortKey) => SORT_OPTIONS.find((o) => o.key === k)?.label ?? "For you";
+
+/** Sorts that preserve an upstream relevance order (server search / personalized rank) rather than
+ *  re-ordering client-side. Shop & Search use this to know when NOT to override the ranked list. */
+export const isRelevanceSort = (k: SortKey) => k === "for_you" || k === "featured";
 
 // ── Filter state (shared between Shop, Search and the Filter sheet) ─────────
 
@@ -41,7 +46,7 @@ export const DEFAULT_FILTERS: Filters = {
   priceMax: null,
   inStockOnly: false,
   minRating: null,
-  sort: "featured",
+  sort: "for_you",
 };
 
 let filters: Filters = { ...DEFAULT_FILTERS };

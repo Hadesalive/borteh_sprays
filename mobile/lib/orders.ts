@@ -9,6 +9,8 @@ export type Order = {
   status: OrderStatus;
   subtotalMinor: number;
   deliveryFeeMinor: number | null;
+  discountMinor: number;
+  loyaltyRedeemMinor: number;
   totalMinor: number;
   landmark: string | null;
   phone: string | null;
@@ -38,13 +40,16 @@ export const STATUS_TONE: Record<OrderStatus, "muted" | "success" | "warning" | 
   returned: "error",
 };
 
-/** Place a cash-on-delivery order via the server RPC (atomic order + items + stock hold). */
+/** Place a cash-on-delivery order via the server RPC (atomic order + items + stock hold).
+ *  The promo code is re-validated and priced SERVER-side — the client only previews. */
 export async function placeOrder(input: {
   items: { variant_id: string; qty: number }[];
   landmark: string;
   phone: string;
   recipientName: string;
   notes?: string;
+  promoCode?: string | null;
+  redeemPoints?: number;
 }): Promise<{ orderId: string; orderNumber: string }> {
   const { data, error } = await supabase.rpc("fn_place_order", {
     p_items: input.items,
@@ -53,6 +58,8 @@ export async function placeOrder(input: {
     p_recipient_name: input.recipientName,
     p_zone_id: null,
     p_notes: input.notes ?? null,
+    p_promo_code: input.promoCode ?? null,
+    p_redeem_points: input.redeemPoints ?? 0,
   });
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;
@@ -60,7 +67,7 @@ export async function placeOrder(input: {
 }
 
 const ORDER_SELECT =
-  "id, order_number, status, subtotal_minor, delivery_fee_minor, total_minor, " +
+  "id, order_number, status, subtotal_minor, delivery_fee_minor, discount_minor, loyalty_redeem_minor, total_minor, " +
   "landmark_snapshot, contact_phone_snapshot, recipient_name_snapshot, placed_at, created_at, " +
   "order_item(product_name_snapshot, variant_label_snapshot, qty, unit_price_minor, line_total_minor)";
 
@@ -72,6 +79,8 @@ function normalize(r: any): Order {
     status: r.status,
     subtotalMinor: r.subtotal_minor,
     deliveryFeeMinor: r.delivery_fee_minor,
+    discountMinor: r.discount_minor ?? 0,
+    loyaltyRedeemMinor: r.loyalty_redeem_minor ?? 0,
     totalMinor: r.total_minor,
     landmark: r.landmark_snapshot,
     phone: r.contact_phone_snapshot,

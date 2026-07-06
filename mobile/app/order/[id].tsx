@@ -1,11 +1,14 @@
+import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Bell, CheckCircle } from "phosphor-react-native";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
+import { Confetti } from "@/components/Confetti";
 import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
 import { formatLe } from "@/lib/format";
@@ -20,6 +23,21 @@ export default function OrderDetail() {
   const { data: order, isLoading } = useOrder(id);
   const justPlaced = placed === "1";
   const pushStatus = usePushStatus();
+  const checkScale = useRef(new Animated.Value(0.6)).current;
+
+  // Celebrate the placed order — a haptic roll (following checkout's success),
+  // the check springing in, and a Maison-palette confetti burst.
+  useEffect(() => {
+    if (!justPlaced) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const t1 = setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), 150);
+    const t2 = setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), 300);
+    Animated.spring(checkScale, { toValue: 1, useNativeDriver: true, friction: 4, tension: 130 }).start();
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [justPlaced, checkScale]);
 
   return (
     <View style={s.screen}>
@@ -32,10 +50,12 @@ export default function OrderDetail() {
         ) : (
           <>
             {justPlaced ? (
-              <View style={{ marginTop: space["2xl"] }}>
-                <CheckCircle size={32} color={colors.success} weight="regular" />
-                <AppText variant="display" style={{ marginTop: space.md }}>Your order is in.</AppText>
-                <AppText variant="bodySoft" style={{ marginTop: space.sm }}>
+              <View style={s.placedHero}>
+                <Animated.View style={{ transform: [{ scale: checkScale }] }}>
+                  <CheckCircle size={44} color={colors.success} weight="fill" />
+                </Animated.View>
+                <AppText variant="display" style={s.placedTitle}>Your order is in.</AppText>
+                <AppText variant="bodySoft" style={s.placedSub}>
                   We'll confirm the delivery fee and call you on {order.phone} before the rider leaves.
                 </AppText>
               </View>
@@ -60,6 +80,18 @@ export default function OrderDetail() {
                   <AppText variant="body">{formatLe(it.lineTotalMinor)}</AppText>
                 </View>
               ))}
+              {order.discountMinor > 0 ? (
+                <View style={s.sumRow}>
+                  <AppText variant="bodySoft" style={{ color: colors.accent }}>Savings</AppText>
+                  <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(order.discountMinor)}</AppText>
+                </View>
+              ) : null}
+              {order.loyaltyRedeemMinor > 0 ? (
+                <View style={s.sumRow}>
+                  <AppText variant="bodySoft" style={{ color: colors.accent }}>Points</AppText>
+                  <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(order.loyaltyRedeemMinor)}</AppText>
+                </View>
+              ) : null}
               <View style={s.sumRow}>
                 <AppText variant="bodySoft">Delivery</AppText>
                 <AppText variant="bodySoft">{order.deliveryFeeMinor == null ? "To be confirmed" : formatLe(order.deliveryFeeMinor)}</AppText>
@@ -97,12 +129,17 @@ export default function OrderDetail() {
           <Button title="Continue shopping" variant="secondary" onPress={() => router.replace("/(tabs)")} />
         </View>
       ) : null}
+
+      {justPlaced ? <Confetti originY={insets.top + 110} /> : null}
     </View>
   );
 }
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
+  placedHero: { alignItems: "center", marginTop: space["3xl"], marginBottom: space.md },
+  placedTitle: { marginTop: space.lg, textAlign: "center" },
+  placedSub: { marginTop: space.sm, textAlign: "center", maxWidth: 320 },
   metaRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: space["2xl"], paddingVertical: space.lg, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },
   sumRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.md, paddingVertical: space.sm },
   totalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: space.md, marginTop: space.sm, borderTopWidth: 1, borderTopColor: colors.line },
