@@ -12,6 +12,48 @@ Stack assumptions: Supabase (Postgres + pgvector), Next.js admin (`web/`) readin
 
 ---
 
+## 📍 Status & Roadmap — updated 2026-07-06
+
+**Phases 0–3 are LIVE; Phase 4 is scaffolded.** The recommender personalizes the mobile home end-to-end today; the learned-ranking layer is built and waiting on data.
+
+### Progress at a glance
+| Phase | What | Status | Key migrations / files |
+|---|---|---|---|
+| 0 Foundations | pgvector, `recs` schema, `recs.config`, catalog audit gate | ✅ live | `…090013`; `scripts/recs-audit-products.mjs` |
+| 1 Event pipeline | events + RLS + `fn_track_events`; mobile instrumentation (14 event types); anon→user merge; nightly profile rollup | ✅ live | `…090014`, `…090016`, `…090019`; `mobile/lib/track.ts` |
+| 2 Content engine | product embeddings (MiniLM) + HNSW + `fn_similar_products` → product-page "Similar scents"; taste vectors + "Picked for you"; cold-start quiz; personalized home feed | ✅ live | `…090020/25/26`; `jobs/embed-products.mjs`; `mobile/lib/feed.ts` |
+| 3 Collaborative filtering | item-item co-occurrence, `cf_candidates`, `fn_cf_picks`, kill-switch + guardrail, "Recommended for you" rail | ✅ built (data-gated) | `…151536` |
+| 4 Learning-to-rank | **scaffolding only**: feature layer, training-example generator, model registry, ranker kill-switch, LGBMRanker trainer skeleton | ✅ scaffolded (needs data) | `…160502`; `jobs/train-ranker/` |
+| 5 Eval & A/B + admin panel | offline NDCG/recall harness, stable A/B buckets, admin "Home algorithm" panel | ⬜ not started | — |
+| 6 Hardening | feed cache, privacy cascade, health view, runbook | ⬜ not started | — |
+
+### What the customer experiences today
+Signed-in home = **Picked for you** · **Recommended for you** (CF) · **Because you viewed X** · **Back in stock for you** · **Still thinking about it** · **New in [family]** · **Trending** — deduped, thin rows hidden, never blank. New users get a **3-tap quiz** + Trending. Product pages show **embedding-based Similar scents**. Automation: editing a product re-embeds within ~a minute (GitHub Action via DB trigger); nightly pg_cron refreshes profiles + taste vectors + CF.
+
+### ⚠️ Owner action items — DO NOW
+1. **Push pending recs migrations:** `supabase db push` → applies `…090025` (taste), `…090026` (feed modules), `…151536` (CF), `…160502` (ranker scaffold). (`…090013`–`…090020` already pushed.)
+2. **Seed taste vectors once** so existing users get "Picked for you" immediately (else wait for 02:00 UTC nightly): `select recs.fn_refresh_user_profiles();`
+3. **Reload the mobile app** to pick up the personalized-home code.
+4. **After any big catalog change:** re-run `node scripts/recs-audit-products.mjs` (blocks family-less products from the recs).
+
+### What to do next — and WHEN
+
+**A. Activate the ranker (Phase 4 serving) — WHEN `recs.events` has ~10k+ rows with real `module_tap` volume.** Check `select count(*) from recs.events;`.
+   1. Train: `cd jobs/train-ranker && pip install -r requirements.txt && DATABASE_URL=… python train_ranker.py` — only activates a model that beats the popularity baseline on a time holdout.
+   2. Build the (~1) serving function: gather the candidate pool (existing module RPCs) → `fn_candidate_features` → score with the active model → ordered feed, with the fallback chain **model → rules feed → Trending**. Point `useHomeFeed` at it when `rank.enabled` is true.
+   *Until then `rank.enabled=false` ⇒ the app already serves the rules feed. No gap, no rush.*
+
+**B. Phase 5 (eval + A/B + admin "Home algorithm" panel) — WHEN ~2–4 weeks from a real launch** (needs live traffic to mean anything). Offline recall@10/NDCG@10 → `recs.eval_runs` (alert on >10% regression); stable hashed A/B buckets (ranker vs rules, ≥2 weeks); web admin panel over `recs.config` (module toggles, weights, kill-switches, per-module tap/ATB table, "preview feed as user X").
+
+**C. Phase 6 (hardening) — WHEN pre-launch.** Per-user feed cache (session TTL, payload <30KB); privacy: user-deletion cascade to `recs.events` + profile (no FK today — add here); `recs.health` view + nightly job alerts; runbook (retrain, roll back a model, kill-switch to rules, reseed embeddings).
+
+**D. Data quality (ongoing):** every active product needs `scent_family` + notes; keep the audit gate green.
+
+### Config kill-switches (all in `recs.config` — tune with no deploy)
+`feed.length` · `modules.enabled` · `blend.weights` · `recency.half_life_days` · `feedback.weights` · `cf.enabled` / `cf.min_events_for_cf` / `cf.model_freshness_hours` · `rank.enabled` / `rank.candidate_pool`.
+
+---
+
 ## Phase 0 — Foundations (½ day) — ✅ DONE (Session 1)
 
 **Goal:** the ground the whole system stands on.
