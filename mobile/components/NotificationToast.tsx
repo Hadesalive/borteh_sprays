@@ -88,8 +88,10 @@ export function NotificationToast() {
     if (!item) return;
     markRead.mutate([item.id]);
     const isOrder = item.referenceType === "order" && item.referenceId;
+    const isNotice = item.type === "promo" || item.type === "system";
     hide();
     if (isOrder) router.push({ pathname: "/order/[id]", params: { id: item.referenceId! } });
+    else if (isNotice) router.push("/notices");
     else router.push("/notifications");
   };
 

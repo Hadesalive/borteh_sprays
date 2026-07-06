@@ -109,8 +109,10 @@ export async function disablePush() {
 function routeFromData(data: any) {
   if (data?.reference_type === "order" && data?.reference_id) {
     router.push({ pathname: "/order/[id]", params: { id: String(data.reference_id) } });
+  } else if (data?.type === "promo" || data?.type === "system") {
+    router.push("/notices"); // public notices read in the bulletin
   } else {
-    router.push("/notifications"); // restock/promo land in the inbox, which resolves further
+    router.push("/notifications"); // restocks land in the inbox, which resolves further
   }
 }
 

@@ -63,6 +63,28 @@ export function useUnreadCount(): number {
   return (data ?? []).filter((n) => !n.readAt).length;
 }
 
+/** Public notices only (system + promo) — the maison's bulletin, own archive. */
+export function useNotices() {
+  const session = useSession();
+  const uid = session?.user.id;
+  return useQuery<AppNotification[]>({
+    queryKey: ["notices", uid],
+    enabled: !!uid,
+    staleTime: 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("notification")
+        .select("id, type, title, body, reference_type, reference_id, read_at, created_at")
+        .eq("user_id", uid!)
+        .in("type", ["system", "promo"])
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return (data ?? []).map(normalizeNotification);
+    },
+  });
+}
+
 export function useMarkRead() {
   const qc = useQueryClient();
   const session = useSession();
@@ -73,16 +95,20 @@ export function useMarkRead() {
       if (error) throw error;
     },
     onMutate: async (ids) => {
-      // optimistic — the row greys out immediately
+      // optimistic — the row greys out immediately, in both inbox + notices caches
+      const patch = (list?: AppNotification[]) =>
+        (list ?? []).map((n) => (ids.includes(n.id) ? { ...n, readAt: n.readAt ?? new Date().toISOString() } : n));
       await qc.cancelQueries({ queryKey: ["notifications", uid] });
+      await qc.cancelQueries({ queryKey: ["notices", uid] });
       const prev = qc.getQueryData<AppNotification[]>(["notifications", uid]);
-      qc.setQueryData<AppNotification[]>(["notifications", uid], (list) =>
-        (list ?? []).map((n) => (ids.includes(n.id) ? { ...n, readAt: n.readAt ?? new Date().toISOString() } : n)),
-      );
-      return { prev };
+      const prevNotices = qc.getQueryData<AppNotification[]>(["notices", uid]);
+      qc.setQueryData<AppNotification[]>(["notifications", uid], patch);
+      qc.setQueryData<AppNotification[]>(["notices", uid], patch);
+      return { prev, prevNotices };
     },
     onError: (_e, _ids, ctx) => {
       if (ctx?.prev) qc.setQueryData(["notifications", uid], ctx.prev);
+      if (ctx?.prevNotices) qc.setQueryData(["notices", uid], ctx.prevNotices);
     },
   });
 }

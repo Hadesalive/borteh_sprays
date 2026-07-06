@@ -1,7 +1,7 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Heart, PencilSimple, Receipt, User } from "phosphor-react-native";
+import { Heart, MegaphoneSimple, PencilSimple, Receipt, User } from "phosphor-react-native";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
@@ -48,6 +48,7 @@ export default function Profile() {
             <View>
               <ListRow icon={<Receipt size={20} color={colors.ink} weight="regular" />} title="Orders" value={orderCount ? String(orderCount) : undefined} onPress={() => router.push("/orders")} />
               <ListRow icon={<Heart size={20} color={colors.ink} weight="regular" />} title="Saved fragrances" value={saved.length ? String(saved.length) : undefined} onPress={() => router.push("/wishlist")} />
+              <ListRow icon={<MegaphoneSimple size={20} color={colors.ink} weight="regular" />} title="Notices" onPress={() => router.push("/notices")} />
               <ListRow icon={<PencilSimple size={20} color={colors.ink} weight="regular" />} title="Edit profile" onPress={() => router.push("/edit-profile")} />
             </View>
 

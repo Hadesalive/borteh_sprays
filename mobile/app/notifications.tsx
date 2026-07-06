@@ -56,6 +56,8 @@ export default function Notifications() {
       // the reference is a variant — resolve its product from the catalog cache
       const product = (products ?? []).find((p) => p.variants.some((v) => v.id === n.referenceId));
       if (product) router.push({ pathname: "/product/[slug]", params: { slug: product.slug } });
+    } else if (n.type === "promo" || n.type === "system") {
+      router.push("/notices"); // the bulletin — full reading view
     }
   };
 

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
+import { createAuthServerClient } from "@/lib/supabase/auth-server";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 export type CouponResult = { ok: true; code: string } | { ok: false; error: string };
@@ -77,19 +78,33 @@ export async function setTier(userId: string, tierId: string | null): Promise<Ac
   return { ok: true };
 }
 
-/** Issue a personal coupon code (percent off) for the customer to use. */
+/** Issue a personal coupon code (percent off) — and tell the customer about it.
+ *  The notification rides fn_notify_user (staff-gated in the DB, RLS-scoped to
+ *  this one customer): inbox instantly, banner if they're in the app, push if on. */
 export async function issueCoupon(userId: string, customerName: string, percent: number): Promise<CouponResult> {
   if (!Number.isFinite(percent) || percent <= 0 || percent > 100) return { ok: false, error: "Enter a discount between 1 and 100%." };
+  const pct = Math.round(percent);
   const code = `BS-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
   const { error } = await createAdminClient().from("promo_code").insert({
     code,
     discount_type: "percent",
-    discount_value: Math.round(percent),
+    discount_value: pct,
     description: `Issued to ${customerName}`,
     per_user_limit: 1,
     is_active: true,
   });
   if (error) return { ok: false, error: error.message };
+
+  // Best-effort: the coupon exists either way; the notice runs on the STAFF session
+  // so the DB's is_staff() gate does the authorizing.
+  const auth = await createAuthServerClient();
+  await auth.rpc("fn_notify_user", {
+    p_user_id: userId,
+    p_title: `${pct}% off your next order`,
+    p_body: `Use code ${code} at checkout.`,
+    p_kind: "promo",
+  });
+
   revalidate(userId);
   return { ok: true, code };
 }

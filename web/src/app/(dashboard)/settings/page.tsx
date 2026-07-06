@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Icon } from "@phosphor-icons/react";
-import { ArrowRight, BellRinging, Gift, MapPinArea, Storefront, UsersThree } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, BellRinging, Gift, MapPinArea, MegaphoneSimple, Storefront, UsersThree } from "@phosphor-icons/react/dist/ssr";
 
 import { createServerClient } from "@/lib/supabase/server";
 import { formatInt } from "@/lib/format";
@@ -30,6 +30,7 @@ export default async function SettingsPage() {
     { title: "Store profile", description: storeName, href: "/settings/store", icon: Storefront },
     { title: "Staff & roles", description: `${formatInt(staffCount)} staff ${staffCount === 1 ? "account" : "accounts"}`, href: "/settings/staff", icon: UsersThree },
     { title: "Notifications", description: "In-app alerts for orders, low stock, restock demand", href: "/settings/notifications", icon: BellRinging },
+    { title: "Public notices", description: "Broadcast a notice or promotion to every customer", href: "/settings/notices", icon: MegaphoneSimple },
   ];
 
   return (
