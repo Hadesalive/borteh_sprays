@@ -1,62 +1,33 @@
 import Link from "next/link";
-import { DownloadSimple, Plus } from "@phosphor-icons/react/dist/ssr";
+import { Plus } from "@phosphor-icons/react/dist/ssr";
 
 import { createServerClient } from "@/lib/supabase/server";
-import { PageHeader } from "@/components/admin/page-header";
-import { type PillTone } from "@/components/admin/status-pill";
-import { OrdersTable, type OrderRow } from "@/components/admin/orders-table";
+import { humanize, statusTone } from "@/components/admin/chip";
+import { formatInt, formatLe } from "@/lib/format";
+import { ExportButton } from "@/components/admin/export-button";
+import { OrdersTable, type OrderRow, type SummaryStat } from "@/components/admin/orders-table";
 
 export const dynamic = "force-dynamic";
 
-const STATUS_TONE: Record<string, PillTone> = {
-  pending: "warning",
-  cod_pending: "warning",
-  confirmed: "info",
-  preparing: "info",
-  packing: "info",
-  ready: "info",
-  dispatched: "info",
-  out_for_delivery: "info",
-  delivered: "success",
-  completed: "success",
-  cancelled: "danger",
-  returned: "danger",
-};
+const PENDING = new Set(["pending", "cod_pending"]);
+const CONFIRMED = new Set(["confirmed", "preparing", "packing", "ready"]);
+const OFD = new Set(["dispatched", "out_for_delivery"]);
+const DELIVERED = new Set(["delivered", "completed"]);
+const CANCELLED = new Set(["cancelled", "returned"]);
 
-function humanize(s: string): string {
-  return s
-    .split("_")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
-
-function statusTone(s: string): PillTone {
-  return STATUS_TONE[s] ?? "neutral";
-}
-
-function paymentInfo(method: string): { label: string; tone: PillTone } {
+function paymentLabel(method: string): string {
   switch (method) {
-    case "cash_on_delivery":
-      return { label: "COD", tone: "warning" };
-    case "cash":
-      return { label: "Cash", tone: "neutral" };
-    case "monime":
-      return { label: "Monime", tone: "info" };
-    case "card":
-      return { label: "Card", tone: "info" };
-    default:
-      return { label: humanize(method), tone: "neutral" };
+    case "cash_on_delivery": return "COD";
+    case "cash": return "Cash";
+    case "monime": return "Monime";
+    case "card": return "Card";
+    default: return method ? humanize(method) : "—";
   }
 }
 
 function fmtPlaced(iso: string | null): string {
   if (!iso) return "";
-  return new Date(iso).toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
 export default async function OrdersPage() {
@@ -64,21 +35,16 @@ export default async function OrdersPage() {
 
   const { data, error } = await db
     .from("order")
-    .select(
-      "id, order_number, status, fulfillment_type, payment_method, total_minor, created_at, placed_at, user_id"
-    )
+    .select("id, order_number, status, fulfillment_type, payment_method, total_minor, created_at, placed_at, user_id")
     .order("created_at", { ascending: false });
 
   const records = (data ?? []) as Record<string, unknown>[];
 
-  // Fetch customers separately and attach (avoid relying on an embed).
+  // Attach customer names/phones separately (avoid relying on an embed).
   const userIds = [...new Set(records.map((r) => r.user_id as string).filter(Boolean))];
   const customers = new Map<string, { name: string; phone: string }>();
   if (userIds.length > 0) {
-    const { data: users } = await db
-      .from("app_user")
-      .select("id, display_name, phone")
-      .in("id", userIds);
+    const { data: users } = await db.from("app_user").select("id, display_name, phone").in("id", userIds);
     for (const u of (users ?? []) as Record<string, unknown>[]) {
       customers.set(u.id as string, {
         name: (u.display_name as string) ?? "",
@@ -89,16 +55,15 @@ export default async function OrdersPage() {
 
   const orders: OrderRow[] = records.map((r) => {
     const status = (r.status as string) ?? "pending";
-    const channel = humanize((r.fulfillment_type as string) ?? "");
     const cust = customers.get(r.user_id as string);
     return {
       id: r.id as string,
       number: (r.order_number as string) ?? "",
       placed: fmtPlaced((r.placed_at as string) ?? (r.created_at as string)),
-      customer: cust?.name || "Unknown customer",
+      customer: cust?.name || "Walk-in",
       phone: cust?.phone || "—",
-      channel,
-      payment: paymentInfo((r.payment_method as string) ?? ""),
+      channel: humanize((r.fulfillment_type as string) ?? ""),
+      payment: paymentLabel((r.payment_method as string) ?? ""),
       status,
       statusLabel: humanize(status),
       statusTone: statusTone(status),
@@ -106,33 +71,48 @@ export default async function OrdersPage() {
     };
   });
 
-  return (
-    <>
-      <PageHeader
-        title="Orders"
-        description={
-          error
-            ? "Couldn't load orders — check the Supabase keys in web/.env.local."
-            : "Every online and counter order, newest first."
-        }
-      >
-        <Link
-          href="/orders/export"
-          className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
-        >
-          <DownloadSimple weight="duotone" className="size-4" />
-          Export
-        </Link>
-        <Link
-          href="/orders/new"
-          className="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
-        >
-          <Plus weight="duotone" className="size-4" />
-          New order
-        </Link>
-      </PageHeader>
+  // Summary strip — live counts + COD still to collect.
+  const day = 86_400_000;
+  const start7 = new Date(Date.now() - 6 * day); start7.setHours(0, 0, 0, 0);
+  const dateOf = (r: Record<string, unknown>) => new Date((r.placed_at as string) ?? (r.created_at as string));
+  const isCod = (r: Record<string, unknown>) => String((r.payment_method as string) ?? "").includes("cash");
+  const count = (set: Set<string>) => records.filter((r) => set.has((r.status as string) ?? "")).length;
+  const codToCollect = records
+    .filter((r) => isCod(r) && !DELIVERED.has((r.status as string) ?? "") && !CANCELLED.has((r.status as string) ?? ""))
+    .reduce((s, r) => s + ((r.total_minor as number) ?? 0), 0);
 
-      <OrdersTable orders={orders} />
-    </>
+  const summary: SummaryStat[] = [
+    { n: formatInt(count(PENDING)), label: "pending", tone: "text-warning" },
+    { n: formatInt(count(CONFIRMED)), label: "confirmed", tone: "text-info" },
+    { n: formatInt(count(OFD)), label: "out for delivery", tone: "text-info" },
+    { n: formatInt(records.filter((r) => DELIVERED.has((r.status as string) ?? "") && dateOf(r) >= start7).length), label: "delivered · 7d", tone: "text-success" },
+    { n: formatInt(count(CANCELLED)), label: "cancelled", tone: "text-destructive" },
+    { n: formatLe(codToCollect), label: "COD to collect", tone: "text-foreground" },
+  ];
+
+  return (
+    <div className="px-5 pb-6 pt-2">
+      <div className="flex items-center justify-between py-2 pb-4">
+        <div>
+          <h1 className="text-xl font-[650] tracking-[-0.2px]">Orders</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {error ? "Couldn't load orders — check the Supabase keys in web/.env.local." : "Every online and counter order, newest first."}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <ExportButton
+            filename="borteh-orders.csv"
+            headers={["Order", "Placed", "Customer", "Phone", "Channel", "Payment", "Status", "Total (Le)"]}
+            rows={orders.map((o) => [`#${o.number}`, o.placed, o.customer, o.phone, o.channel, o.payment, o.statusLabel, formatLe(o.minor, 2)])}
+          />
+          <Link href="/orders/new" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[13px] font-medium text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_-1px_0_rgba(0,0,0,0.25),0_1px_0_rgba(26,26,26,0.07)] transition-colors hover:bg-[#1a1917]">
+            <Plus weight="duotone" className="size-4" />
+            New order
+          </Link>
+        </div>
+      </div>
+
+      <OrdersTable orders={orders} summary={summary} />
+    </div>
   );
 }

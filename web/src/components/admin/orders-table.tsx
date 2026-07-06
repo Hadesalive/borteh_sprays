@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 import { cn } from "@/lib/utils";
 import { formatLe } from "@/lib/format";
-import { StatusPill, type PillTone } from "@/components/admin/status-pill";
+import { Chip, type Tone } from "@/components/admin/chip";
 
 export type OrderRow = {
   id: string;
@@ -15,14 +15,19 @@ export type OrderRow = {
   customer: string;
   phone: string;
   channel: string;
-  payment: { label: string; tone: PillTone };
+  payment: string;
   status: string;
   statusLabel: string;
-  statusTone: PillTone;
+  statusTone: Tone;
   minor: number;
 };
 
-export function OrdersTable({ orders }: { orders: OrderRow[] }) {
+export type SummaryStat = { n: string; label: string; tone: string };
+
+const th = "px-3 py-1.5 text-left text-xs font-medium text-muted-foreground";
+
+export function OrdersTable({ orders, summary }: { orders: OrderRow[]; summary: SummaryStat[] }) {
+  const router = useRouter();
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
 
@@ -36,100 +41,89 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
     const q = query.trim().toLowerCase();
     return orders
       .filter((o) => filter === "all" || o.status === filter)
-      .filter(
-        (o) =>
-          !q ||
-          o.number.toLowerCase().includes(q) ||
-          o.customer.toLowerCase().includes(q) ||
-          o.phone.includes(q)
-      );
+      .filter((o) => !q || o.number.toLowerCase().includes(q) || o.customer.toLowerCase().includes(q) || o.phone.includes(q));
   }, [orders, filter, query]);
 
   return (
-    <>
-      {/* Toolbar */}
-      <div className="flex flex-col gap-3 px-6 py-4 lg:px-10">
-        <div className="relative max-w-xs">
+    <div className="overflow-hidden rounded-[12px] border border-border bg-card shadow-[0_1px_0_rgba(26,26,26,0.07)]">
+      {/* Summary strip */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 border-b border-border px-4 py-2.5">
+        {summary.map((s) => (
+          <span key={s.label} className="text-[13px] text-muted-foreground">
+            <span className={cn("nums font-[650]", s.tone)}>{s.n}</span> {s.label}
+          </span>
+        ))}
+      </div>
+
+      {/* Search + filters */}
+      <div className="flex flex-wrap items-center gap-2 px-4 py-3">
+        <div className="relative">
           <MagnifyingGlass className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search order, name, phone…"
-            className="h-9 w-full rounded-md border border-border bg-background pl-8 pr-3 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+            placeholder="Search order, name, phone"
+            className="h-8 w-60 rounded-lg border border-border bg-card pl-8 pr-3 text-[13px] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:outline-none"
           />
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          {filters.map((f) => (
-            <button
-              key={f.key}
-              type="button"
-              onClick={() => setFilter(f.key)}
-              className={cn(
-                "h-7 rounded-full border px-3 text-xs font-medium transition-colors",
-                filter === f.key
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+        {filters.map((f) => (
+          <button
+            key={f.key}
+            type="button"
+            onClick={() => setFilter(f.key)}
+            className={cn(
+              "h-7 rounded-lg px-2.5 text-xs font-medium transition-colors",
+              filter === f.key
+                ? "bg-primary text-primary-foreground"
+                : "border border-border bg-card text-muted-foreground hover:bg-muted"
+            )}
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full border-t border-border text-sm">
+        <table className="w-full border-collapse text-[13px]">
           <thead>
-            <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="px-6 py-2.5 font-medium lg:px-10">Order</th>
-              <th className="px-3 py-2.5 font-medium">Customer</th>
-              <th className="px-3 py-2.5 font-medium">Channel</th>
-              <th className="px-3 py-2.5 font-medium">Payment</th>
-              <th className="px-3 py-2.5 font-medium">Status</th>
-              <th className="px-3 py-2.5 text-right font-medium">Total</th>
-              <th className="px-6 py-2.5 lg:px-10" />
+            <tr className="border-b border-border">
+              <th className={cn(th, "pl-4")}>Order</th>
+              <th className={th}>Customer</th>
+              <th className={th}>Channel</th>
+              <th className={th}>Payment</th>
+              <th className={th}>Status</th>
+              <th className={cn(th, "pr-4 text-right")}>Total</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border border-t border-border">
+          <tbody>
             {rows.map((o) => (
-              <tr key={o.id} className="group transition-colors hover:bg-muted/40">
-                <td className="px-6 py-3.5 lg:px-10">
-                  <Link href={`/orders/${o.id}`} className="block">
-                    <span className="nums font-medium">#{o.number}</span>
-                    <span className="block text-xs text-muted-foreground">{o.placed}</span>
-                  </Link>
+              <tr
+                key={o.id}
+                onClick={() => router.push(`/orders/${o.id}`)}
+                className="cursor-pointer border-t border-accent transition-colors hover:bg-muted"
+              >
+                <td className="nums py-1.5 pl-4 pr-3 font-medium">
+                  #{o.number} <span className="nums font-normal text-[12px] text-[#B5B2AC]">{o.placed}</span>
                 </td>
-                <td className="px-3 py-3.5">
-                  <span className="block font-medium">{o.customer}</span>
-                  <span className="nums block text-xs text-muted-foreground">{o.phone}</span>
+                <td className="px-3 py-1.5">
+                  {o.customer} <span className="nums text-[12px] text-[#B5B2AC]">{o.phone}</span>
                 </td>
-                <td className="px-3 py-3.5 text-muted-foreground">{o.channel}</td>
-                <td className="px-3 py-3.5">
-                  <StatusPill tone={o.payment.tone}>{o.payment.label}</StatusPill>
-                </td>
-                <td className="px-3 py-3.5">
-                  <StatusPill tone={o.statusTone} dot>
-                    {o.statusLabel}
-                  </StatusPill>
-                </td>
-                <td className="nums px-3 py-3.5 text-right font-semibold">{formatLe(o.minor, 2)}</td>
-                <td className="px-6 py-3.5 text-right lg:px-10">
-                  <Link href={`/orders/${o.id}`} aria-label={`Open order ${o.number}`}>
-                    <ArrowRight className="inline-block size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </td>
+                <td className="px-3 py-1.5 text-muted-foreground">{o.channel}</td>
+                <td className="px-3 py-1.5 text-muted-foreground">{o.payment}</td>
+                <td className="px-3 py-1.5"><Chip tone={o.statusTone}>{o.statusLabel}</Chip></td>
+                <td className="nums py-1.5 pl-3 pr-4 text-right font-medium">{formatLe(o.minor, 2)}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
         {rows.length === 0 ? (
-          <div className="px-6 py-16 text-center text-sm text-muted-foreground lg:px-10">
+          <div className="px-4 py-16 text-center text-[13px] text-muted-foreground">
             {orders.length === 0 ? "No orders yet." : "No orders match this view."}
           </div>
         ) : null}
       </div>
-    </>
+    </div>
   );
 }

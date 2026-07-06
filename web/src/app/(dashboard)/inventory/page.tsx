@@ -1,11 +1,8 @@
-import { Package } from "@phosphor-icons/react/dist/ssr";
-
-import { cn } from "@/lib/utils";
 import { createServerClient } from "@/lib/supabase/server";
-import { formatLe, formatInt } from "@/lib/format";
-import { PageHeader } from "@/components/admin/page-header";
-import { StatusPill, type PillTone } from "@/components/admin/status-pill";
-import { InventoryReceive } from "@/components/admin/inventory-receive";
+import { formatInt, formatLe } from "@/lib/format";
+import { type Tone } from "@/components/admin/chip";
+import { InventoryTable, type InvRow } from "@/components/admin/inventory-table";
+import { type SummaryStat } from "@/components/admin/orders-table";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +14,7 @@ type VariantRow = {
   product: { name: string | null; brand: { name: string | null } | null } | null;
 } | null;
 
-type InventoryRow = {
+type InventoryRecord = {
   id: string;
   variant_id: string;
   qty_on_hand: number | null;
@@ -27,7 +24,7 @@ type InventoryRow = {
   product_variant: VariantRow;
 };
 
-function stockStatus(available: number, reorderPoint: number): { label: string; tone: PillTone } {
+function stockStatus(available: number, reorderPoint: number): { label: string; tone: Tone } {
   if (available <= 0) return { label: "Out", tone: "danger" };
   if (available <= reorderPoint) return { label: "Low", tone: "warning" };
   return { label: "In stock", tone: "success" };
@@ -35,119 +32,54 @@ function stockStatus(available: number, reorderPoint: number): { label: string; 
 
 export default async function InventoryPage() {
   const db = createServerClient();
-  const { data, error } = await db
-    .from("inventory_item")
-    .select(
-      "id, variant_id, qty_on_hand, qty_reserved, qty_available, reorder_point, product_variant(sku, size_ml, concentration, price_minor, product(name, brand(name)))"
-    )
-    .order("qty_available", { ascending: true });
+  const [invRes, restockRes] = await Promise.all([
+    db
+      .from("inventory_item")
+      .select("id, variant_id, qty_on_hand, qty_reserved, qty_available, reorder_point, product_variant(sku, size_ml, concentration, price_minor, product(name, brand(name)))")
+      .order("qty_available", { ascending: true }),
+    db.from("restock_subscription").select("id", { count: "exact", head: true }).eq("status", "active"),
+  ]);
 
-  const rows = (data ?? []) as unknown as InventoryRow[];
+  const records = (invRes.data ?? []) as unknown as InventoryRecord[];
+  const restockers = restockRes.count ?? 0;
 
-  const lowCount = rows.filter((r) => {
-    const available = r.qty_available ?? 0;
-    return available > 0 && available <= (r.reorder_point ?? 0);
-  }).length;
-  const outCount = rows.filter((r) => (r.qty_available ?? 0) <= 0).length;
+  const rows: InvRow[] = records.map((it) => {
+    const v = it.product_variant;
+    const available = it.qty_available ?? 0;
+    const status = stockStatus(available, it.reorder_point ?? 0);
+    const meta = [v?.product?.brand?.name, v?.size_ml != null ? `${v.size_ml} ml` : null, v?.concentration]
+      .filter(Boolean)
+      .join(" · ");
+    return {
+      id: it.id,
+      variantId: it.variant_id,
+      name: v?.product?.name ?? "Unknown product",
+      meta,
+      sku: v?.sku ?? "—",
+      onHand: it.qty_on_hand ?? 0,
+      available,
+      reorderPoint: it.reorder_point ?? 0,
+      priceMinor: v?.price_minor ?? null,
+      statusLabel: status.label,
+      statusTone: status.tone,
+    };
+  });
 
-  return (
-    <>
-      <PageHeader
-        title="Inventory"
-        description={
-          error
-            ? "Couldn't load inventory — check the Supabase keys in web/.env.local."
-            : `${rows.length} variants · ${lowCount} low · ${outCount} out`
-        }
-      />
+  const unitsOnHand = rows.reduce((s, r) => s + r.onHand, 0);
+  const stockValue = rows.reduce((s, r) => s + r.onHand * (r.priceMinor ?? 0), 0);
+  const low = rows.filter((r) => r.available > 0 && r.available <= r.reorderPoint).length;
+  const out = rows.filter((r) => r.available <= 0).length;
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="px-6 py-2.5 font-medium lg:px-10">Product</th>
-              <th className="px-3 py-2.5 font-medium">SKU</th>
-              <th className="px-3 py-2.5 text-right font-medium">On hand</th>
-              <th className="px-3 py-2.5 text-right font-medium">Reserved</th>
-              <th className="px-3 py-2.5 text-right font-medium">Available</th>
-              <th className="px-3 py-2.5 font-medium">Status</th>
-              <th className="px-3 py-2.5 text-right font-medium">Price</th>
-              <th className="px-6 py-2.5 text-right font-medium lg:px-10">Receive</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border border-t border-border">
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="px-6 py-16 text-center text-sm text-muted-foreground lg:px-10">
-                  {error ? "Inventory is unavailable right now." : "No inventory items yet."}
-                </td>
-              </tr>
-            ) : (
-              rows.map((it) => {
-                const variant = it.product_variant;
-                const product = variant?.product;
-                const name = product?.name ?? "Unknown product";
-                const brand = product?.brand?.name;
-                const sku = variant?.sku ?? "—";
-                const onHand = it.qty_on_hand ?? 0;
-                const reserved = it.qty_reserved ?? 0;
-                const available = it.qty_available ?? 0;
-                const reorderPoint = it.reorder_point ?? 0;
-                const status = stockStatus(available, reorderPoint);
+  const summary: SummaryStat[] = [
+    { n: formatInt(rows.length), label: "SKUs", tone: "text-foreground" },
+    { n: formatInt(unitsOnHand), label: "units on hand", tone: "text-foreground" },
+    { n: formatLe(stockValue), label: "stock value", tone: "text-foreground" },
+    { n: formatInt(low), label: "low", tone: "text-warning" },
+    { n: formatInt(out), label: "out", tone: "text-destructive" },
+    { n: formatInt(restockers), label: "restock subscribers", tone: "text-foreground" },
+  ];
 
-                const metaParts = [
-                  brand,
-                  variant?.size_ml != null ? `${variant.size_ml} ml` : null,
-                  variant?.concentration,
-                ].filter(Boolean);
+  const empty = invRes.error ? "Inventory is unavailable right now." : "No inventory items yet.";
 
-                return (
-                  <tr key={it.id} className="transition-colors hover:bg-muted/40">
-                    <td className="px-6 py-3.5 lg:px-10">
-                      <div className="flex items-center gap-3">
-                        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground ring-1 ring-border">
-                          <Package weight="duotone" className="size-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="truncate font-medium">{name}</div>
-                          <div className="truncate text-xs text-muted-foreground">
-                            {metaParts.join(" · ")}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="nums px-3 py-3.5 text-xs text-muted-foreground">{sku}</td>
-                    <td className="nums px-3 py-3.5 text-right">{formatInt(onHand)}</td>
-                    <td className="nums px-3 py-3.5 text-right text-muted-foreground">
-                      {formatInt(reserved)}
-                    </td>
-                    <td
-                      className={cn(
-                        "nums px-3 py-3.5 text-right font-semibold",
-                        available <= 0 && "text-destructive",
-                        available > 0 && available <= reorderPoint && "text-warning-soft-foreground"
-                      )}
-                    >
-                      {formatInt(available)}
-                    </td>
-                    <td className="px-3 py-3.5">
-                      <StatusPill tone={status.tone} dot>
-                        {status.label}
-                      </StatusPill>
-                    </td>
-                    <td className="nums px-3 py-3.5 text-right font-medium">
-                      {variant?.price_minor != null ? formatLe(variant.price_minor, 2) : "—"}
-                    </td>
-                    <td className="px-6 py-3.5 text-right lg:px-10">
-                      <InventoryReceive variantId={it.variant_id} />
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
+  return <InventoryTable rows={rows} summary={summary} empty={empty} />;
 }

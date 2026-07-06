@@ -1,81 +1,46 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  DownloadSimple,
-  Minus,
-  Plus,
-  Sparkle,
-  TrendDown,
-  TrendUp,
-} from "@phosphor-icons/react/dist/ssr";
+import { DownloadSimple, Plus } from "@phosphor-icons/react/dist/ssr";
 
 import { cn } from "@/lib/utils";
-import { delta, formatInt, formatLe, formatPct } from "@/lib/format";
+import { formatInt, formatLe, formatPct } from "@/lib/format";
 import { createServerClient } from "@/lib/supabase/server";
+import { Chip, humanize, statusTone } from "@/components/admin/chip";
+import { RevenueChart } from "@/components/admin/revenue-chart";
 
 export const dynamic = "force-dynamic";
 
 const CANCELLED = new Set(["cancelled", "returned"]);
-const DISPATCHABLE = new Set(["confirmed", "preparing", "ready"]);
+const CLOSED = new Set(["delivered", "completed", "cancelled", "returned"]);
+const DELIVERED = new Set(["delivered", "completed"]);
 
-function greeting(hour: number) {
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  return "Good evening";
+function paymentLabel(method: string | null): string {
+  switch (method) {
+    case "cash_on_delivery": return "COD";
+    case "cash": return "Cash";
+    case "monime": return "Monime";
+    case "card": return "Card";
+    default: return method ? humanize(method) : "—";
+  }
 }
 
-function DeltaPill({ ratio }: { ratio: number }) {
-  const d = delta(ratio);
-  const Icon = d.direction === "up" ? TrendUp : d.direction === "down" ? TrendDown : Minus;
+function Delta({ ratio }: { ratio: number }) {
+  if (!isFinite(ratio) || ratio === 0) {
+    return <span className="nums text-xs font-medium text-muted-foreground">—</span>;
+  }
+  const up = ratio > 0;
   return (
-    <span className={cn("nums inline-flex items-center gap-1 text-sm font-medium", d.direction === "up" && "text-success-soft-foreground", d.direction === "down" && "text-destructive", d.direction === "flat" && "text-muted-foreground")}>
-      <Icon weight="duotone" className="size-4" />
-      {d.label}
+    <span className={cn("nums text-xs font-medium", up ? "text-success" : "text-destructive")}>
+      {up ? "▲" : "▼"} {formatPct(Math.abs(ratio), 1)}
     </span>
   );
 }
 
-function Sparkline({ points, className }: { points: number[]; className?: string }) {
-  const W = 200, H = 56, pad = 4;
-  const max = Math.max(...points, 0);
-  const min = Math.min(...points, 0);
-  const span = max - min || 1;
-  const stepX = (W - pad * 2) / Math.max(points.length - 1, 1);
-  const xy = points.map((v, i) => ({ x: pad + i * stepX, y: pad + (H - pad * 2) - ((v - min) / span) * (H - pad * 2) }));
-  let line = `M ${xy[0].x.toFixed(1)} ${xy[0].y.toFixed(1)}`;
-  for (let i = 1; i < xy.length; i++) {
-    const xMid = (xy[i - 1].x + xy[i].x) / 2;
-    const yMid = (xy[i - 1].y + xy[i].y) / 2;
-    line += ` Q ${xy[i - 1].x.toFixed(1)} ${xy[i - 1].y.toFixed(1)} ${xMid.toFixed(1)} ${yMid.toFixed(1)}`;
-  }
-  const last = xy[xy.length - 1];
-  line += ` L ${last.x.toFixed(1)} ${last.y.toFixed(1)}`;
-  const area = `${line} L ${last.x.toFixed(1)} ${H - pad} L ${xy[0].x.toFixed(1)} ${H - pad} Z`;
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden className={cn("text-primary", className)}>
-      <defs>
-        <linearGradient id="hero-spark" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.16" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill="url(#hero-spark)" />
-      <path d={line} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-      <circle cx={last.x} cy={last.y} r={3} fill="currentColor" />
-    </svg>
-  );
-}
-
-const toneText: Record<string, string> = {
-  warning: "text-warning-soft-foreground",
-  info: "text-info-soft-foreground",
-  danger: "text-destructive",
-  muted: "text-muted-foreground",
-};
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{children}</h2>;
-}
+// Card chrome — 12px radius, hairline border, whisper-thin drop shadow (design v5).
+const card = "rounded-[12px] border border-border bg-card shadow-[0_1px_0_rgba(26,26,26,0.07)]";
+const cardHead = "flex items-baseline justify-between";
+const cardTitle = "text-[13px] font-semibold";
+const cardLink = "text-xs font-medium text-brand hover:underline";
+const rowLine = "flex items-center gap-2 h-9 border-t border-accent text-[13px] first:border-t-0";
 
 export default async function OverviewPage() {
   const db = createServerClient();
@@ -83,205 +48,281 @@ export default async function OverviewPage() {
   const day = 86_400_000;
   const start7 = new Date(now.getTime() - 6 * day); start7.setHours(0, 0, 0, 0);
   const startPrev = new Date(now.getTime() - 13 * day); startPrev.setHours(0, 0, 0, 0);
+  const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
 
   const [ordersRes, itemsRes, invRes, restockRes] = await Promise.all([
-    db.from("order").select("total_minor, status, payment_method, fulfillment_type, placed_at, created_at"),
-    db.from("order_item").select("product_name_snapshot, variant_label_snapshot, qty, line_total_minor"),
-    db.from("inventory_item").select("qty_available, reorder_point"),
-    db.from("restock_subscription").select("id", { count: "exact", head: true }),
+    db.from("order").select("id, order_number, total_minor, status, payment_method, fulfillment_type, placed_at, created_at, user_id").order("created_at", { ascending: false }),
+    db.from("order_item").select("product_name_snapshot, variant_label_snapshot, qty, line_total_minor, created_at"),
+    db.from("inventory_item").select("qty_available, reorder_point, variant_id, product_variant(size_ml, product(name))"),
+    db.from("restock_subscription").select("variant_id").eq("status", "active"),
   ]);
 
-  const orders = (ordersRes.data ?? []) as Array<{ total_minor: number; status: string; payment_method: string | null; fulfillment_type: string | null; placed_at: string | null; created_at: string }>;
-  const items = (itemsRes.data ?? []) as Array<{ product_name_snapshot: string; variant_label_snapshot: string | null; qty: number; line_total_minor: number }>;
-  const inv = (invRes.data ?? []) as Array<{ qty_available: number; reorder_point: number }>;
+  type Order = { id: string; order_number: string | null; total_minor: number; status: string; payment_method: string | null; fulfillment_type: string | null; placed_at: string | null; created_at: string; user_id: string | null };
+  const orders = (ordersRes.data ?? []) as Order[];
+  const items = (itemsRes.data ?? []) as Array<{ product_name_snapshot: string; variant_label_snapshot: string | null; qty: number; line_total_minor: number; created_at: string }>;
+  const inv = (invRes.data ?? []) as unknown as Array<{ qty_available: number; reorder_point: number; variant_id: string; product_variant: { size_ml: number | null; product: { name: string } | null } | null }>;
+  const restock = (restockRes.data ?? []) as Array<{ variant_id: string }>;
+
+  // Customer names for the queue / recent-orders cards.
+  const userIds = [...new Set(orders.map((o) => o.user_id).filter(Boolean) as string[])];
+  const names = new Map<string, string>();
+  if (userIds.length) {
+    const { data: users } = await db.from("app_user").select("id, display_name").in("id", userIds);
+    for (const u of (users ?? []) as Array<{ id: string; display_name: string | null }>) {
+      names.set(u.id, u.display_name ?? "");
+    }
+  }
+  const nameOf = (o: Order) => (o.user_id && names.get(o.user_id)) || "Walk-in";
 
   const live = orders.filter((o) => !CANCELLED.has(o.status));
-  const dateOf = (o: { placed_at: string | null; created_at: string }) => new Date(o.placed_at ?? o.created_at);
+  const dateOf = (o: Order) => new Date(o.placed_at ?? o.created_at);
   const last7 = live.filter((o) => dateOf(o) >= start7);
   const prev7 = live.filter((o) => dateOf(o) >= startPrev && dateOf(o) < start7);
+  const today = live.filter((o) => dateOf(o) >= startToday);
 
   const rev7 = last7.reduce((s, o) => s + (o.total_minor ?? 0), 0);
   const revPrev = prev7.reduce((s, o) => s + (o.total_minor ?? 0), 0);
-  const ratio = revPrev ? (rev7 - revPrev) / revPrev : 0;
+  const revToday = today.reduce((s, o) => s + (o.total_minor ?? 0), 0);
   const orders7 = last7.length;
-  const deliveryShare = orders7 ? last7.filter((o) => o.fulfillment_type === "delivery").length / orders7 : 0;
+  const ordersPrev = prev7.length;
   const avg7 = orders7 ? Math.round(rev7 / orders7) : 0;
+  const avgPrev = ordersPrev ? Math.round(revPrev / ordersPrev) : 0;
+  const revRatio = revPrev ? (rev7 - revPrev) / revPrev : 0;
+  const ordersRatio = ordersPrev ? (orders7 - ordersPrev) / ordersPrev : 0;
+  const avgRatio = avgPrev ? (avg7 - avgPrev) / avgPrev : 0;
 
   const revenue7d: number[] = [];
+  const dayLabels: string[] = [];
+  const wd = new Intl.DateTimeFormat("en-US", { weekday: "short" });
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now.getTime() - i * day);
     const key = d.toDateString();
     revenue7d.push(last7.filter((o) => dateOf(o).toDateString() === key).reduce((s, o) => s + (o.total_minor ?? 0), 0));
+    dayLabels.push(wd.format(d));
   }
 
-  const isCod = (o: { payment_method: string | null }) => String(o.payment_method ?? "").includes("cash");
-  const codPending = live.filter((o) => isCod(o) && o.status !== "delivered").length;
-  const readyDispatch = live.filter((o) => o.fulfillment_type === "delivery" && DISPATCHABLE.has(o.status)).length;
-  const lowStock = inv.filter((r) => (r.qty_available ?? 0) <= (r.reorder_point ?? 0)).length;
-  const restockers = restockRes.count ?? 0;
-
-  const attention = [
-    { count: codPending, tone: "warning" as const, title: "COD orders to handle", meta: "Confirm and dispatch", href: "/orders" },
-    { count: readyDispatch, tone: "info" as const, title: "Ready to dispatch", meta: "Delivery orders awaiting a rider", href: "/dispatch" },
-    { count: lowStock, tone: "danger" as const, title: "Low on stock", meta: "Variants at or below their threshold", href: "/inventory" },
-    { count: restockers, tone: "muted" as const, title: "Restock subscribers", meta: "Waiting on availability", href: "/inventory" },
-  ].filter((a) => a.count > 0);
-
+  // Items sold + top sellers, scoped to the last 7 days (fall back to all-time if unstamped).
+  const items7 = items.filter((it) => new Date(it.created_at) >= start7);
+  const itemBase = items7.length ? items7 : items;
+  const itemsSold = itemBase.reduce((s, it) => s + (it.qty ?? 0), 0);
+  const perOrder = orders7 ? itemsSold / orders7 : 0;
   const byProduct = new Map<string, { meta: string; minor: number }>();
-  for (const it of items) {
+  for (const it of itemBase) {
     const cur = byProduct.get(it.product_name_snapshot) ?? { meta: it.variant_label_snapshot ?? "", minor: 0 };
     cur.minor += it.line_total_minor ?? 0;
     byProduct.set(it.product_name_snapshot, cur);
   }
-  const topSellers = [...byProduct.entries()].map(([name, v]) => ({ name, ...v })).sort((a, b) => b.minor - a.minor).slice(0, 4);
+  const topSellers = [...byProduct.entries()].map(([name, v]) => ({ name, ...v })).sort((a, b) => b.minor - a.minor).slice(0, 5);
+  const topMax = Math.max(...topSellers.map((t) => t.minor), 1);
 
-  const allCount = live.length;
-  const codCount = live.filter(isCod).length;
-  const codMinor = live.filter(isCod).reduce((s, o) => s + (o.total_minor ?? 0), 0);
-  const prepaidMinor = live.filter((o) => !isCod(o)).reduce((s, o) => s + (o.total_minor ?? 0), 0);
-  const totalMinor = codMinor + prepaidMinor || 1;
-  const payRows = [
-    { label: "Cash & COD", minor: codMinor, share: codMinor / totalMinor, dot: "bg-foreground" },
-    { label: "Prepaid", minor: prepaidMinor, share: prepaidMinor / totalMinor, dot: "bg-primary" },
-  ].filter((r) => r.minor > 0);
+  // Fulfilment / delivered (7 days).
+  const delivered7 = last7.filter((o) => DELIVERED.has(o.status)).length;
+  const deliveredRate = orders7 ? delivered7 / orders7 : 0;
 
-  const deliveredRate = allCount ? live.filter((o) => o.status === "delivered").length / allCount : 0;
-  const codShare = allCount ? codCount / allCount : 0;
+  // Inventory — low stock + restock demand, with names.
+  const invByVariant = new Map(inv.map((r) => [r.variant_id, r] as const));
+  const labelFor = (r: (typeof inv)[number]) => {
+    const n = r.product_variant?.product?.name ?? "Item";
+    const sz = r.product_variant?.size_ml != null ? `${r.product_variant.size_ml} ml` : "";
+    return { name: n, meta: sz };
+  };
+  const lowRows = inv
+    .filter((r) => (r.qty_available ?? 0) <= (r.reorder_point ?? 0))
+    .sort((a, b) => (a.qty_available ?? 0) - (b.qty_available ?? 0))
+    .slice(0, 4)
+    .map((r) => ({ ...labelFor(r), qty: r.qty_available ?? 0 }));
+  const lowStock = inv.filter((r) => (r.qty_available ?? 0) <= (r.reorder_point ?? 0)).length;
+  const outCount = inv.filter((r) => (r.qty_available ?? 0) <= 0).length;
 
-  const dateLabel = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long" }).format(now);
-  const secondary = [
-    { value: formatInt(orders7), label: "orders" },
-    { value: formatPct(deliveryShare), label: "delivery" },
-    { value: formatLe(avg7, 2), label: "avg order" },
+  const restockByVariant = new Map<string, number>();
+  for (const r of restock) restockByVariant.set(r.variant_id, (restockByVariant.get(r.variant_id) ?? 0) + 1);
+  const restockRows = [...restockByVariant.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([vid, count]) => {
+      const iv = invByVariant.get(vid);
+      return { ...(iv ? labelFor(iv) : { name: "Item", meta: "" }), count };
+    });
+  const waiting = restock.length;
+
+  // Live queue — active (not closed) orders, newest first.
+  const queue = live.filter((o) => !CLOSED.has(o.status)).slice(0, 5);
+  const queueTotal = queue.reduce((s, o) => s + (o.total_minor ?? 0), 0);
+  const recent = orders.slice(0, 5);
+
+  // Channel & payment mix (last 7 days).
+  const isCod = (o: Order) => String(o.payment_method ?? "").includes("cash") || o.payment_method === "cash_on_delivery";
+  const deliveryCount = last7.filter((o) => o.fulfillment_type === "delivery").length;
+  const pickupCount = orders7 - deliveryCount;
+  const codMinor = last7.filter(isCod).reduce((s, o) => s + (o.total_minor ?? 0), 0);
+  const prepaidMinor = rev7 - codMinor;
+  const mix = [
+    { label: "Delivery", value: `${deliveryCount} · ${formatPct(orders7 ? deliveryCount / orders7 : 0)}`, pct: orders7 ? deliveryCount / orders7 : 0, bar: "bg-brand" },
+    { label: "Pickup", value: `${pickupCount} · ${formatPct(orders7 ? pickupCount / orders7 : 0)}`, pct: orders7 ? pickupCount / orders7 : 0, bar: "bg-[#B5B2AC]" },
+    { label: "COD + cash", value: `${formatLe(codMinor)} · ${formatPct(rev7 ? codMinor / rev7 : 0)}`, pct: rev7 ? codMinor / rev7 : 0, bar: "bg-foreground" },
+    { label: "Prepaid", value: `${formatLe(prepaidMinor)} · ${formatPct(rev7 ? prepaidMinor / rev7 : 0)}`, pct: rev7 ? prepaidMinor / rev7 : 0, bar: "bg-[#B5B2AC]" },
+  ];
+
+  const dateLabel = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long" }).format(now);
+  const codToConfirm = live.filter((o) => isCod(o) && (o.status === "pending" || o.status === "cod_pending")).length;
+
+  const stats: Array<{ label: string; value: string; delta: React.ReactNode }> = [
+    { label: "Revenue · 7d", value: formatLe(rev7), delta: <Delta ratio={revRatio} /> },
+    { label: "Orders", value: formatInt(orders7), delta: <Delta ratio={ordersRatio} /> },
+    { label: "Avg order", value: formatLe(avg7), delta: <Delta ratio={avgRatio} /> },
+    { label: "Items sold", value: formatInt(itemsSold), delta: <span className="nums text-xs text-muted-foreground">{perOrder.toFixed(1)} / order</span> },
+    { label: "Delivered", value: formatPct(deliveredRate), delta: <span className="nums text-xs text-muted-foreground">{delivered7} of {orders7}</span> },
+    { label: "Low stock", value: formatInt(lowStock), delta: <span className="nums text-xs font-medium text-destructive">{outCount} out · {waiting} waiting</span> },
   ];
 
   return (
-    <div className="mx-auto max-w-[1200px] px-6 py-8 lg:px-10 lg:py-10">
-      {/* Hero */}
-      <header>
-        <div className="flex items-start justify-between gap-4">
-          <p className="text-sm text-muted-foreground">{dateLabel} · {greeting(now.getHours())}, Mr. Borteh</p>
-          <div className="flex items-center gap-2">
-            <Link href="/analytics" className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none">
-              <DownloadSimple weight="duotone" className="size-4" />
-              Reports
-            </Link>
-            <Link href="/pos" className="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none">
-              <Plus weight="duotone" className="size-4" />
-              New sale
-            </Link>
-          </div>
+    <div className="px-5 pb-6 pt-2">
+      {/* Header */}
+      <div className="flex items-center justify-between py-2 pb-4">
+        <div>
+          <h1 className="text-xl font-[650] tracking-[-0.2px]">Dashboard</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {dateLabel} · {formatLe(revToday)} so far today
+            {codToConfirm > 0 && <> · <span className="font-medium text-warning">{codToConfirm} COD to confirm</span></>}
+          </p>
         </div>
-
-        <div className="mt-5 flex flex-wrap items-end gap-x-6 gap-y-4">
-          <p className="nums text-5xl font-semibold tracking-tight">{formatLe(rev7, 2)}</p>
-          <Sparkline points={revenue7d} className="mb-1 h-12 w-36" />
-          <DeltaPill ratio={ratio} />
-        </div>
-
-        <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-          {secondary.map((s, i) => (
-            <span key={s.label} className="flex items-center gap-3">
-              {i > 0 && <span aria-hidden className="text-border">·</span>}
-              <span><span className="nums font-semibold text-foreground">{s.value}</span> {s.label}</span>
-            </span>
-          ))}
-          <span className="flex items-center gap-3">
-            <span aria-hidden className="text-border">·</span>
-            <span>last 7 days</span>
-          </span>
-        </p>
-      </header>
-
-      <div className="my-8 border-t border-border" />
-
-      <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
-        {/* Needs you */}
-        <section>
-          <SectionLabel>Needs you</SectionLabel>
-          {attention.length ? (
-            <ul className="mt-4 divide-y divide-border">
-              {attention.map((a) => (
-                <li key={a.title}>
-                  <Link href={a.href} className="group -mx-2 flex items-center gap-4 rounded-md px-2 py-4 transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none">
-                    <span className={cn("nums w-9 shrink-0 text-2xl font-semibold tabular-nums", toneText[a.tone])}>{a.count}</span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-medium">{a.title}</span>
-                      <span className="block text-sm text-muted-foreground">{a.meta}</span>
-                    </span>
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-4 text-sm text-muted-foreground">All clear — nothing needs you right now.</p>
-          )}
-          <Link href="/orders" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-            All orders
-            <ArrowRight className="size-3.5" />
+        <div className="flex gap-2">
+          <Link href="/analytics" className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-[13px] font-medium shadow-[0_1px_0_rgba(26,26,26,0.07)] transition-colors hover:bg-muted">
+            <DownloadSimple weight="duotone" className="size-4" />
+            Reports
           </Link>
-        </section>
+          <Link href="/pos" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[13px] font-medium text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_-1px_0_rgba(0,0,0,0.25),0_1px_0_rgba(26,26,26,0.07)] transition-colors hover:bg-[#1a1917]">
+            <Plus weight="duotone" className="size-4" />
+            Open POS
+          </Link>
+        </div>
+      </div>
 
-        {/* Pulse */}
-        <section className="lg:border-l lg:border-border lg:pl-10">
-          <SectionLabel>Pulse</SectionLabel>
-
-          {payRows.length ? (
-            <div className="mt-4">
-              <div className="flex h-2 gap-1 overflow-hidden">
-                {payRows.map((r) => <div key={r.label} className={cn("rounded-full", r.dot)} style={{ flexGrow: r.share * 100 }} />)}
-              </div>
-              <ul className="mt-3 space-y-2">
-                {payRows.map((row) => (
-                  <li key={row.label} className="flex items-center gap-2.5 text-sm">
-                    <span className={cn("size-2.5 shrink-0 rounded-full", row.dot)} />
-                    <span className="flex-1">{row.label}</span>
-                    <span className="nums font-semibold">{formatLe(row.minor, 2)}</span>
-                    <span className="nums w-9 text-right text-muted-foreground">{formatPct(row.share)}</span>
-                  </li>
-                ))}
-              </ul>
+      {/* Stats */}
+      <div className={cn(card, "flex flex-wrap gap-y-3 p-4")}>
+        {stats.map((s) => (
+          <div key={s.label} className="mr-5 border-r border-accent pr-5 last:mr-0 last:border-0 last:pr-0">
+            <div className="text-xs font-medium text-muted-foreground">{s.label}</div>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="nums text-xl font-[650] leading-tight tracking-[-0.2px]">{s.value}</span>
+              {s.delta}
             </div>
-          ) : null}
-
-          <div className="mt-8">
-            <SectionLabel>Top sellers</SectionLabel>
-            <ul className="mt-4 space-y-3.5">
-              {topSellers.map((p) => (
-                <li key={p.name} className="flex items-center gap-3">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-md bg-muted text-muted-foreground ring-1 ring-border">
-                    <Sparkle weight="duotone" className="size-4" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium">{p.name}</span>
-                    {p.meta ? <span className="block truncate text-xs text-muted-foreground">{p.meta}</span> : null}
-                  </span>
-                  <span className="nums text-sm font-semibold">{formatLe(p.minor, 2)}</span>
-                </li>
-              ))}
-              {topSellers.length === 0 ? <li className="text-sm text-muted-foreground">No sales yet.</li> : null}
-            </ul>
           </div>
+        ))}
+      </div>
 
-          <div className="mt-8 space-y-3">
-            <SectionLabel>Fulfilment</SectionLabel>
-            {[
-              { label: "Delivered rate", value: deliveredRate },
-              { label: "COD share", value: codShare },
-            ].map((m) => (
-              <div key={m.label}>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{m.label}</span>
-                  <span className="nums font-semibold">{formatPct(m.value)}</span>
-                </div>
-                <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-success" style={{ width: `${m.value * 100}%` }} />
-                </div>
+      {/* Chart + Live queue */}
+      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+        <div className={cn(card, "p-4")}>
+          <div className={cardHead}>
+            <span className={cardTitle}>Revenue</span>
+            <span className="nums text-xs text-muted-foreground">Last 7 days · {formatLe(rev7)}</span>
+          </div>
+          <RevenueChart data={revenue7d} labels={dayLabels} />
+        </div>
+
+        <div className={cn(card, "p-4")}>
+          <div className={cardHead}>
+            <span className={cardTitle}>Live queue</span>
+            <Link href="/orders" className={cardLink}>All orders</Link>
+          </div>
+          <div className="mt-1">
+            {queue.length ? queue.map((o) => (
+              <div key={o.id} className={rowLine}>
+                <span className="nums font-medium">#{o.order_number ?? "—"}</span>
+                <span className="min-w-0 flex-1 truncate text-muted-foreground">{nameOf(o)}</span>
+                <Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip>
+                <span className="nums font-medium">{formatLe(o.total_minor ?? 0, 2)}</span>
               </div>
-            ))}
+            )) : <p className="py-3 text-[13px] text-muted-foreground">Queue is clear.</p>}
           </div>
-        </section>
+          {queue.length > 0 && (
+            <div className="mt-3 flex items-center justify-between border-t border-accent pt-3 text-xs">
+              <span className="font-semibold text-muted-foreground">In the queue</span>
+              <span className="nums font-medium">{queue.length} active · {formatLe(queueTotal)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Recent orders + Low stock */}
+      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+        <div className={cn(card, "px-4 pb-3 pt-2")}>
+          <div className={cn(cardHead, "py-2")}>
+            <span className={cardTitle}>Recent orders</span>
+            <Link href="/orders" className={cardLink}>View all</Link>
+          </div>
+          <table className="w-full border-collapse text-[13px]">
+            <tbody>
+              {recent.length ? recent.map((o) => (
+                <tr key={o.id} className="h-9 border-t border-accent">
+                  <td className="nums w-14 py-1.5 pr-3 font-medium">#{o.order_number ?? "—"}</td>
+                  <td className="px-3 py-1.5">{nameOf(o)}</td>
+                  <td className="px-3 py-1.5 text-muted-foreground">{paymentLabel(o.payment_method)}</td>
+                  <td className="px-3 py-1.5"><Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip></td>
+                  <td className="nums py-1.5 text-right font-medium">{formatLe(o.total_minor ?? 0, 2)}</td>
+                </tr>
+              )) : (
+                <tr><td className="py-3 text-muted-foreground">No orders yet.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={cn(card, "px-4 pb-3 pt-2")}>
+          <div className={cn(cardHead, "py-2")}>
+            <span className={cardTitle}>Low stock</span>
+            <Link href="/inventory" className={cardLink}>Inventory</Link>
+          </div>
+          {lowRows.length ? lowRows.map((r, i) => (
+            <div key={i} className={rowLine}>
+              <span className="min-w-0 flex-1 truncate">{r.name} <span className="text-[#B5B2AC]">{r.meta}</span></span>
+              <span className={cn("nums text-xs font-medium", r.qty <= 0 ? "text-destructive" : "text-warning")}>{r.qty <= 0 ? "Out" : r.qty}</span>
+            </div>
+          )) : <p className="py-2 text-[13px] text-muted-foreground">Everything in stock.</p>}
+
+          <div className="flex items-baseline justify-between pb-2 pt-3">
+            <span className="text-xs font-semibold text-muted-foreground">Restock demand</span>
+          </div>
+          {restockRows.length ? restockRows.map((r, i) => (
+            <div key={i} className={rowLine}>
+              <span className="min-w-0 flex-1 truncate">{r.name} <span className="text-[#B5B2AC]">{r.meta}</span></span>
+              <span className="nums font-medium">{r.count} <span className="font-normal text-[#B5B2AC]">waiting</span></span>
+            </div>
+          )) : <p className="py-2 text-[13px] text-muted-foreground">No one waiting.</p>}
+        </div>
+      </div>
+
+      {/* Top sellers + Mix */}
+      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+        <div className={cn(card, "px-4 pb-3 pt-2")}>
+          <div className={cn(cardHead, "py-2")}>
+            <span className={cardTitle}>Top sellers · 7d</span>
+            <Link href="/analytics" className={cardLink}>Reports</Link>
+          </div>
+          {topSellers.length ? topSellers.map((t) => (
+            <div key={t.name} className={rowLine}>
+              <span className="w-[190px] shrink-0 truncate">{t.name}</span>
+              <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-accent">
+                <div className="h-full rounded-sm bg-brand" style={{ width: `${(t.minor / topMax) * 100}%` }} />
+              </div>
+              <span className="nums w-[100px] text-right font-medium">{formatLe(t.minor, 2)}</span>
+            </div>
+          )) : <p className="py-2 text-[13px] text-muted-foreground">No sales yet.</p>}
+        </div>
+
+        <div className={cn(card, "px-4 pb-3 pt-2")}>
+          <div className="py-2"><span className={cardTitle}>Channel &amp; payment</span></div>
+          {mix.map((m) => (
+            <div key={m.label} className={rowLine}>
+              <span className="w-[104px] shrink-0">{m.label}</span>
+              <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-accent">
+                <div className={cn("h-full rounded-sm", m.bar)} style={{ width: `${m.pct * 100}%` }} />
+              </div>
+              <span className="nums w-[104px] text-right text-xs text-muted-foreground">{m.value}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

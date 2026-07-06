@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { UsersThree } from "@phosphor-icons/react/dist/ssr";
 
 import { createServerClient } from "@/lib/supabase/server";
-import { PageHeader } from "@/components/admin/page-header";
-import { StatusPill, type PillTone } from "@/components/admin/status-pill";
-import { CustomerActions } from "@/components/admin/customer-actions";
+import { type Tone } from "@/components/admin/chip";
+import { CustomersTable, type CustomerRow } from "@/components/admin/customers-table";
+import { ExportButton } from "@/components/admin/export-button";
 import { formatInt, formatLe } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -20,16 +19,7 @@ type Customer = {
   last: string;
 };
 
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-function loyaltyTier(points: number, blocked: boolean): { label: string; tone: PillTone } {
+function loyaltyTier(points: number, blocked: boolean): { label: string; tone: Tone } {
   if (blocked) return { label: "Blocked", tone: "danger" };
   if (points >= 500) return { label: "Gold", tone: "warning" };
   if (points >= 100) return { label: "Silver", tone: "neutral" };
@@ -112,73 +102,51 @@ export default async function CustomersPage() {
     };
   });
 
+  const rows: CustomerRow[] = customers.map((c) => {
+    const tier = loyaltyTier(c.points, c.blocked);
+    return {
+      id: c.id,
+      name: c.name,
+      contact: c.contact,
+      tierLabel: tier.label,
+      tierTone: tier.tone,
+      orders: c.orders,
+      spent: c.spent,
+      last: c.last,
+    };
+  });
+
   return (
-    <>
-      <PageHeader
-        title="Customers"
-        description={
-          error
-            ? "Couldn't load customers — check the Supabase keys in web/.env.local."
-            : `${formatInt(customers.length)} ${customers.length === 1 ? "customer" : "customers"}`
-        }
-      />
+    <div className="px-5 pb-6 pt-2">
+      <div className="flex items-center justify-between py-2 pb-4">
+        <div>
+          <h1 className="text-xl font-[650] tracking-[-0.2px]">Customers</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {error
+              ? "Couldn't load customers — check the Supabase keys in web/.env.local."
+              : `${formatInt(customers.length)} ${customers.length === 1 ? "customer" : "customers"}`}
+          </p>
+        </div>
+        <ExportButton
+          filename="borteh-customers.csv"
+          headers={["Name", "Contact", "Tier", "Orders", "Total spent (Le)", "Last order"]}
+          rows={rows.map((c) => [c.name, c.contact, c.tierLabel, c.orders, formatLe(c.spent, 2), c.last])}
+        />
+      </div>
+
       {customers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center px-6 py-20 text-center lg:px-10">
+        <div className="flex flex-col items-center justify-center rounded-[12px] border border-border bg-card px-6 py-20 text-center shadow-[0_1px_0_rgba(26,26,26,0.07)]">
           <span className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
             <UsersThree weight="duotone" className="size-6" />
           </span>
           <p className="mt-4 text-sm font-medium">No customers yet</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            {error
-              ? "We couldn't reach the database."
-              : "Customers will appear here once people sign up and start ordering."}
+            {error ? "We couldn't reach the database." : "Customers will appear here once people sign up and start ordering."}
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="px-6 py-2.5 font-medium lg:px-10">Customer</th>
-                <th className="px-3 py-2.5 font-medium">Loyalty</th>
-                <th className="px-3 py-2.5 text-right font-medium">Orders</th>
-                <th className="px-3 py-2.5 text-right font-medium">Total spent</th>
-                <th className="px-3 py-2.5 text-right font-medium">Last order</th>
-                <th className="px-6 py-2.5 text-right font-medium lg:px-10" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border border-t border-border">
-              {customers.map((c) => {
-                const tier = loyaltyTier(c.points, c.blocked);
-                return (
-                  <tr key={c.id} className="transition-colors hover:bg-muted/40">
-                    <td className="px-6 py-3.5 lg:px-10">
-                      <Link href={`/customers/${c.id}`} className="group flex items-center gap-3">
-                        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
-                          {initials(c.name)}
-                        </span>
-                        <div className="min-w-0">
-                          <div className="truncate font-medium group-hover:text-primary group-hover:underline">{c.name}</div>
-                          <div className="nums truncate text-xs text-muted-foreground">{c.contact}</div>
-                        </div>
-                      </Link>
-                    </td>
-                    <td className="px-3 py-3.5">
-                      <StatusPill tone={tier.tone}>{tier.label}</StatusPill>
-                    </td>
-                    <td className="nums px-3 py-3.5 text-right">{formatInt(c.orders)}</td>
-                    <td className="nums px-3 py-3.5 text-right font-semibold">{formatLe(c.spent, 2)}</td>
-                    <td className="px-3 py-3.5 text-right text-muted-foreground">{c.last}</td>
-                    <td className="px-6 py-3.5 text-right lg:px-10">
-                      <CustomerActions id={c.id} blocked={c.blocked} name={c.name} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <CustomersTable customers={rows} />
       )}
-    </>
+    </div>
   );
 }
