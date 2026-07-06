@@ -58,13 +58,14 @@ export default function Onboarding() {
   };
 
   return (
-    <View style={s.screen}>
+    // Image starts below the status bar — the bar always sits on paper, icons stay legible.
+    <View style={[s.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
       <Animated.View style={{ opacity: fade, flex: 1 }}>
         <View style={[s.image, { height: imgH }]}>
           <Image source={slide.img} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" transition={200} />
           {!last ? (
-            <Pressable onPress={finish} style={[s.skip, { top: insets.top + space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel="Skip">
+            <Pressable onPress={finish} style={[s.skip, { top: space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel="Skip">
               <AppText variant="label">Skip</AppText>
             </Pressable>
           ) : null}

@@ -14,7 +14,11 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { NotificationsLive } from "@/components/NotificationsLive";
+import { NotificationToast } from "@/components/NotificationToast";
 import { QuickPeek } from "@/components/QuickPeek";
+import { initPush } from "@/lib/push";
+import { initTracking } from "@/lib/track";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,6 +40,13 @@ export default function RootLayout() {
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
+  // Boot the event pipeline + push once: queue hydration, flush timer, silent
+  // push-token refresh (never prompts), and notification tap routing.
+  useEffect(() => {
+    initTracking();
+    initPush();
+  }, []);
+
   if (!loaded) return null;
 
   return (
@@ -46,6 +57,8 @@ export default function RootLayout() {
           <Stack.Screen name="review" options={{ presentation: "modal" }} />
         </Stack>
         <QuickPeek />
+        <NotificationsLive />
+        <NotificationToast />
       </QueryClientProvider>
     </SafeAreaProvider>
   );

@@ -9,19 +9,37 @@ import { formatLe } from "@/lib/format";
 import { openPeek } from "@/lib/quickPeek";
 import { productImage } from "@/lib/productImage";
 import { colors, space } from "@/lib/theme";
+import { track } from "@/lib/track";
 import { toggleWish, useWishlist } from "@/lib/wishlist";
 import { AppText } from "./Text";
 
 // Flat Maison card: 3:4 image on a surface bed, bare heart top-right, serif name,
 // brand·notes, price. No border, no shadow, no quick-add — the photo leads.
-export function ProductCard({ product, width, imageHeight }: { product: Product; width: number; imageHeight: number }) {
+// `source`/`position`: when a card lives inside a tracked home module, they attribute the
+// tap to that module (module_tap). Omitted elsewhere — the card stays untracked.
+export function ProductCard({
+  product,
+  width,
+  imageHeight,
+  source,
+  position,
+}: {
+  product: Product;
+  width: number;
+  imageHeight: number;
+  source?: string;
+  position?: number;
+}) {
   const router = useRouter();
   const liked = useWishlist().includes(product.slug);
   const scale = useRef(new Animated.Value(1)).current;
 
   return (
     <Pressable
-      onPress={() => router.push({ pathname: "/product/[slug]", params: { slug: product.slug } })}
+      onPress={() => {
+        if (source) track("module_tap", { productId: product.id, module: source, position, metadata: { slug: product.slug } });
+        router.push({ pathname: "/product/[slug]", params: { slug: product.slug } });
+      }}
       onLongPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         openPeek(product.slug);
@@ -47,14 +65,20 @@ export function ProductCard({ product, width, imageHeight }: { product: Product;
           <Pressable
             onPress={() => {
               Haptics.selectionAsync();
-              toggleWish(product.slug);
+              toggleWish(product.slug, product.id);
             }}
             hitSlop={12}
             style={s.heart}
             accessibilityRole="button"
             accessibilityLabel={liked ? "Remove from saved" : "Save"}
           >
-            <Heart size={24} color={colors.ink} weight={liked ? "fill" : "regular"} />
+            {/* Paper-filled heart under the ink glyph — contrast on any photo, no chrome */}
+            <View>
+              <View style={s.heartHalo}>
+                <Heart size={24} color="rgba(250,248,245,0.92)" weight="fill" />
+              </View>
+              <Heart size={24} color={colors.ink} weight={liked ? "fill" : "regular"} />
+            </View>
           </Pressable>
         </View>
 
@@ -75,6 +99,7 @@ export function ProductCard({ product, width, imageHeight }: { product: Product;
 const s = StyleSheet.create({
   imageWrap: { backgroundColor: colors.surface },
   heart: { position: "absolute", top: space.md, right: space.md },
+  heartHalo: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center" },
   name: { marginTop: space.sm },
   price: { marginTop: space.xs },
 });

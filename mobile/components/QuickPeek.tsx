@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Modal, Pressable, StyleSheet, View } from "react-native";
 import { productSubline, useProducts } from "@/lib/api";
@@ -9,8 +10,10 @@ import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
 import { closePeek, useQuickPeek } from "@/lib/quickPeek";
 import { colors, space } from "@/lib/theme";
+import { track } from "@/lib/track";
 import { Button } from "./Button";
 import { AppText } from "./Text";
+import { LinkLabel } from "./ui";
 
 /** Long-press preview: a centered quick-look card that springs in. Mounted at root. */
 export function QuickPeek() {
@@ -43,7 +46,7 @@ export function QuickPeek() {
   const add = () => {
     if (!product || !variant) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    addToBag({ variantId: variant.id, slug: product.slug, sizeMl: variant.sizeMl, priceMinor: variant.priceMinor }, 1);
+    addToBag({ productId: product.id, variantId: variant.id, slug: product.slug, sizeMl: variant.sizeMl, priceMinor: variant.priceMinor }, 1);
     closePeek();
   };
   const view = () => {
@@ -51,9 +54,16 @@ export function QuickPeek() {
     closePeek();
     if (s) router.push({ pathname: "/product/[slug]", params: { slug: s } });
   };
+  const notInterested = () => {
+    if (!product) return;
+    Haptics.selectionAsync();
+    track("not_interested", { productId: product.id, metadata: { slug: product.slug } });
+    closePeek();
+  };
 
   return (
     <Modal visible={!!slug} transparent animationType="none" onRequestClose={closePeek} statusBarTranslucent>
+      {slug ? <StatusBar style="light" animated /> : null}
       <Animated.View style={[st.backdrop, { opacity }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={closePeek} accessibilityLabel="Close preview" />
       </Animated.View>
@@ -90,6 +100,9 @@ export function QuickPeek() {
                   <Button title="Add to bag" onPress={add} />
                 </View>
               </View>
+              <View style={st.dismiss}>
+                <LinkLabel label="Not interested" onPress={notInterested} color={colors.ink40} />
+              </View>
             </View>
           </Animated.View>
         ) : null}
@@ -109,4 +122,5 @@ const st = StyleSheet.create({
   sizeOn: { borderColor: colors.ink },
   sizeOff: { borderColor: colors.line },
   actions: { flexDirection: "row", gap: space.md, marginTop: space.xl },
+  dismiss: { alignItems: "center", marginTop: space.lg },
 });

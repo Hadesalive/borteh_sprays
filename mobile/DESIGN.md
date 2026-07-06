@@ -37,9 +37,21 @@ Bronze is spent **once per screen** — the active choice or the single link. Ne
 
 ## Spacing · radius · elevation · icons
 - **4px grid:** 4 / 8 / 12 / 16 / 24 / 32 / 48. Screen gutter = 24.
-- **Radius 0 — squared everything.** The only round things are avatars, notification dots, and
-  toggle knobs (`radius.circle`).
+- **Radius 0 — squared everything.** The only round things are avatars, notification dots,
+  toggle knobs, and `FrostCircle` (`radius.circle`).
 - **Elevation: none.** No drop shadows, no blur, no glass. 1px `line` borders separate layers.
+  **Two sanctioned exceptions:** `FrostCircle` (in `ui.tsx`) — a frosted round bed behind the
+  product-hero back/heart, which float over full-bleed photography with content scrolling under
+  them. Functional contrast only, never decoration. **Card hearts don't get a bed** — they use a
+  paper-filled heart layered under the ink glyph (halo, zero chrome; see `ProductCard`).
+  And `NotificationToast` — the in-app heads-up banner is a solid **ink**, **rounded** card in
+  messenger anatomy: the status glyph rides a semantic color chip (the "avatar"), "Borteh" is
+  the sender. It mimics a *system* notification, not page chrome, so the radius-0 / one-accent
+  rules don't govern it — standing out over any screen IS its function.
+- **Status bar rule:** icons are always ink-on-paper. Photo-topped screens keep the photo *below*
+  the top inset (Onboarding) or run a fixed paper mask over the inset (Product). Dark scrims
+  (Filter, QuickPeek) flip `StatusBar` to `light` while open. Never let imagery or scrolled text
+  sit under the clock.
 - **Icons: Phosphor `regular`** weight (`weight="regular"`), 20px inline · 24px nav/actions. Active
   tab and a saved heart use `weight="fill"`. No emoji.
 
@@ -58,6 +70,7 @@ Bronze is spent **once per screen** — the active choice or the single link. Ne
 - **TabBar** — full-width, paper bg, 1px top border; 4 items (Home · Shop · Saved · Bag), icon 24 +
   12px label; active `ink` (fill icon), inactive `ink40`.
 - **Header** — back (`ph-arrow-left` 24) at the gutter, serif 24 title below, always left-aligned.
+  Every top-level screen (tabs, Bag, Checkout) carries `HeaderActions` (bell + avatar) top-right.
 - **EmptyState / Skeleton** — `surface` blocks, **no spinners**.
 
 ## Motion (kept from the build ethos)

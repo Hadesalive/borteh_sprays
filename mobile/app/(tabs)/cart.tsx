@@ -10,6 +10,7 @@ import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
 import { EmptyState } from "@/components/EmptyState";
 import { AppText } from "@/components/Text";
+import { HeaderActions } from "@/components/ui";
 import { useProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { cartTotalMinor, removeFromBag, setQty, useCart } from "@/lib/cart";
@@ -47,6 +48,9 @@ export default function Cart() {
       <View style={s.screen}>
         <StatusBar style="dark" />
         <BackButton onPress={leave} style={[s.back, { top: insets.top + space.md }]} />
+        <View style={[s.actionsAbs, { top: insets.top + space.md }]}>
+          <HeaderActions />
+        </View>
         <EmptyState
           icon={<Handbag size={32} color={colors.ink40} weight="regular" />}
           title="Your bag is empty."
@@ -74,7 +78,10 @@ export default function Cart() {
     <View style={s.screen}>
       <StatusBar style="dark" />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + 120 }}>
-        <BackButton onPress={leave} />
+        <View style={s.topRow}>
+          <BackButton onPress={leave} />
+          <HeaderActions />
+        </View>
         <AppText variant="heading" style={{ marginTop: space.lg }}>Bag</AppText>
         <AppText variant="caption" style={{ marginTop: space.xs }}>
           {count} {count === 1 ? "item" : "items"}
@@ -141,6 +148,8 @@ export default function Cart() {
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   back: { position: "absolute", left: space.gutter, zIndex: 10 },
+  actionsAbs: { position: "absolute", right: space.gutter, zIndex: 10 },
+  topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   row: { flexDirection: "row", gap: space.lg, paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
   thumb: { width: 112, height: 128, backgroundColor: colors.surface, overflow: "hidden" },
   middle: { flex: 1, minWidth: 0, height: 128 },

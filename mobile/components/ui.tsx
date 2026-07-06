@@ -1,6 +1,10 @@
+import { BlurView } from "expo-blur";
+import { useRouter } from "expo-router";
 import { Bell, MagnifyingGlass, SlidersHorizontal, User } from "phosphor-react-native";
 import { type ReactNode } from "react";
 import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
+import { useSession } from "@/lib/auth";
+import { useUnreadCount } from "@/lib/notifications";
 import { colors, font, label as labelToken, space } from "@/lib/theme";
 import { AppText } from "./Text";
 
@@ -36,13 +40,55 @@ export function Avatar({ initials, size = 32 }: { initials?: string; size?: numb
   );
 }
 
-/** Bell with an optional bronze notification dot. */
-export function BellButton({ onPress, dot }: { onPress?: () => void; dot?: boolean }) {
+/** Bell with an unread-count badge (bronze — the header's one accent). */
+export function BellButton({ onPress, count = 0 }: { onPress?: () => void; count?: number }) {
   return (
-    <Pressable onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel="Notifications">
+    <Pressable
+      onPress={onPress}
+      hitSlop={8}
+      accessibilityRole="button"
+      accessibilityLabel={count > 0 ? `Notifications, ${count} unread` : "Notifications"}
+    >
       <Bell size={24} color={colors.ink} weight="regular" />
-      {dot ? <View style={s.dot} /> : null}
+      {count > 0 ? (
+        <View style={s.bellBadge}>
+          <AppText style={s.bellBadgeTxt} maxFontSizeMultiplier={1}>
+            {count > 9 ? "9+" : count}
+          </AppText>
+        </View>
+      ) : null}
     </Pressable>
+  );
+}
+
+/** The standard header cluster (bell + avatar) — one source for every screen's top-right.
+ *  Resolves the session monogram itself so screens don't repeat it. */
+export function HeaderActions() {
+  const router = useRouter();
+  const session = useSession();
+  const unread = useUnreadCount();
+  const name = (session?.user?.user_metadata?.display_name as string | undefined)?.trim();
+  const initials = name?.split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("") || undefined;
+  return (
+    <View style={s.headerActions}>
+      <BellButton onPress={() => router.push("/notifications")} count={unread} />
+      <Pressable onPress={() => router.push("/profile")} accessibilityRole="button" accessibilityLabel="Account">
+        <Avatar initials={initials} />
+      </Pressable>
+    </View>
+  );
+}
+
+/** Frosted round bed for controls floating over photography — the ONE sanctioned blur:
+ *  functional contrast (an ink glyph is invisible on a dark bottle shot), never decoration.
+ *  Blur on iOS; the paper tint keeps it readable where Android falls back to translucency. */
+export function FrostCircle({ size = 36, children }: { size?: number; children: ReactNode }) {
+  return (
+    <View style={[s.frost, { width: size, height: size, borderRadius: size / 2 }]}>
+      <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(250,248,245,0.6)" }]} />
+      {children}
+    </View>
   );
 }
 
@@ -110,6 +156,21 @@ export function CategoryChip({ label, icon, active, onPress }: { label: string; 
   );
 }
 
+/** Squared Maison toggle — ink fill + paper knob when on, 1px line when off. */
+export function ToggleSwitch({ value, onToggle }: { value: boolean; onToggle: (v: boolean) => void }) {
+  return (
+    <Pressable
+      onPress={() => onToggle(!value)}
+      hitSlop={8}
+      accessibilityRole="switch"
+      accessibilityState={{ checked: value }}
+      style={[s.toggle, value ? s.toggleOn : s.toggleOff]}
+    >
+      <View style={[s.knob, value ? s.knobOn : s.knobOff]} />
+    </Pressable>
+  );
+}
+
 /** Squared surface tile for a labelled category. */
 export function ScentTile({ label, count, onPress, style }: { label: string; count?: number; onPress?: () => void; style?: StyleProp<ViewStyle> }) {
   return (
@@ -128,7 +189,16 @@ const s = StyleSheet.create({
   section: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", paddingHorizontal: space.gutter },
   avatar: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, alignItems: "center", justifyContent: "center", overflow: "hidden" },
   avatarTxt: { fontFamily: font.semibold, fontSize: 12, color: colors.ink },
-  dot: { position: "absolute", top: 0, right: 0, width: 8, height: 8, borderRadius: 999, backgroundColor: colors.accent },
+  bellBadge: { position: "absolute", top: -5, right: -7, minWidth: 16, height: 16, borderRadius: 999, paddingHorizontal: 3, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center" },
+  bellBadgeTxt: { fontFamily: font.semibold, fontSize: 10, lineHeight: 12, color: colors.paper },
+  headerActions: { flexDirection: "row", alignItems: "center", gap: space.lg },
+  frost: { overflow: "hidden", alignItems: "center", justifyContent: "center" },
+  toggle: { width: 44, height: 24, padding: 2, borderWidth: 1, justifyContent: "center" },
+  toggleOn: { backgroundColor: colors.ink, borderColor: colors.ink, alignItems: "flex-end" },
+  toggleOff: { backgroundColor: "transparent", borderColor: colors.line, alignItems: "flex-start" },
+  knob: { width: 18, height: 18 },
+  knobOn: { backgroundColor: colors.paper },
+  knobOff: { backgroundColor: colors.ink40 },
   field: { flexDirection: "row", alignItems: "center", gap: space.md, height: 52, paddingHorizontal: space.lg, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper },
   input: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },
   placeholder: { fontFamily: font.regular, fontSize: 14, color: colors.ink40 },

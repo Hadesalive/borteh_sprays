@@ -176,6 +176,22 @@ export function useProducts() {
   return useQuery<Product[]>({ queryKey: ["products"], queryFn: fetchProducts, staleTime: 5 * 60 * 1000 });
 }
 
+/** Embedding-ranked "Similar scents" — ordered product ids from the fn_similar_products RPC.
+ *  Returns [] until embeddings are computed, so callers fall back to a content filter. */
+export function useSimilarProducts(productId?: string, limit = 8) {
+  return useQuery<string[]>({
+    queryKey: ["similar", productId, limit],
+    enabled: !!productId,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("fn_similar_products", { p_product_id: productId, p_limit: limit });
+      if (error) throw error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (data ?? []).map((r: any) => r.product_id as string);
+    },
+  });
+}
+
 // --- Storefront curation (admin-managed home rails) -------------------------
 
 export type BrandLite = { slug: string; name: string; logoPath: string | null };

@@ -11,13 +11,14 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { ListRow } from "@/components/ListRow";
 import { AppText } from "@/components/Text";
-import { LinkLabel } from "@/components/ui";
+import { HeaderActions, LinkLabel } from "@/components/ui";
 import { useProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { cartTotalMinor, clearBag, useCart } from "@/lib/cart";
 import { formatLe } from "@/lib/format";
 import { placeOrder } from "@/lib/orders";
 import { colors, font, space } from "@/lib/theme";
+import { track } from "@/lib/track";
 
 // Demo coupons — the owner can edit these (value is in minor units; Le 50 = 5000).
 const COUPONS: Record<string, { label: string; type: "pct" | "flat"; value: number }> = {
@@ -89,6 +90,10 @@ export default function Checkout() {
         notes: orderNotes,
       });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      // recs: strongest signal — one purchase event per product, before the bag is cleared.
+      for (const it of items) {
+        track("purchase", { productId: it.productId, metadata: { variantId: it.variantId, qty: it.qty, priceMinor: it.priceMinor, orderId } });
+      }
       clearBag();
       qc.invalidateQueries({ queryKey: ["orders"] });
       router.replace({ pathname: "/order/[id]", params: { id: orderId, placed: "1" } });
@@ -105,7 +110,10 @@ export default function Checkout() {
       <StatusBar style="dark" />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + 120, paddingHorizontal: space.gutter }}>
-          <BackButton onPress={() => router.back()} />
+          <View style={s.topRow}>
+            <BackButton onPress={() => router.back()} />
+            <HeaderActions />
+          </View>
           <AppText variant="heading" style={{ marginTop: space.lg }}>Checkout</AppText>
 
           {/* Delivery */}
@@ -184,6 +192,7 @@ export default function Checkout() {
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
+  topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   eyebrow: { color: colors.ink60, marginTop: space["2xl"] },
   couponRow: { flexDirection: "row", alignItems: "center", gap: space.md, height: 56, borderBottomWidth: 1, borderBottomColor: colors.line },
   couponInput: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },

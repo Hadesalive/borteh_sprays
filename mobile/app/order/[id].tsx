@@ -1,14 +1,16 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { CheckCircle } from "phosphor-react-native";
+import { Bell, CheckCircle } from "phosphor-react-native";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import { AppText } from "@/components/Text";
+import { LinkLabel } from "@/components/ui";
 import { formatLe } from "@/lib/format";
 import { STATUS_LABEL, STATUS_TONE, useOrder } from "@/lib/orders";
+import { enablePush, usePushStatus } from "@/lib/push";
 import { colors, font, space } from "@/lib/theme";
 
 export default function OrderDetail() {
@@ -17,6 +19,7 @@ export default function OrderDetail() {
   const insets = useSafeAreaInsets();
   const { data: order, isLoading } = useOrder(id);
   const justPlaced = placed === "1";
+  const pushStatus = usePushStatus();
 
   return (
     <View style={s.screen}>
@@ -73,6 +76,18 @@ export default function OrderDetail() {
               {order.recipientName ? <AppText variant="body" style={{ marginTop: space.sm }}>{order.recipientName}</AppText> : null}
               <AppText variant="bodySoft">{[order.landmark, order.phone].filter(Boolean).join(" · ")}</AppText>
             </View>
+
+            {/* push opt-in — the moment it's actually useful, never on launch */}
+            {justPlaced && pushStatus === "undetermined" ? (
+              <View style={s.pushCard}>
+                <Bell size={20} color={colors.ink} weight="regular" />
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <AppText variant="body">Follow this order on your lock screen</AppText>
+                  <AppText variant="caption" style={{ marginTop: 2 }}>We'll only ping you about orders and restocks.</AppText>
+                </View>
+                <LinkLabel label="Turn on" color={colors.accent} onPress={() => enablePush()} />
+              </View>
+            ) : null}
           </>
         )}
       </ScrollView>
@@ -92,5 +107,6 @@ const s = StyleSheet.create({
   sumRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.md, paddingVertical: space.sm },
   totalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: space.md, marginTop: space.sm, borderTopWidth: 1, borderTopColor: colors.line },
   deliver: { marginTop: space["2xl"], paddingTop: space.lg, borderTopWidth: 1, borderTopColor: colors.line },
+  pushCard: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space["2xl"], borderWidth: 1, borderColor: colors.line, padding: space.lg },
   footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.gutter, paddingTop: space.lg, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
 });

@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Bell, Heart, Minus, Plus } from "phosphor-react-native";
+import { ArrowLeft, Bell, Heart, Minus, Plus } from "phosphor-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, UIManager, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,15 +12,17 @@ import { Button } from "@/components/Button";
 import { ListRow } from "@/components/ListRow";
 import { ProductCard } from "@/components/ProductCard";
 import { AppText } from "@/components/Text";
-import { LinkLabel } from "@/components/ui";
-import { type Band, type Concentration, noteLine, type Product, type ProductVariant, useProducts } from "@/lib/api";
+import { FrostCircle, LinkLabel } from "@/components/ui";
+import { type Band, type Concentration, noteLine, type Product, type ProductVariant, useProducts, useSimilarProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { addToBag } from "@/lib/cart";
 import { formatLe } from "@/lib/format";
+import { useRestockSub, useToggleRestockSub } from "@/lib/notifications";
 import { productImage } from "@/lib/productImage";
 import { recordView } from "@/lib/recentlyViewed";
 import { useReviews } from "@/lib/reviews";
 import { colors, space } from "@/lib/theme";
+import { track } from "@/lib/track";
 import { toggleWish, useWishlist } from "@/lib/wishlist";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -59,7 +61,14 @@ export default function ProductDetail() {
   const [expanded, setExpanded] = useState(false);
   const [descLines, setDescLines] = useState(0);
   const [added, setAdded] = useState(false);
-  const [notifyOn, setNotifyOn] = useState(false);
+
+  // Variant selection is derived before the early returns so the restock-subscription
+  // hooks below can run unconditionally.
+  const variants = product?.variants ?? [];
+  const selected: ProductVariant | undefined = variants.find((v) => v.id === variantId) ?? variants[0];
+  // Persisted "Notify me" — real subscription state, not a local flag (honest affordances).
+  const { data: subscribed = false } = useRestockSub(selected?.id);
+  const toggleSub = useToggleRestockSub();
 
   const enter = useRef(new Animated.Value(0)).current;
   const qtyScale = useRef(new Animated.Value(1)).current;
@@ -73,13 +82,33 @@ export default function ProductDetail() {
   useEffect(() => {
     if (product) recordView(product.slug);
   }, [product]);
+  // recs: a "view" when the product resolves, a "dwell" (time-on-screen) on unmount/switch.
+  useEffect(() => {
+    if (!product) return;
+    const id = product.id;
+    track("view", { productId: id, metadata: { slug: product.slug } });
+    const start = Date.now();
+    return () => {
+      const dwellMs = Date.now() - start;
+      if (dwellMs >= 1000) track("dwell", { productId: id, metadata: { dwell_ms: dwellMs } });
+    };
+  }, [product?.id]);
 
+  const { data: similarIds } = useSimilarProducts(product?.id);
   const similar = useMemo(() => {
     if (!product) return [];
-    return (data ?? [])
+    const all = data ?? [];
+    // Prefer embedding-ranked neighbours (fn_similar_products); fall back to a content
+    // filter until embeddings are populated — the section never blanks.
+    if (similarIds && similarIds.length) {
+      const byId = new Map(all.map((p) => [p.id, p]));
+      const ranked = similarIds.map((id) => byId.get(id)).filter(Boolean) as Product[];
+      if (ranked.length) return ranked.slice(0, 6);
+    }
+    return all
       .filter((p) => p.slug !== product.slug && ((product.scentFamily && p.scentFamily === product.scentFamily) || p.brand === product.brand))
       .slice(0, 6);
-  }, [data, product]);
+  }, [data, product, similarIds]);
 
   // ---- Loading & not-found, both with a way back ----
   if (!product) {
@@ -108,8 +137,6 @@ export default function ProductDetail() {
     );
   }
 
-  const variants = product.variants ?? [];
-  const selected: ProductVariant | undefined = variants.find((v) => v.id === variantId) ?? variants[0];
   const lineTotal = selected ? selected.priceMinor * qty : null;
   const outOfStock = selected?.band === "out";
   const stock = selected ? STOCK[selected.band] : null;
@@ -132,12 +159,12 @@ export default function ProductDetail() {
     Haptics.selectionAsync();
     heartScale.setValue(0.7);
     Animated.spring(heartScale, { toValue: 1, useNativeDriver: true, friction: 3, tension: 140 }).start();
-    toggleWish(product.slug);
+    toggleWish(product.slug, product.id);
   };
   const onAdd = () => {
     if (!selected) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    addToBag({ variantId: selected.id, slug: product.slug, sizeMl: selected.sizeMl, priceMinor: selected.priceMinor }, qty);
+    addToBag({ productId: product.id, variantId: selected.id, slug: product.slug, sizeMl: selected.sizeMl, priceMinor: selected.priceMinor }, qty);
     ease();
     setAdded(true);
     setTimeout(() => {
@@ -146,16 +173,23 @@ export default function ProductDetail() {
     }, 1600);
   };
   const onNotify = () => {
-    Haptics.notificationAsync(notifyOn ? Haptics.NotificationFeedbackType.Warning : Haptics.NotificationFeedbackType.Success);
+    if (!selected) return;
+    if (!session) {
+      router.push("/login"); // restock alerts need an account to deliver to
+      return;
+    }
+    const next = !subscribed;
+    Haptics.notificationAsync(next ? Haptics.NotificationFeedbackType.Success : Haptics.NotificationFeedbackType.Warning);
     ease();
-    setNotifyOn((v) => !v);
+    toggleSub.mutate({ variantId: selected.id, subscribe: next });
+    if (next) track("notify_subscribe", { productId: product.id, metadata: { variantId: selected.id, sizeMl: selected.sizeMl } });
   };
   const liked = wished.includes(product.slug);
 
   return (
     <View style={s.screen}>
       <StatusBar style="dark" />
-      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 96 }}>
+      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 96 }}>
         <Animated.View style={{ opacity: enter }}>
           {/* hero */}
           <View style={[s.hero, { height: heroH }]}>
@@ -266,10 +300,10 @@ export default function ProductDetail() {
                 <View style={{ flex: 1 }}>
                   <AppText variant="body">{selected?.sizeMl} ml is out of stock</AppText>
                   <AppText variant="caption" style={{ marginTop: 2 }}>
-                    {notifyOn ? "We'll message you the moment it returns." : "We'll tell you the moment it returns."}
+                    {subscribed ? "You're on the list — we'll tell you the moment it returns." : "We'll tell you the moment it returns."}
                   </AppText>
                 </View>
-                <LinkLabel label={notifyOn ? "Added" : "Notify me"} onPress={onNotify} color={colors.accent} />
+                <LinkLabel label={subscribed ? "Added" : "Notify me"} onPress={onNotify} color={colors.accent} />
               </View>
             ) : null}
           </View>
@@ -324,18 +358,27 @@ export default function ProductDetail() {
         </Animated.View>
       </ScrollView>
 
-      {/* fixed hero controls */}
-      <BackButton onPress={() => router.back()} style={[s.floatL, { top: insets.top + space.md }]} />
-      <Pressable onPress={toggleLike} style={[s.floatR, { top: insets.top + space.md }]} hitSlop={12} accessibilityRole="button" accessibilityLabel={liked ? "Remove from saved" : "Save"}>
-        <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-          <Heart size={24} color={colors.ink} weight={liked ? "fill" : "regular"} />
-        </Animated.View>
+      {/* status bar always sits on paper — content scrolls under this mask, never under the clock */}
+      <View style={[s.statusMask, { height: insets.top }]} />
+
+      {/* fixed hero controls — frosted for contrast over photography */}
+      <Pressable onPress={() => router.back()} style={[s.floatL, { top: insets.top + space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
+        <FrostCircle size={44}>
+          <ArrowLeft size={22} color={colors.ink} weight="regular" />
+        </FrostCircle>
+      </Pressable>
+      <Pressable onPress={toggleLike} style={[s.floatR, { top: insets.top + space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel={liked ? "Remove from saved" : "Save"}>
+        <FrostCircle size={44}>
+          <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+            <Heart size={22} color={colors.ink} weight={liked ? "fill" : "regular"} />
+          </Animated.View>
+        </FrostCircle>
       </Pressable>
 
       {/* sticky CTA */}
       <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
         {outOfStock ? (
-          <Button title={notifyOn ? "We'll let you know" : "Notify me when back in stock"} variant="secondary" haptic={false} onPress={onNotify} />
+          <Button title={subscribed ? "We'll let you know" : "Notify me when back in stock"} variant="secondary" haptic={false} onPress={onNotify} />
         ) : (
           <Button title={added ? "Added to bag" : "Add to bag"} trailing={added ? undefined : formatLe(lineTotal)} haptic={false} disabled={!selected} onPress={onAdd} />
         )}
@@ -370,7 +413,8 @@ const s = StyleSheet.create({
   reviewSummary: { flexDirection: "row", alignItems: "baseline", gap: space.md, marginTop: space.md, paddingBottom: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
   reviewItem: { paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
 
-  floatL: { position: "absolute", left: space.gutter },
-  floatR: { position: "absolute", right: space.gutter },
+  statusMask: { position: "absolute", top: 0, left: 0, right: 0, backgroundColor: colors.paper, zIndex: 10 },
+  floatL: { position: "absolute", left: space.gutter, zIndex: 11 },
+  floatR: { position: "absolute", right: space.gutter, zIndex: 11 },
   footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.gutter, paddingTop: space.lg, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
 });

@@ -2,18 +2,20 @@ import { Image } from "expo-image";
 import { Redirect, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ArrowRight } from "phosphor-react-native";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Pressable, RefreshControl, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ProductCard } from "@/components/ProductCard";
 import { HomeSkeleton } from "@/components/Skeleton";
 import { AppText } from "@/components/Text";
-import { Avatar, BellButton, LinkLabel, SectionHeader } from "@/components/ui";
+import { TrackImpression, reportScroll, resetImpressionRegistry } from "@/components/TrackImpression";
+import { HeaderActions, LinkLabel, SectionHeader } from "@/components/ui";
 import { useFeaturedCollections, useHomeCarousel, useProducts, useScentFamilies } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { useOnboarded } from "@/lib/onboarding";
 import { imageUrl } from "@/lib/supabase";
 import { colors, space } from "@/lib/theme";
+import { track } from "@/lib/track";
 
 // Local art shown until the owner curates the home in the admin (mirrors the bands' fallbacks).
 const HERO_FALLBACK = require("../../assets/home/hero-gold.jpg");
@@ -39,12 +41,6 @@ function greeting(name?: string) {
   return name ? `${part}, ${name}` : part;
 }
 
-function initialsOf(name?: string) {
-  if (!name) return undefined;
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  return parts.map((p) => p[0]?.toUpperCase() ?? "").join("") || undefined;
-}
-
 export default function Home() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -59,6 +55,13 @@ export default function Home() {
 
   const products = data ?? [];
   const best = useMemo(() => products.slice(0, 8), [products]); // query already sorts by popularity
+
+  // recs: module-impression tracking. The registry is cleared on mount so a fresh visit
+  // re-measures; the scroll view feeds offset + viewport height to reportScroll().
+  const viewportH = useRef(0);
+  useEffect(() => {
+    resetImpressionRegistry();
+  }, []);
 
   const displayName = (session?.user?.user_metadata?.display_name as string | undefined)?.trim() || undefined;
   const firstName = displayName?.split(/\s+/)[0];
@@ -115,26 +118,36 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: space["3xl"] }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.ink40} colors={[colors.accent]} />}
+        scrollEventThrottle={100}
+        onScroll={(e) => reportScroll(e.nativeEvent.contentOffset.y, viewportH.current)}
+        onLayout={(e) => {
+          viewportH.current = e.nativeEvent.layout.height;
+          reportScroll(0, e.nativeEvent.layout.height);
+        }}
       >
         {/* header */}
         <View style={s.header}>
           <AppText variant="heading" numberOfLines={1} style={{ flex: 1 }}>
             {greeting(firstName)}
           </AppText>
-          <View style={s.actions}>
-            <BellButton onPress={() => router.push("/orders")} />
-            <Pressable onPress={() => router.push("/profile")} accessibilityRole="button" accessibilityLabel="Account">
-              <Avatar initials={initialsOf(displayName)} />
-            </Pressable>
-          </View>
+          <HeaderActions />
         </View>
 
         {/* hero image */}
-        <Pressable onPress={() => router.push(heroTo)} accessibilityRole="button" accessibilityLabel={heroCta}>
-          <View style={[s.hero, { height: heroH }]}>
-            <Image source={heroSource} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" transition={300} />
-          </View>
-        </Pressable>
+        <TrackImpression module="hero" position={0}>
+          <Pressable
+            onPress={() => {
+              track("module_tap", { module: "hero", position: 0, metadata: { to: String(heroTo) } });
+              router.push(heroTo);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={heroCta}
+          >
+            <View style={[s.hero, { height: heroH }]}>
+              <Image source={heroSource} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" transition={300} />
+            </View>
+          </Pressable>
+        </TrackImpression>
 
         {/* editorial block */}
         <View style={s.editorial}>
@@ -151,27 +164,33 @@ export default function Home() {
 
         {/* best sellers */}
         {best.length > 0 ? (
-          <View style={{ marginTop: space["5xl"] }}>
-            <SectionHeader title="Best sellers" trailing="View all" onPressTrailing={() => router.push("/shop")} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.rail}>
-              {best.map((p) => (
-                <ProductCard key={p.id} product={p} width={160} imageHeight={200} />
-              ))}
-            </ScrollView>
-          </View>
+          <TrackImpression module="best_sellers" position={1}>
+            <View style={{ marginTop: space["5xl"] }}>
+              <SectionHeader title="Best sellers" trailing="View all" onPressTrailing={() => router.push("/shop")} />
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.rail}>
+                {best.map((p, i) => (
+                  <ProductCard key={p.id} product={p} width={160} imageHeight={200} source="best_sellers" position={i} />
+                ))}
+              </ScrollView>
+            </View>
+          </TrackImpression>
         ) : null}
 
         {/* shop by note */}
         {noteRows.length > 0 ? (
+          <TrackImpression module="shop_by_note" position={2}>
           <View style={{ marginTop: space["5xl"] }}>
             <View style={s.gutter}>
               <AppText variant="heading">Shop by note</AppText>
             </View>
             <View style={[s.gutter, { marginTop: space.sm }]}>
-              {noteRows.map((n) => (
+              {noteRows.map((n, i) => (
                 <Pressable
                   key={n.family}
-                  onPress={() => router.push({ pathname: "/shop", params: { family: n.family } })}
+                  onPress={() => {
+                    track("module_tap", { module: "shop_by_note", position: i, metadata: { family: n.family } });
+                    router.push({ pathname: "/shop", params: { family: n.family } });
+                  }}
                   style={s.noteRow}
                   accessibilityRole="button"
                   accessibilityLabel={`Shop ${n.label}`}
@@ -186,13 +205,18 @@ export default function Home() {
               ))}
             </View>
           </View>
+          </TrackImpression>
         ) : null}
 
         {/* collection */}
         {collection ? (
+          <TrackImpression module="collection" position={3}>
           <View style={{ marginTop: space["5xl"] }}>
             <Pressable
-              onPress={() => router.push({ pathname: "/shop", params: { collection: collection.slug } })}
+              onPress={() => {
+                track("module_tap", { module: "collection", position: 3, metadata: { slug: collection.slug } });
+                router.push({ pathname: "/shop", params: { collection: collection.slug } });
+              }}
               accessibilityRole="button"
               accessibilityLabel={`Shop ${collection.name}`}
             >
@@ -213,6 +237,7 @@ export default function Home() {
               ) : null}
             </View>
           </View>
+          </TrackImpression>
         ) : null}
 
         {/* browse all */}
@@ -230,7 +255,6 @@ export default function Home() {
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   header: { flexDirection: "row", alignItems: "center", gap: space.md, paddingHorizontal: space.gutter, paddingVertical: space.md },
-  actions: { flexDirection: "row", alignItems: "center", gap: space.lg },
   hero: { backgroundColor: colors.surface, marginTop: space.sm },
   editorial: { paddingHorizontal: space.gutter, marginTop: space["2xl"] },
   rail: { paddingHorizontal: space.gutter, gap: space.lg, paddingTop: space.lg },
