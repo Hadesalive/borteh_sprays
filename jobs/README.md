@@ -12,13 +12,11 @@ product page's "Similar scents" (`fn_similar_products`) and, later, taste vector
 ### Setup (once)
 ```bash
 cd jobs
-npm install                     # pulls transformers.js + postgres; model downloads on first run
+npm install                     # pulls transformers.js; the ~90MB model downloads on first run
 ```
-Create `jobs/.env` with a **direct** Postgres connection string
-(Supabase → Project Settings → Database → Connection string → URI):
-```
-DATABASE_URL=postgres://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres
-```
+No extra config: the job reads `SUPABASE_URL` + `SUPABASE_SECRET_KEY` (service role) and
+writes via the REST API. Those already live in `scripts/.env` (auto-loaded), so if the audit
+script works, this does too. (You can also put them in `jobs/.env` or the shell env.)
 
 ### Run
 ```bash

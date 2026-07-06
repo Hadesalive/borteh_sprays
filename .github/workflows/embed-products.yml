@@ -1,0 +1,41 @@
+name: Embed products
+
+# Keeps product embeddings fresh for the app's "Similar scents" (recs Phase 2.1).
+# The job only (re)embeds products that are new or changed since their last embedding, so a
+# run is a cheap no-op when the catalog hasn't changed. Runs nightly; can also be run by hand.
+
+on:
+  repository_dispatch:
+    types: [embed-products] # fired by the DB trigger when a product is added/edited
+  schedule:
+    - cron: "0 3 * * *" # 03:00 UTC nightly (after the profile rollup at 02:00), as a backstop
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "Re-embed ALL active products (not just new/changed)"
+        type: boolean
+        default: false
+
+# Don't pile up runs if one is slow.
+concurrency:
+  group: embed-products
+  cancel-in-progress: false
+
+jobs:
+  embed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install job deps
+        working-directory: jobs
+        run: npm install --no-audit --no-fund
+      - name: Embed products
+        working-directory: jobs
+        env:
+          # Project URL is public; only the service key is a secret.
+          SUPABASE_URL: https://oltuvavkssvgmqnduxvh.supabase.co
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: node embed-products.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.all) && '--all' || '' }}

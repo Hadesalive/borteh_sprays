@@ -9,7 +9,6 @@
     "embed:all": "node embed-products.mjs --all"
   },
   "dependencies": {
-    "@huggingface/transformers": "^3.0.2",
-    "postgres": "^3.4.4"
+    "@huggingface/transformers": "^3.0.2"
   }
 }
