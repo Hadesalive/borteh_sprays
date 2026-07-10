@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { Barcode, DeviceMobile, MagnifyingGlass, Minus, Money, Plus, Sparkle, Trash } from "@phosphor-icons/react";
+import { Barcode, Cards, DeviceMobile, MagnifyingGlass, Minus, Money, Plus, Sparkle, Trash, X } from "@phosphor-icons/react";
 
 import { formatLe } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -17,9 +17,25 @@ export type CatalogItem = {
   image: string | null;
 };
 
-export function PosTerminal({ catalog }: { catalog: CatalogItem[] }) {
+export type PosCombo = {
+  id: string;
+  name: string;
+  items: { variantId: string; qty: number }[];
+  sumMinor: number;
+  dealMinor: number;
+  savingsMinor: number;
+};
+
+// One tapped pair. Adding a combo drops its bottles into the cart and records a
+// removable deal here; the saving is independent of the line items so staff can
+// still adjust bottles by hand.
+type Claim = { key: number; comboId: string; name: string; savingsMinor: number };
+
+export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combos: PosCombo[] }) {
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Record<string, number>>({});
+  const [claims, setClaims] = useState<Claim[]>([]);
+  const [claimSeq, setClaimSeq] = useState(0);
   const [tender, setTender] = useState<"cash" | "monime">("cash");
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -33,6 +49,8 @@ export function PosTerminal({ catalog }: { catalog: CatalogItem[] }) {
 
   const lines = Object.entries(cart).map(([id, qty]) => ({ item: byId.get(id)!, qty })).filter((l) => l.item);
   const subtotal = lines.reduce((s, l) => s + l.item.price * l.qty, 0);
+  const discount = Math.min(claims.reduce((s, c) => s + c.savingsMinor, 0), subtotal);
+  const total = subtotal - discount;
 
   function add(id: string) {
     setMsg(null);
@@ -45,6 +63,19 @@ export function PosTerminal({ catalog }: { catalog: CatalogItem[] }) {
       else next[id] = qty;
       return next;
     });
+  }
+  function addCombo(combo: PosCombo) {
+    setMsg(null);
+    setCart((c) => {
+      const next = { ...c };
+      for (const it of combo.items) next[it.variantId] = (next[it.variantId] ?? 0) + it.qty;
+      return next;
+    });
+    setClaims((cs) => [...cs, { key: claimSeq, comboId: combo.id, name: combo.name, savingsMinor: combo.savingsMinor }]);
+    setClaimSeq((n) => n + 1);
+  }
+  function removeClaim(key: number) {
+    setClaims((cs) => cs.filter((c) => c.key !== key));
   }
 
   function charge() {
@@ -59,9 +90,10 @@ export function PosTerminal({ catalog }: { catalog: CatalogItem[] }) {
       qty: l.qty,
     }));
     start(async () => {
-      const res = await createPosSale(payload, tender);
+      const res = await createPosSale(payload, tender, discount);
       if (res.ok) {
         setCart({});
+        setClaims([]);
         setMsg({ ok: true, text: `Sale ${res.orderNumber} recorded.` });
       } else {
         setMsg({ ok: false, text: res.error });
@@ -83,6 +115,29 @@ export function PosTerminal({ catalog }: { catalog: CatalogItem[] }) {
           />
           <MagnifyingGlass className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         </div>
+
+        {combos.length > 0 ? (
+          <div className="mb-5">
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <Cards weight="duotone" className="size-3.5" /> Pairs
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {combos.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => addCombo(c)}
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left transition-colors hover:border-foreground/20 hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+                >
+                  <span className="text-sm font-medium">{c.name}</span>
+                  <span className="nums rounded bg-success-soft px-1.5 py-0.5 text-[0.7rem] font-medium text-success-soft-foreground">
+                    save {formatLe(c.savingsMinor)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {filtered.map((p) => (
@@ -143,9 +198,28 @@ export function PosTerminal({ catalog }: { catalog: CatalogItem[] }) {
         </ul>
 
         <div className="mt-4 space-y-1.5 border-t border-border pt-4 text-sm">
+          {claims.length > 0 ? (
+            <>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Subtotal</span>
+                <span className="nums">{formatLe(subtotal, 2)}</span>
+              </div>
+              {claims.map((c) => (
+                <div key={c.key} className="flex items-center justify-between text-success-soft-foreground">
+                  <span className="flex items-center gap-1.5">
+                    {c.name} deal
+                    <button type="button" aria-label={`Remove ${c.name} deal`} onClick={() => removeClaim(c.key)} className="text-muted-foreground transition-colors hover:text-destructive">
+                      <X className="size-3.5" />
+                    </button>
+                  </span>
+                  <span className="nums">−{formatLe(c.savingsMinor, 2)}</span>
+                </div>
+              ))}
+            </>
+          ) : null}
           <div className="flex justify-between text-base font-semibold">
             <span>Total</span>
-            <span className="nums">{formatLe(subtotal, 2)}</span>
+            <span className="nums">{formatLe(total, 2)}</span>
           </div>
         </div>
 
@@ -177,7 +251,7 @@ export function PosTerminal({ catalog }: { catalog: CatalogItem[] }) {
           disabled={lines.length === 0 || pending}
           className="mt-2 inline-flex h-11 w-full items-center justify-center rounded-md bg-primary text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
         >
-          {pending ? "Recording…" : `Charge ${formatLe(subtotal, 2)}`}
+          {pending ? "Recording…" : `Charge ${formatLe(total, 2)}`}
         </button>
       </aside>
     </div>

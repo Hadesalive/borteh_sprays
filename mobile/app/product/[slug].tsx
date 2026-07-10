@@ -11,11 +11,13 @@ import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import { ListRow } from "@/components/ListRow";
 import { ProductCard } from "@/components/ProductCard";
+import { ComboRail } from "@/components/ComboRail";
 import { AppText } from "@/components/Text";
 import { FrostCircle, LinkLabel } from "@/components/ui";
 import { type Band, type Concentration, noteLine, type Product, type ProductVariant, useProducts, useSimilarProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { addToBag } from "@/lib/cart";
+import { useCombosForProduct } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { useRestockSub, useToggleRestockSub } from "@/lib/notifications";
 import { productImage } from "@/lib/productImage";
@@ -94,6 +96,7 @@ export default function ProductDetail() {
     };
   }, [product?.id]);
 
+  const combos = useCombosForProduct(product?.id);
   const { data: similarIds } = useSimilarProducts(product?.id);
   const similar = useMemo(() => {
     if (!product) return [];
@@ -307,6 +310,9 @@ export default function ProductDetail() {
               </View>
             ) : null}
           </View>
+
+          {/* complete the pair — combos containing this fragrance */}
+          <ComboRail title="Complete the pair" combos={combos} onOpen={(slug) => router.push({ pathname: "/combo/[slug]", params: { slug } })} />
 
           {/* similar scents */}
           {similar.length > 0 ? (

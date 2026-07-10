@@ -7,13 +7,16 @@ import { ArrowRight } from "phosphor-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, RefreshControl, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ComboRail } from "@/components/ComboRail";
 import { FeedRail } from "@/components/FeedRail";
+import { LeaderboardBand } from "@/components/LeaderboardBand";
 import { HomeSkeleton } from "@/components/Skeleton";
 import { AppText } from "@/components/Text";
 import { TrackImpression, reportScroll, resetImpressionRegistry } from "@/components/TrackImpression";
 import { HeaderActions, SearchButton } from "@/components/ui";
 import { useFeaturedCollections, useHomeCarousel, useProducts, useScentFamilies } from "@/lib/api";
 import { useSession } from "@/lib/auth";
+import { useCombos } from "@/lib/combos";
 import { useHomeFeed, useMyTopFamilies, useRankedCollections } from "@/lib/feed";
 import { useOnboarded } from "@/lib/onboarding";
 import { imageUrl } from "@/lib/supabase";
@@ -61,6 +64,7 @@ export default function Home() {
   const products = data ?? [];
   const { modules } = useHomeFeed();
   const topFamilies = useMyTopFamilies(signedIn);
+  const combos = useCombos();
 
   const viewportH = useRef(0);
   const [headerH, setHeaderH] = useState(insets.top + 52); // measured on layout; estimate avoids first-frame jump
@@ -215,6 +219,9 @@ export default function Home() {
         {/* first personalized product rail — products above the fold */}
         {firstRail ? <FeedRail key={firstRail.key} module={firstRail.key} title={firstRail.title} products={firstRail.products} position={2} /> : null}
 
+        {/* leaderboard teaser — top buyers + your standing; self-hides until there's a board */}
+        <LeaderboardBand position={3} />
+
         {/* collections — swipeable shelf of rounded text-on-image cards, ordered per user */}
         {orderedCollections.length > 0 ? (
           <TrackImpression module="collection" position={3}>
@@ -255,6 +262,9 @@ export default function Home() {
             </View>
           </TrackImpression>
         ) : null}
+
+        {/* perfect pairs — curated combos */}
+        <ComboRail title="Perfect pairs" combos={combos} onOpen={(slug) => router.push({ pathname: "/combo/[slug]", params: { slug } })} onSeeAll={() => router.push("/pairs")} />
 
         {/* remaining personalized rails */}
         {restRails.map((m, i) => (

@@ -1,7 +1,7 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { storageUrl } from "@/lib/supabase/storage";
 import { PageHeader } from "@/components/admin/page-header";
-import { PosTerminal, type CatalogItem } from "@/components/admin/pos-terminal";
+import { PosTerminal, type CatalogItem, type PosCombo } from "@/components/admin/pos-terminal";
 
 export const dynamic = "force-dynamic";
 
@@ -38,10 +38,34 @@ export default async function PosPage() {
     .filter((x): x is CatalogItem => x !== null)
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  // Deal combos the counter can add in one tap — only pairs whose every bottle is
+  // an addable catalog variant and whose deal price actually saves money.
+  const { data: comboRows } = await db
+    .from("combo")
+    .select("id, name, combo_price_minor, combo_item(variant_id, qty)")
+    .eq("is_active", true)
+    .is("deleted_at", null)
+    .not("combo_price_minor", "is", null);
+
+  const catById = new Map(catalog.map((c) => [c.id, c]));
+  type ComboRaw = { id: string; name: string; combo_price_minor: number | null; combo_item: { variant_id: string; qty: number }[] | null };
+  const combos: PosCombo[] = ((comboRows ?? []) as unknown as ComboRaw[])
+    .map((c): PosCombo | null => {
+      const items = (c.combo_item ?? []).map((ci) => ({ variantId: ci.variant_id, qty: ci.qty }));
+      if (items.length < 2 || !items.every((it) => catById.has(it.variantId))) return null;
+      const sumMinor = items.reduce((s, it) => s + catById.get(it.variantId)!.price * it.qty, 0);
+      const dealMinor = c.combo_price_minor ?? sumMinor;
+      const savingsMinor = sumMinor - dealMinor;
+      if (savingsMinor <= 0) return null;
+      return { id: c.id, name: c.name, items, sumMinor, dealMinor, savingsMinor };
+    })
+    .filter((x): x is PosCombo => x !== null)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <>
       <PageHeader title="Point of sale" description="Record a counter sale — search or tap to add." />
-      <PosTerminal catalog={catalog} />
+      <PosTerminal catalog={catalog} combos={combos} />
     </>
   );
 }

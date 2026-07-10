@@ -18,6 +18,7 @@ export type AppNotification = {
   body: string;
   referenceType: string | null; // 'order' | 'product_variant' | …
   referenceId: string | null;
+  imagePath: string | null; // product thumbnail (product_image.storage_path), null for notices
   readAt: string | null;
   createdAt: string;
 };
@@ -31,6 +32,7 @@ export const normalizeNotification = (r: any): AppNotification => ({
   body: r.body,
   referenceType: r.reference_type,
   referenceId: r.reference_id,
+  imagePath: r.image_path ?? null,
   readAt: r.read_at,
   createdAt: r.created_at,
 });
@@ -47,7 +49,7 @@ export function useNotifications() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("notification")
-        .select("id, type, title, body, reference_type, reference_id, read_at, created_at")
+        .select("id, type, title, body, reference_type, reference_id, image_path, read_at, created_at")
         .eq("user_id", uid!)
         .order("created_at", { ascending: false })
         .limit(50);
@@ -74,7 +76,7 @@ export function useNotices() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("notification")
-        .select("id, type, title, body, reference_type, reference_id, read_at, created_at")
+        .select("id, type, title, body, reference_type, reference_id, image_path, read_at, created_at")
         .eq("user_id", uid!)
         .in("type", ["system", "promo"])
         .order("created_at", { ascending: false })

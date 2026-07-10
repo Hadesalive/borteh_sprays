@@ -1,4 +1,5 @@
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Bell } from "phosphor-react-native";
@@ -16,6 +17,7 @@ import { useProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { type AppNotification, timeAgo, useMarkRead, useNotifications } from "@/lib/notifications";
 import { enablePush, syncBadge, usePushStatus } from "@/lib/push";
+import { imageUrl } from "@/lib/supabase";
 import { colors, font, space } from "@/lib/theme";
 
 function RowSkeleton() {
@@ -111,6 +113,7 @@ export default function Notifications() {
               const isUnread = !n.readAt;
               const lead = n.title ?? n.body;
               const detail = n.title ? n.body : null;
+              const thumb = n.imagePath ? imageUrl(n.imagePath) : null;
               return (
                 <Pressable key={n.id} onPress={() => openItem(n)} style={s.row} accessibilityRole="button" accessibilityLabel={lead}>
                   <View style={s.iconSlot}>
@@ -126,9 +129,16 @@ export default function Notifications() {
                       </AppText>
                     ) : null}
                   </View>
-                  <AppText variant="caption" style={{ color: colors.ink40 }}>
-                    {timeAgo(n.createdAt)}
-                  </AppText>
+                  <View style={s.metaCol}>
+                    <AppText variant="caption" style={{ color: colors.ink40 }}>
+                      {timeAgo(n.createdAt)}
+                    </AppText>
+                    {thumb ? (
+                      <View style={s.thumb}>
+                        <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" recyclingKey={n.id} />
+                      </View>
+                    ) : null}
+                  </View>
                 </Pressable>
               );
             })}
@@ -148,6 +158,8 @@ const s = StyleSheet.create({
   pushCard: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space.lg, borderWidth: 1, borderColor: colors.line, padding: space.lg },
   row: { flexDirection: "row", alignItems: "center", gap: space.md, paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
   iconSlot: { width: 24, alignItems: "center" },
+  metaCol: { alignItems: "flex-end", gap: space.sm },
+  thumb: { width: 44, height: 44, borderRadius: 8, overflow: "hidden", backgroundColor: colors.surface },
   titleUnread: { fontFamily: font.semibold },
   titleRead: { color: colors.ink60 },
 });

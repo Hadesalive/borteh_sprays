@@ -1,7 +1,7 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { BellRinging, Coins, Heart, MegaphoneSimple, PencilSimple, Receipt, Sparkle, Ticket, User, UsersThree, WhatsappLogo } from "phosphor-react-native";
+import { BellRinging, Coins, Heart, Lightbulb, MegaphoneSimple, PencilSimple, Receipt, Sparkle, Ticket, Trophy, User, UsersThree, WhatsappLogo } from "phosphor-react-native";
 import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
@@ -65,12 +65,14 @@ export default function Profile() {
 
             <View>
               <ListRow icon={<Coins size={20} color={colors.ink} weight="regular" />} title="Points" value={String(loyalty?.points ?? 0)} onPress={() => router.push("/points")} />
+              <ListRow icon={<Trophy size={20} color={colors.ink} weight="regular" />} title="Leaderboard" onPress={() => router.push("/leaderboard")} />
               <ListRow icon={<Receipt size={20} color={colors.ink} weight="regular" />} title="Orders" value={orderCount ? String(orderCount) : undefined} onPress={() => router.push("/orders")} />
               <ListRow icon={<Heart size={20} color={colors.ink} weight="regular" />} title="Saved fragrances" value={saved.length ? String(saved.length) : undefined} onPress={() => router.push("/wishlist")} />
               <ListRow icon={<Ticket size={20} color={colors.ink} weight="regular" />} title="Coupons" value={coupons?.length ? String(coupons.length) : undefined} onPress={() => router.push("/coupons")} />
               <ListRow icon={<MegaphoneSimple size={20} color={colors.ink} weight="regular" />} title="Notices" onPress={() => router.push("/notices")} />
               <ListRow icon={<UsersThree size={20} color={colors.ink} weight="regular" />} title="Invite friends" onPress={() => router.push("/invite")} />
               <ListRow icon={<Sparkle size={20} color={colors.ink} weight="regular" />} title="Scent preferences" onPress={() => router.push("/scent-preferences")} />
+              <ListRow icon={<Lightbulb size={20} color={colors.ink} weight="regular" />} title="How to use Borteh" onPress={() => router.push("/tips")} />
               <ListRow icon={<BellRinging size={20} color={colors.ink} weight="regular" />} title="Notification settings" onPress={() => router.push("/preferences")} />
               <ListRow icon={<PencilSimple size={20} color={colors.ink} weight="regular" />} title="Edit profile" onPress={() => router.push("/edit-profile")} />
               {storePhone ? <ListRow icon={<WhatsappLogo size={20} color={colors.ink} weight="regular" />} title="Message us on WhatsApp" onPress={whatsapp} /> : null}

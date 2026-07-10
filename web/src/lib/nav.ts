@@ -6,6 +6,7 @@ import {
   Package,
   Drop,
   Stack,
+  Cards,
   Sparkle,
   DeviceMobile,
   ChartLineUp,
@@ -35,6 +36,7 @@ export const catalogNav: NavItem[] = [
   { title: "Products", href: "/products", icon: Drop },
   { title: "Inventory", href: "/inventory", icon: Package, badge: 4 },
   { title: "Collections", href: "/collections", icon: Stack },
+  { title: "Combos", href: "/combos", icon: Cards },
   { title: "Brands", href: "/brands", icon: Sparkle },
   { title: "Storefront", href: "/storefront", icon: DeviceMobile },
 ];
