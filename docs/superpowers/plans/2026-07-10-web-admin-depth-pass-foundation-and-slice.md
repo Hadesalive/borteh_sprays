@@ -178,7 +178,7 @@ describe("formatPct", () => {
 - [ ] **Step 6: Run it**
 
 Run: `npm --prefix web test`
-Expected: PASS, 5 tests. If `formatLe(245_050, 2)` fails, read `src/lib/format.ts` and correct the *test* to the real behavior — this task proves the harness works, it does not change `format.ts`.
+Expected: PASS, 5 tests. These assertions were checked against `src/lib/format.ts` when the plan was written; `formatLe(245_050, 2)` is `"Le 2,450.50"`. If any fails, that is a real bug in `format.ts` — report it, do not weaken the test to match.
 
 - [ ] **Step 7: Commit**
 
@@ -215,8 +215,13 @@ This is the mechanism that enforces pixel-neutrality. The baseline is captured *
 Create `web/src/app/__visual/page.tsx`. It reproduces the *current* v5 chrome literally, copied from `app/(dashboard)/page.tsx:39-43` and `app/(dashboard)/orders/page.tsx:96`:
 
 ```tsx
+import { notFound } from "next/navigation";
+
 // Dev-only visual baseline. Renders v5 chrome with no data so Playwright can
 // screenshot-diff it. Task 3 and Task 4 must not change these pixels.
+//
+// 404s in production: this is a test fixture, not a page the shop owner or
+// anyone else should ever be able to reach.
 export const dynamic = "force-static";
 
 const card =
@@ -225,6 +230,8 @@ const bevel =
   "shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_-1px_0_rgba(0,0,0,0.25),0_1px_0_rgba(26,26,26,0.07)]";
 
 export default function VisualBaselinePage() {
+  if (process.env.NODE_ENV === "production") notFound();
+
   return (
     <main className="bg-background p-8">
       <div data-testid="card-default" className={`${card} w-80 p-4`}>
@@ -571,11 +578,20 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 **Interfaces:**
 - Consumes: nothing
-- Produces: two views the query layer reads in Task 7.
-  - `admin_overview_stats` — exactly one row. Columns: `revenue_today_minor bigint`, `revenue_7d_minor bigint`, `revenue_prev_7d_minor bigint`, `orders_7d int`, `pending_count int`, `confirmed_count int`, `out_for_delivery_count int`, `delivered_7d_count int`, `low_stock_count int`.
-  - `admin_order_stats` — exactly one row. Columns: `pending_count int`, `confirmed_count int`, `out_for_delivery_count int`, `delivered_7d_count int`, `cancelled_count int`, `cod_to_collect_minor bigint`.
+- Produces: seven views the query layer reads in Task 7. Every one is inherently bounded — the panel views carry their own `limit`.
+  - `admin_overview_stats` — 1 row: `revenue_today_minor bigint`, `revenue_7d_minor bigint`, `revenue_prev_7d_minor bigint`, `orders_7d int`, `orders_prev_7d int`, `pending_count int`, `confirmed_count int`, `out_for_delivery_count int`, `delivered_7d_count int`, `items_sold_7d int`, `low_stock_count int`, `out_of_stock_count int`, `restock_waiting_count int`.
+  - `admin_order_stats` — 1 row: `pending_count int`, `confirmed_count int`, `out_for_delivery_count int`, `delivered_7d_count int`, `cancelled_count int`, `cod_to_collect_minor bigint`.
+  - `admin_revenue_daily` — 7 rows: `day date`, `revenue_minor bigint`.
+  - `admin_top_sellers` — ≤5 rows: `product_name text`, `variant_label text`, `revenue_minor bigint`.
+  - `admin_low_stock` — ≤4 rows: `product_name text`, `size_ml int`, `qty_available int`.
+  - `admin_restock_demand` — ≤4 rows: `product_name text`, `size_ml int`, `subscriber_count int`.
+  - `admin_order_queue` — ≤5 rows: `id uuid`, `order_number text`, `status text`, `total_minor bigint`, `customer_name text`, `placed_at timestamptz`.
 
 `app/(dashboard)/page.tsx:56-59` selects every row of `order`, `order_item`, and `inventory_item` and aggregates in JavaScript. `app/(dashboard)/orders/page.tsx:37-39` selects the whole `order` table to derive six numbers. Both move into SQL.
+
+**The Overview renders more than scalars.** It derives top sellers (`:110-116`), a named low-stock list (`:128-133`), restock demand (`:137-145`), the live queue (`:148`), and a 7-day revenue series (`:100`) from those whole-table selects. `PRODUCT.md` names "see what's selling" as one of the owner's jobs, so **none of these panels may be deleted** — the redesign changes their hierarchy, not their existence. Each gets a bounded view.
+
+**Known behavior change:** `admin_top_sellers` covers the last 7 days only. The current code falls back to all-time when the 7-day window is empty (`:106`). That fallback is dropped; on a quiet week the panel shows its empty state, which the page now has.
 
 - [ ] **Step 1: Confirm the migration name sorts last (HARD RULE)**
 
@@ -630,6 +646,11 @@ select
     where at >= date_trunc('day', now()) - interval '6 days'
   )::int as orders_7d,
 
+  count(*) filter (
+    where at >= date_trunc('day', now()) - interval '13 days'
+      and at <  date_trunc('day', now()) - interval '6 days'
+  )::int as orders_prev_7d,
+
   count(*) filter (where status = 'pending_payment')::int
     as pending_count,
   count(*) filter (where status in ('confirmed', 'preparing'))::int
@@ -641,11 +662,105 @@ select
       and at >= date_trunc('day', now()) - interval '6 days'
   )::int as delivered_7d_count,
 
+  -- Uncorrelated scalar subqueries; legal beside aggregates.
+  (select coalesce(sum(oi.qty), 0)
+     from public.order_item oi
+     join public."order" o on o.id = oi.order_id
+    where o.status not in ('cancelled', 'returned')
+      and coalesce(o.placed_at, o.created_at)
+          >= date_trunc('day', now()) - interval '6 days')::int as items_sold_7d,
+
   (select count(*) from public.inventory_item
-   where qty_available <= reorder_point)::int as low_stock_count
+   where qty_available <= reorder_point)::int as low_stock_count,
+  (select count(*) from public.inventory_item
+   where qty_available <= 0)::int as out_of_stock_count,
+  (select count(*) from public.restock_subscription
+   where status = 'active')::int as restock_waiting_count
 from live;
 
 alter view public.admin_overview_stats set (security_invoker = on);
+
+-- The 7-day trend line. generate_series guarantees a row per day even with
+-- no orders, so the chart never collapses to fewer than 7 points.
+create or replace view public.admin_revenue_daily as
+select
+  d::date as day,
+  coalesce(sum(o.total_minor), 0)::bigint as revenue_minor
+from generate_series(
+       date_trunc('day', now()) - interval '6 days',
+       date_trunc('day', now()),
+       interval '1 day'
+     ) as d
+left join public."order" o
+  on coalesce(o.placed_at, o.created_at) >= d
+ and coalesce(o.placed_at, o.created_at) <  d + interval '1 day'
+ and o.status not in ('cancelled', 'returned')
+group by d
+order by d;
+
+alter view public.admin_revenue_daily set (security_invoker = on);
+
+create or replace view public.admin_top_sellers as
+select
+  oi.product_name_snapshot            as product_name,
+  min(oi.variant_label_snapshot)      as variant_label,
+  sum(oi.line_total_minor)::bigint    as revenue_minor
+from public.order_item oi
+join public."order" o on o.id = oi.order_id
+where o.status not in ('cancelled', 'returned')
+  and coalesce(o.placed_at, o.created_at)
+      >= date_trunc('day', now()) - interval '6 days'
+group by oi.product_name_snapshot
+order by revenue_minor desc
+limit 5;
+
+alter view public.admin_top_sellers set (security_invoker = on);
+
+create or replace view public.admin_low_stock as
+select
+  p.name           as product_name,
+  pv.size_ml,
+  ii.qty_available
+from public.inventory_item ii
+join public.product_variant pv on pv.id = ii.variant_id
+join public.product p         on p.id  = pv.product_id
+where ii.qty_available <= ii.reorder_point
+order by ii.qty_available asc
+limit 4;
+
+alter view public.admin_low_stock set (security_invoker = on);
+
+create or replace view public.admin_restock_demand as
+select
+  p.name          as product_name,
+  pv.size_ml,
+  count(*)::int   as subscriber_count
+from public.restock_subscription rs
+join public.product_variant pv on pv.id = rs.variant_id
+join public.product p         on p.id  = pv.product_id
+where rs.status = 'active'
+group by p.name, pv.size_ml
+order by subscriber_count desc
+limit 4;
+
+alter view public.admin_restock_demand set (security_invoker = on);
+
+-- The live queue: orders still needing the owner's attention.
+create or replace view public.admin_order_queue as
+select
+  o.id,
+  o.order_number,
+  o.status,
+  o.total_minor,
+  coalesce(nullif(u.display_name, ''), 'Walk-in') as customer_name,
+  coalesce(o.placed_at, o.created_at)             as placed_at
+from public."order" o
+left join public.app_user u on u.id = o.user_id
+where o.status in ('pending_payment', 'confirmed', 'preparing', 'out_for_delivery')
+order by coalesce(o.placed_at, o.created_at) desc
+limit 5;
+
+alter view public.admin_order_queue set (security_invoker = on);
 
 create or replace view public.admin_order_stats as
 select
@@ -868,11 +983,36 @@ export type OverviewStats = {
   revenue_7d_minor: number;
   revenue_prev_7d_minor: number;
   orders_7d: number;
+  orders_prev_7d: number;
   pending_count: number;
   confirmed_count: number;
   out_for_delivery_count: number;
   delivered_7d_count: number;
+  items_sold_7d: number;
   low_stock_count: number;
+  out_of_stock_count: number;
+  restock_waiting_count: number;
+};
+
+export type RevenueDay = { day: string; revenue_minor: number };
+export type TopSeller = { product_name: string; variant_label: string; revenue_minor: number };
+export type LowStockRow = { product_name: string; size_ml: number; qty_available: number };
+export type RestockRow = { product_name: string; size_ml: number; subscriber_count: number };
+export type QueueRow = {
+  id: string;
+  order_number: string | null;
+  status: string;
+  total_minor: number;
+  customer_name: string;
+  placed_at: string;
+};
+
+export type OverviewPanels = {
+  revenueDaily: RevenueDay[];
+  topSellers: TopSeller[];
+  lowStock: LowStockRow[];
+  restockDemand: RestockRow[];
+  queue: QueueRow[];
 };
 
 /** One bounded row. Replaces three whole-table selects. */
@@ -885,6 +1025,34 @@ export async function getOverviewStats(
     .single();
   if (error) throw error;
   return data as OverviewStats;
+}
+
+/**
+ * The Overview's five panels. Every view carries its own LIMIT, so none of
+ * these can grow with the shop's history.
+ */
+export async function getOverviewPanels(
+  db: SupabaseClient,
+): Promise<OverviewPanels> {
+  const [daily, top, low, restock, queue] = await Promise.all([
+    db.from("admin_revenue_daily").select("*"),
+    db.from("admin_top_sellers").select("*"),
+    db.from("admin_low_stock").select("*"),
+    db.from("admin_restock_demand").select("*"),
+    db.from("admin_order_queue").select("*"),
+  ]);
+
+  for (const r of [daily, top, low, restock, queue]) {
+    if (r.error) throw r.error;
+  }
+
+  return {
+    revenueDaily: (daily.data ?? []) as RevenueDay[],
+    topSellers: (top.data ?? []) as TopSeller[],
+    lowStock: (low.data ?? []) as LowStockRow[],
+    restockDemand: (restock.data ?? []) as RestockRow[],
+    queue: (queue.data ?? []) as QueueRow[],
+  };
 }
 ```
 
@@ -1194,6 +1362,7 @@ export default async function OrdersPage({
           </p>
         </div>
         <ExportButton
+          label="Export this page"
           filename="borteh-orders.csv"
           headers={["Order", "Placed", "Customer", "Phone", "Channel", "Payment", "Status", "Total (Le)"]}
           rows={orders.map((o) => [`#${o.number}`, o.placed, o.customer, o.phone, o.channel, o.payment, o.statusLabel, formatLe(o.minor, 2)])}
@@ -1206,7 +1375,9 @@ export default async function OrdersPage({
 }
 ```
 
-Note what left: the `Plus` import, the `Link` import, the `/orders/new` button, the five status `Set`s, the `error` variable and its subtitle, and the whole JS summary computation. `ExportButton` now exports the current page only — that is a known, accepted change; a full export is Phase 3 work.
+Note what left: the `Plus` import, the `Link` import, the `/orders/new` button, the five status `Set`s, the `error` variable and its subtitle, and the whole JS summary computation.
+
+`ExportButton` now exports the visible page only, so **it must be relabelled "Export this page"** — the owner decided against a silent regression. If `ExportButton` has no `label` prop, add one defaulting to `"Export"`, and pass the new label from here. A server-action full export is tracked as Phase 3 work.
 
 Deleting those five `Set`s is what fixes the phantom-status bug. `PENDING` was `{"pending", "cod_pending"}`, and neither value is legal under the `order.status` check constraint, so the "pending" stat read `0` no matter how many orders awaited payment. `stats.pending_count` now counts `pending_payment`, which is the real status. **Expect this number to jump from 0 to a true count** — that is the fix landing, not a regression.
 
@@ -1288,10 +1459,12 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Create: `web/src/app/(dashboard)/error.tsx`
 
 **Interfaces:**
-- Consumes: `getOverviewStats` from `@/lib/queries/overview`; `listOrders` for the recent-orders panel; `Card`, `PageError`, `TableSkeleton`.
-- Produces: the Overview reads one row plus one bounded page of recent orders.
+- Consumes: `getOverviewStats` and `getOverviewPanels` from `@/lib/queries/overview`; `Card`, `PageError`, `Skeleton`.
+- Produces: the Overview reads one scalar row plus five bounded panel views. No whole-table select remains.
 
-`app/(dashboard)/page.tsx:56-59` currently selects every row of three tables. Hierarchy today is a flat grid of co-equal stat cards; `PRODUCT.md` names "the hero-metric template: a wall of big-number stat cards" as an anti-reference. Today's revenue becomes the single headline; the rest supports it.
+`app/(dashboard)/page.tsx:56-59` currently selects every row of three tables. Hierarchy today is a flat grid of **six co-equal stat cards** (`:169-176`); `PRODUCT.md` names "the hero-metric template: a wall of big-number stat cards" as an anti-reference. Today's revenue becomes the single headline; the rest supports it.
+
+**Preserve every panel.** Top sellers, low stock, restock demand, and the live queue all stay — they move down the page, they do not disappear. The six stat cards collapse into the headline plus inline supporting text.
 
 - [ ] **Step 1: Write the loading and error states**
 
@@ -1330,28 +1503,38 @@ export default function OverviewError({ reset }: { error: Error; reset: () => vo
 
 - [ ] **Step 2: Rewrite the data fetch**
 
-In `web/src/app/(dashboard)/page.tsx`, replace the four-query `Promise.all` (lines 56-59) and everything that derives from `orders`, `items`, `inv`, and `restock` with:
+In `web/src/app/(dashboard)/page.tsx`, delete the four-query `Promise.all` (lines 56-59), the `app_user` name lookup, and **every derivation from `orders`, `items`, `inv`, and `restock`** — lines 81-151, i.e. `live`, `last7`, `prev7`, `revenue7d`, `items7`, `itemBase`, `itemsSold`, `perOrder`, `byProduct`, `topSellers`, `topMax`, `delivered7`, `deliveredRate`, `invByVariant`, `labelFor`, `lowRows`, `lowStock`, `outCount`, `restockByVariant`, `restockRows`, `waiting`, `queue`, `queueTotal`. The SQL views replace all of it.
 
 ```tsx
-import { getOverviewStats } from "@/lib/queries/overview";
-import { listOrders } from "@/lib/queries/orders";
+import { getOverviewStats, getOverviewPanels } from "@/lib/queries/overview";
 
 // …
 
   const db = createServerClient();
-  const [stats, { rows: recent }] = await Promise.all([
+  const [stats, panels] = await Promise.all([
     getOverviewStats(db),
-    listOrders(db, { page: 0, pageSize: 8 }),
+    getOverviewPanels(db),
   ]);
 
-  const revenueDelta =
-    stats.revenue_prev_7d_minor === 0
-      ? 0
-      : (stats.revenue_7d_minor - stats.revenue_prev_7d_minor) /
-        stats.revenue_prev_7d_minor;
+  const ratio = (now: number, prev: number) => (prev === 0 ? 0 : (now - prev) / prev);
+
+  const revenueDelta = ratio(stats.revenue_7d_minor, stats.revenue_prev_7d_minor);
+  const deliveredRate =
+    stats.orders_7d === 0 ? 0 : stats.delivered_7d_count / stats.orders_7d;
+  const perOrder = stats.orders_7d === 0 ? 0 : stats.items_sold_7d / stats.orders_7d;
+  const topMax = Math.max(...panels.topSellers.map((t) => t.revenue_minor), 1);
 ```
 
-Customer names for `recent` are looked up exactly as in Task 9 (`db.from("app_user").select("id, display_name").in("id", userIds)`), bounded by the eight rows.
+`panels.queue` already carries `customer_name`, so the separate `app_user` lookup and the `nameOf` helper both go away.
+
+`RevenueChart` currently takes the `revenue7d` number array and `dayLabels`. Feed it from `panels.revenueDaily`:
+
+```tsx
+  const revenue7d = panels.revenueDaily.map((d) => d.revenue_minor);
+  const dayLabels = panels.revenueDaily.map((d) =>
+    new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(new Date(d.day)),
+  );
+```
 
 - [ ] **Step 3: Give the page a hierarchy**
 
