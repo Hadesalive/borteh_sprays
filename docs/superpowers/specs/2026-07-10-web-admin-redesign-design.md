@@ -49,6 +49,21 @@ Two smaller defects found while surveying, both on the Orders page:
   orders — check the Supabase keys in web/.env.local."* This is shown to the
   shop owner. It is the closest thing the app currently has to an error state.
 
+And one found while writing the implementation plan, which is the most serious
+defect in the survey:
+
+- **The Orders summary counts statuses that cannot exist.** The `check`
+  constraint at `supabase/migrations/20260616090002_schema.sql:323` permits
+  exactly seven values — `pending_payment`, `confirmed`, `preparing`,
+  `out_for_delivery`, `delivered`, `cancelled`, `returned` — and no later
+  migration widens it. But `orders/page.tsx:12` filters on
+  `PENDING = {"pending", "cod_pending"}`. Neither is legal. **The "pending"
+  stat has read 0 since it shipped**, and orders awaiting payment are counted
+  in no bucket at all. `packing`, `ready`, `dispatched`, and `completed` are
+  likewise dead strings, though their buckets survive via legal siblings.
+  Moving these aggregates into SQL fixes this as a side effect — the views
+  must use the constraint's vocabulary, not the pages'.
+
 ### Documentation drift
 
 `web/DESIGN.md` claims Hanken Grotesk + Bricolage Grotesque; `app/layout.tsx`
