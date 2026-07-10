@@ -26,9 +26,20 @@ layer assumes a shop with almost no history. Three concrete failures:
 3. **The design system is not adopted.** `components/ui/card.tsx` exports a full
    `Card` family and is imported by no file. Instead, 13 files hand-roll
    `const card = "rounded-[12px] border border-border …"`, contributing 32
-   hardcoded `rounded-[…]` / `shadow-[…]` one-offs. Radius disagrees three ways:
-   `DESIGN.md` says `0.5rem`, `globals.css` says `0.375rem`, the pages hardcode
-   `12px`.
+   hardcoded `rounded-[…]` / `shadow-[…]` one-offs.
+
+   Important: the 12px card radius and the button bevel
+   (`inset_0_1px_0_rgba(255,255,255,.14)…`, 5 occurrences) are **intentional,
+   owner-supplied "Borteh Admin v5" design decisions**, not accidents. They are
+   not to be deleted. The defect is that each is redefined per file rather than
+   living in one place.
+
+4. **Dark mode is an abandoned theme that users can still reach.** The `.dark`
+   block in `globals.css` is entirely hue 265–270 — `--primary:
+   oklch(0.62 0.17 270)` is indigo, the surfaces are cool slate. It is the
+   pre-v5 design, orphaned when v5 landed. `ThemeToggle` remains mounted at
+   `(dashboard)/layout.tsx:51`, so the owner can click it and land in a generic
+   indigo SaaS panel — the first entry on `PRODUCT.md`'s anti-references list.
 
 Two smaller defects found while surveying, both on the Orders page:
 
@@ -82,13 +93,20 @@ and is currently imported by nothing) shaped to each page's real layout — not 
 generic spinner. Add `error.tsx` per route segment: plain-language message plus
 a retry button, never a developer-facing string.
 
-**Tokens.** Radius settles at `0.375rem` — the value already in `globals.css`,
-since code is the source of truth. `DESIGN.md`'s claim of `0.5rem` is corrected.
-Remove the hardcoded radius/shadow literals in `app/` and `components/admin/`
-(the `rounded-[calc(var(--radius)-3px)]` forms inside `components/ui/` are
-token-derived, shadcn-generated, and stay). Replace hand-rolled
-`<Link>`-as-button instances with `<Button>`. Rewrite `DESIGN.md` and the
-palette paragraph of `PRODUCT.md` to match the code.
+**Tokens.** Promote the v5 decisions instead of deleting them: add a
+`--radius-card` token (12px) consumed by `<Card>`, and express the button bevel
+as a `<Button>` variant. The pixels do not change; the definitions collapse from
+thirteen files to one. Control radius stays `0.375rem` as `globals.css` already
+has it; `DESIGN.md`'s claim of `0.5rem` is corrected. The
+`rounded-[calc(var(--radius)-3px)]` forms inside `components/ui/` are
+token-derived, shadcn-generated, and stay.
+
+Replace hand-rolled `<Link>`-as-button instances with `<Button>`. Rewrite
+`DESIGN.md` and the palette paragraph of `PRODUCT.md` to match the code.
+
+**Theme.** v5 is light-only. Delete the orphaned `.dark` block and remove
+`ThemeToggle` from `(dashboard)/layout.tsx`. Keep the `next-themes` dependency
+so dark can be reintroduced later as deliberate design work.
 
 ### Phase 2 — Vertical slice
 
@@ -123,7 +141,7 @@ hand-rolled buttons.
 
 ### Phase 4 — Cross-cutting
 
-Dark-mode audit: confirm AA contrast in both themes (body ≥4.5:1, UI ≥3:1).
+Contrast audit on the one remaining (light) theme: body ≥4.5:1, UI text ≥3:1.
 Visible focus ring on every interactive element. Empty states upgraded from bare
 table rows to a short line plus the obvious first action — the existing copy
 ("No combos yet. Pair two fragrances to create your first.") is already the right
@@ -139,7 +157,10 @@ Behavioral, verified by exercising the app — not by inspecting the diff:
   "Supabase".
 - Every page shows a skeleton while loading, shaped like its content.
 - Tab through each screen: focus is always visible.
-- Light and dark both pass AA on body and UI text.
+- The light theme passes AA on body and UI text. No theme toggle ships, and
+  `grep -rn "\.dark" web/src/app/globals.css` returns nothing.
+- Cards still render at 12px radius and buttons still carry the v5 bevel —
+  verified visually, not just by grep. The pass must be pixel-neutral here.
 - `grep -rn "rounded-\[\|shadow-\[" web/src/app web/src/components/admin` returns
   nothing. (`web/src/components/ui` is exempt: its `rounded-[calc(var(--radius)…)]`
   forms derive from the token and are correct.)
