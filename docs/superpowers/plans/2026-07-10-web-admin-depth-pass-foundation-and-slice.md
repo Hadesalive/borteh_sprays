@@ -368,10 +368,12 @@ Expected: PASS. Adding unused tokens changes nothing.
 In `web/src/components/ui/card.tsx`, replace the `className` argument to `cn(...)` on line 15 with:
 
 ```tsx
-        "group/card flex flex-col gap-(--card-spacing) rounded-card border border-border bg-card text-sm text-card-foreground shadow-card [--card-spacing:--spacing(4)] data-[size=sm]:[--card-spacing:--spacing(3)]",
+        "group/card rounded-card border border-border bg-card text-card-foreground shadow-card [--card-spacing:--spacing(4)] data-[size=sm]:[--card-spacing:--spacing(3)]",
 ```
 
 Note what was dropped and why: `ring-1 ring-foreground/10` (v5 uses a real border), `rounded-xl` (v5 is 12px), `py-(--card-spacing)` (v5 call sites supply their own padding), `overflow-hidden` and the `*:[img:…]` rules (no v5 card contains a bleed image).
+
+**Also dropped, and this matters:** `flex flex-col gap-(--card-spacing)` and `text-sm`. The v5 baseline captured in Task 2 is the hand-rolled string `rounded-[12px] border border-border bg-card shadow-[…]` — which is *not* a flex container and sets no base font size. Keeping `flex … gap` added a 16px gap between children (a pixel-gate failure); keeping `text-sm` shifted a child by 1px via inherited line-height. Both were carried over from stock shadcn and are not part of v5. Dropping them makes `<Card>` render byte-identical to what the 13 call sites hand-roll — which is exactly the point. Verified: `test:visual` passes with zero diff.
 
 - [ ] **Step 4: Point the visual harness at `<Card>`**
 
