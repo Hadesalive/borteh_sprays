@@ -198,7 +198,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 **Files:**
 - Create: `web/playwright.config.ts`
-- Create: `web/src/app/__visual/page.tsx`
+- Create: `web/src/app/%5F%5Fvisual/page.tsx`
 - Create: `web/e2e/visual.spec.ts`
 - Modify: `web/package.json` (add `test:visual` script)
 
@@ -212,7 +212,7 @@ This is the mechanism that enforces pixel-neutrality. The baseline is captured *
 
 - [ ] **Step 1: Write the visual harness page**
 
-Create `web/src/app/__visual/page.tsx`. It reproduces the *current* v5 chrome literally, copied from `app/(dashboard)/page.tsx:39-43` and `app/(dashboard)/orders/page.tsx:96`:
+Create `web/src/app/%5F%5Fvisual/page.tsx`. It reproduces the *current* v5 chrome literally, copied from `app/(dashboard)/page.tsx:39-43` and `app/(dashboard)/orders/page.tsx:96`:
 
 ```tsx
 import { notFound } from "next/navigation";
@@ -331,7 +331,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 **Files:**
 - Modify: `web/src/app/globals.css` (add tokens to `:root` and `@theme inline`)
 - Modify: `web/src/components/ui/card.tsx:15` (base classes)
-- Modify: `web/src/app/__visual/page.tsx` (switch to `<Card>`)
+- Modify: `web/src/app/%5F%5Fvisual/page.tsx` (switch to `<Card>`)
 - Test: `web/e2e/visual.spec.ts` (unchanged — it is the test)
 
 **Interfaces:**
@@ -375,7 +375,9 @@ Note what was dropped and why: `ring-1 ring-foreground/10` (v5 uses a real borde
 
 - [ ] **Step 4: Point the visual harness at `<Card>`**
 
-In `web/src/app/__visual/page.tsx`, delete the `card` string constant and replace the first block:
+The folder is named `%5F%5Fvisual` on disk (literal percent-encoding), NOT `__visual`. This is deliberate and correct: a plain `__visual` folder starts with `_`, which Next.js treats as a private folder excluded from routing, so `/__visual` would 404 and the Playwright baseline could never load. The `%5F` escape forces the route to resolve. **Do not rename it.**
+
+In `web/src/app/%5F%5Fvisual/page.tsx`, delete the `card` string constant and replace the first block:
 
 ```tsx
 import { Card } from "@/components/ui/card";
@@ -396,7 +398,7 @@ Expected: PASS, 2 tests, zero pixel difference. If `card.png` differs, `<Card>` 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add web/src/app/globals.css web/src/components/ui/card.tsx web/src/app/__visual/page.tsx
+git add web/src/app/globals.css web/src/components/ui/card.tsx web/src/app/%5F%5Fvisual/page.tsx
 git commit -m "refactor(ui): promote v5 card chrome into Card and tokens
 
 Card shipped unused while 13 files hand-rolled rounded-[12px]. Retunes
@@ -413,7 +415,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 **Files:**
 - Modify: `web/src/app/globals.css` (add `--shadow-bevel`)
 - Modify: `web/src/components/ui/button.tsx:12` (the `default` variant)
-- Modify: `web/src/app/__visual/page.tsx` (switch to `<Button>`)
+- Modify: `web/src/app/%5F%5Fvisual/page.tsx` (switch to `<Button>`)
 - Test: `web/e2e/visual.spec.ts` (unchanged)
 
 **Interfaces:**
@@ -442,7 +444,7 @@ In `web/src/components/ui/button.tsx`, replace the `default` variant on line 12:
 
 - [ ] **Step 3: Point the visual harness at `<Button>`**
 
-In `web/src/app/__visual/page.tsx`, delete the `bevel` constant and replace the button:
+In `web/src/app/%5F%5Fvisual/page.tsx`, delete the `bevel` constant and replace the button:
 
 ```tsx
 import { Button } from "@/components/ui/button";
@@ -464,7 +466,7 @@ The hand-rolled button was `h-8 … px-3 text-[13px]`; `<Button size="default">`
 - [ ] **Step 5: Commit**
 
 ```bash
-git add web/src/app/globals.css web/src/components/ui/button.tsx web/src/app/__visual/page.tsx
+git add web/src/app/globals.css web/src/components/ui/button.tsx web/src/app/%5F%5Fvisual/page.tsx
 git commit -m "refactor(ui): promote v5 bevel into the default Button variant
 
 The bevel was inlined at 5 call sites. Now it is --shadow-bevel, applied
