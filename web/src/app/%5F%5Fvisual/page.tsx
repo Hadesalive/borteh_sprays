@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 
+import { Card } from "@/components/ui/card";
+
 // Dev-only visual baseline. Renders v5 chrome with no data so Playwright can
 // screenshot-diff it. Task 3 and Task 4 must not change these pixels.
 //
@@ -7,8 +9,6 @@ import { notFound } from "next/navigation";
 // anyone else should ever be able to reach.
 export const dynamic = "force-static";
 
-const card =
-  "rounded-[12px] border border-border bg-card shadow-[0_1px_0_rgba(26,26,26,0.07)]";
 const bevel =
   "shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_-1px_0_rgba(0,0,0,0.25),0_1px_0_rgba(26,26,26,0.07)]";
 
@@ -17,10 +17,10 @@ export default function VisualBaselinePage() {
 
   return (
     <main className="bg-background p-8">
-      <div data-testid="card-default" className={`${card} w-80 p-4`}>
+      <Card data-testid="card-default" className="w-80 p-4">
         <p className="text-[13px] font-semibold">Card title</p>
         <p className="mt-1 text-xs text-muted-foreground">Supporting line.</p>
-      </div>
+      </Card>
 
       <button
         data-testid="button-primary"
