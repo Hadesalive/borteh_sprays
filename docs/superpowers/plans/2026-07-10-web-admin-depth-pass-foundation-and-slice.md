@@ -437,12 +437,20 @@ In `web/src/app/globals.css`, in the `@theme inline` block beside `--shadow-card
 
 - [ ] **Step 2: Apply it to the `default` variant**
 
-In `web/src/components/ui/button.tsx`, replace the `default` variant on line 12:
+In `web/src/components/ui/button.tsx`, replace the `default` variant on line 12 and the `default` **size** to match v5's `h-8 gap-1.5 px-3 text-[13px]`. As shipped:
 
 ```ts
-        default:
-          "bg-primary text-primary-foreground shadow-bevel hover:bg-[#1a1917]",
+        // variant
+        default: "border-0 bg-primary text-primary-foreground shadow-bevel hover:bg-[#1a1917]",
+        // size (default)
+        "h-8 gap-1.5 px-3 text-[13px] has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
 ```
+
+Two additions beyond the naive string, both required for pixel parity and both verified against the baseline:
+- **`border-0`**: the shared base string carries `border border-transparent`, which adds 2px to an auto-width button. The hand-rolled v5 primary button has no border at all, so `border-0` on the `default` variant only (never the base, never other variants — `outline`/`secondary` rely on the border) restores parity. Faithful to v5: primary is borderless, `outline`/paper keeps its `border-border`.
+- **`px-3 text-[13px]`** on the `default` size: v5's button is `px-3 text-[13px]`, not the stock `px-2.5 text-sm`.
+
+Accessibility note: `border-0` makes `focus-visible:border-ring` a no-op for primary buttons, but `focus-visible:ring-3 focus-visible:ring-ring/50` remains in the base string, so a visible 3px focus ring still renders. WCAG visible-focus is satisfied; the lost border treatment was redundant with the ring.
 
 - [ ] **Step 3: Point the visual harness at `<Button>`**
 
