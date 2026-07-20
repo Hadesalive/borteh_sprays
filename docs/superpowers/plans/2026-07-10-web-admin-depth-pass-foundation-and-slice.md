@@ -1476,7 +1476,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 `app/(dashboard)/page.tsx:56-59` currently selects every row of three tables. Hierarchy today is a flat grid of **six co-equal stat cards** (`:169-176`); `PRODUCT.md` names "the hero-metric template: a wall of big-number stat cards" as an anti-reference. Today's revenue becomes the single headline; the rest supports it.
 
-**Preserve every panel.** Top sellers, low stock, restock demand, and the live queue all stay — they move down the page, they do not disappear. The six stat cards collapse into the headline plus inline supporting text.
+**Preserve every panel.** The old page had SEVEN panels, not the five Task 6 built views for — a planning miss caught during execution. Full set: revenue chart, live queue, top sellers, low stock, restock demand, **Recent orders**, and **Channel & payment mix**. Resolution (owner-approved): chart/queue/top-sellers/low-stock/restock → rewired to the SQL views (they move down the page, none disappear; the six co-equal stat cards collapse into the headline plus inline text). **Recent orders** → restored via the bounded `listOrders(db,{page:0,pageSize:8})` + a bounded `app_user` name lookup (follow-up commit; no new view). **Channel & payment mix** → DEFERRED to Phase 3 (needs four new aggregate columns + an owner `db push`); tracked, not silently lost.
 
 - [ ] **Step 1: Write the loading and error states**
 
