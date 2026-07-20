@@ -5,11 +5,22 @@ import { cn } from "@/lib/utils";
 import { formatInt, formatLe, formatPct } from "@/lib/format";
 import { createServerClient } from "@/lib/supabase/server";
 import { getOverviewStats, getOverviewPanels } from "@/lib/queries/overview";
+import { listOrders } from "@/lib/queries/orders";
 import { Chip, humanize, statusTone } from "@/components/admin/chip";
 import { RevenueChart } from "@/components/admin/revenue-chart";
 import { Card } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
+
+function paymentLabel(method: string | null): string {
+  switch (method) {
+    case "cash_on_delivery": return "COD";
+    case "cash": return "Cash";
+    case "monime": return "Monime";
+    case "card": return "Card";
+    default: return method ? humanize(method) : "—";
+  }
+}
 
 function Delta({ ratio }: { ratio: number }) {
   if (!isFinite(ratio) || ratio === 0) {
@@ -30,10 +41,22 @@ const rowLine = "flex items-center gap-2 h-9 border-t border-accent text-[13px] 
 
 export default async function OverviewPage() {
   const db = createServerClient();
-  const [stats, panels] = await Promise.all([
+  const [stats, panels, { rows: recent }] = await Promise.all([
     getOverviewStats(db),
     getOverviewPanels(db),
+    listOrders(db, { page: 0, pageSize: 8 }),
   ]);
+
+  // Bounded name lookup for just these 8 rows — panels.queue.customer_name only
+  // covers active orders, not recent orders of any status.
+  const recentUserIds = [...new Set(recent.map((o) => o.user_id).filter(Boolean) as string[])];
+  const recentNames = new Map<string, string>();
+  if (recentUserIds.length > 0) {
+    const { data: users } = await db.from("app_user").select("id, display_name").in("id", recentUserIds);
+    for (const u of (users ?? []) as Array<{ id: string; display_name: string | null }>) {
+      recentNames.set(u.id, u.display_name ?? "");
+    }
+  }
 
   const ratio = (now: number, prev: number) => (prev === 0 ? 0 : (now - prev) / prev);
 
@@ -160,6 +183,29 @@ export default async function OverviewPage() {
           )) : <p className="py-2 text-[13px] text-muted-foreground">No one waiting.</p>}
         </Card>
       </div>
+
+      {/* Recent orders */}
+      <Card className="mt-4 p-4">
+        <div className={cardHead}>
+          <span className={cardTitle}>Recent orders</span>
+          <Link href="/orders" className={cardLink}>View all</Link>
+        </div>
+        <table className="mt-1 w-full border-collapse text-[13px]">
+          <tbody>
+            {recent.length ? recent.map((o) => (
+              <tr key={o.id} className="h-9 border-t border-accent">
+                <td className="nums w-14 py-1.5 pr-3 font-medium">#{o.order_number ?? "—"}</td>
+                <td className="px-3 py-1.5">{recentNames.get(o.user_id ?? "") || "Walk-in"}</td>
+                <td className="px-3 py-1.5 text-muted-foreground">{paymentLabel(o.payment_method)}</td>
+                <td className="px-3 py-1.5"><Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip></td>
+                <td className="nums py-1.5 text-right font-medium">{formatLe(o.total_minor ?? 0, 2)}</td>
+              </tr>
+            )) : (
+              <tr><td className="py-3 text-muted-foreground">No orders yet.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </Card>
     </div>
   );
 }
