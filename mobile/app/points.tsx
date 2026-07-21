@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Coins, Handbag, Package, UsersThree } from "phosphor-react-native";
+import { Coins, Handbag, Package, Trophy, UsersThree } from "phosphor-react-native";
 import { useMemo } from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -209,6 +209,17 @@ export default function Points() {
                 The house's highest standing — thank you.
               </AppText>
             ) : null}
+
+            {/* where you stand against everyone else */}
+            <View style={{ marginTop: space["2xl"] }}>
+              <ListRow
+                icon={<Trophy size={20} color={colors.ink} weight="regular" />}
+                title="Leaderboard"
+                value="Top buyers"
+                onPress={() => router.push("/leaderboard")}
+                borderTop
+              />
+            </View>
 
             {/* how points move — live numbers, tappable where it leads somewhere */}
             <AppText variant="label" style={s.eyebrow}>How points work</AppText>

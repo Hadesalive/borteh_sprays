@@ -1,0 +1,643 @@
+[
+ {
+  "file": "PHOTO-2026-07-12-21-02-14.jpg",
+  "visible_text": "ARMAF (medallion); club de nuit intense man",
+  "list_number": null,
+  "matched_name": "Armaf Club de Nuit Intense Man",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-15.jpg",
+  "visible_text": "ARMAF (medallion); club de nuit MALEKA",
+  "list_number": 108,
+  "matched_name": "Armaf Club de Nuit Maleka",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-17.jpg",
+  "visible_text": "ARMAF BLING (medallion); black rhinestone-studded bottle",
+  "list_number": 97,
+  "matched_name": "Armaf Club de Nuit Bling",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-18.jpg",
+  "visible_text": "ARMAF (medallion); club de nuit Untold; EAU DE PARFUM | VAPORISATEUR SPRAY | 105ML 3.6 FL OZ (partially legible)",
+  "list_number": 107,
+  "matched_name": "Armaf Club de Nuit Untold",
+  "size_ml": 105,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-19 2.jpg",
+  "visible_text": "ARMAF (medallion); club de nuit ...woman (bottom of bottle, partially legible); amber liquid, gold cap",
+  "list_number": 109,
+  "matched_name": "Armaf Club de Nuit Woman",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-19.jpg",
+  "visible_text": "ARMAF (lion-head medallion); lionheart MAN",
+  "list_number": 116,
+  "matched_name": "Lionheart Man (brand unknown — research)",
+  "note": "Brand confirmed from photo: Armaf Lionheart Man",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-38.jpg",
+  "visible_text": "ARMAF (medallion); club de nuit Sillage; EAU DE PARFUM | VAPORISATEUR SPRAY | 105ML 3.6FL.OZ (partially legible); mirrored silver bottle",
+  "list_number": 106,
+  "matched_name": "Armaf Club de Nuit Sillage",
+  "size_ml": 105,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-39.jpg",
+  "visible_text": "ARMAF (medallion); club de nuit Impériale; EAU DE PARFUM | VAPORISATEUR SPRAY | 105ML 3.6FL.OZ",
+  "list_number": 110,
+  "matched_name": "Armaf Club de Nuit Imperial",
+  "size_ml": 105,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-42.jpg",
+  "visible_text": "SA SWISS ARABIAN; essence of CASABLANCA; EXTRAIT DE PARFUM; gold panel with mosque-tower artwork",
+  "list_number": 81,
+  "matched_name": "Essence of Casablanca (brand unknown — research)",
+  "note": "Brand confirmed from photo: Swiss Arabian Essence of Casablanca (Extrait de Parfum)",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-12-21-02-43.jpg",
+  "visible_text": "CASABLANCA (vertical); SWISS ARABIAN; clear tall bottle, golden liquid",
+  "list_number": 118,
+  "matched_name": "Swiss Arabian Casablanca",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-09.jpg",
+  "visible_text": "HARAMAIN AMBER OUD EXTREME; GOLD EDITION Extrait De Parfum; 100 ML",
+  "list_number": null,
+  "matched_name": "Al Haramain Amber Oud Gold Edition Extreme (Extrait de Parfum)",
+  "off_list": true,
+  "note": "Extreme flanker of list #73 Amber Oud Gold Edition — different product (100ml Extrait vs 120ml EDP)",
+  "size_ml": 100,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-10 2.jpg",
+  "visible_text": "HARAMAIN AMBER OUD; RUBY EDITION; 120 ML",
+  "list_number": null,
+  "matched_name": "Al Haramain Amber Oud Ruby Edition (120ml)",
+  "off_list": true,
+  "size_ml": 120,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-10.jpg",
+  "visible_text": "HARAMAIN AMBER OUD; GOLD EDITION; 120 ML 4.0 FL.OZ",
+  "list_number": 73,
+  "matched_name": "Al Haramain Amber Oud Gold Edition (120ml)",
+  "size_ml": 120,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-11 2.jpg",
+  "visible_text": "Arabic script (Teriaq); INTENSE; Lattafa; TERIAQ (on gold base)",
+  "list_number": 36,
+  "matched_name": "Lattafa Teriaq Intense",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-11.jpg",
+  "visible_text": "9 pm ELIXIR; AFNAN; parfum intense · natural spray vaporisateur; 100ml 3.4Fl.oz",
+  "list_number": 94,
+  "matched_name": "Afnan 9PM Elixir",
+  "size_ml": 100,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-12 2.jpg",
+  "visible_text": "INTENSE NOIR / LE PARFUM / EAU DE PARFUM",
+  "list_number": null,
+  "matched_name": "Fragrance World Intense Noir Le Parfum",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "medium",
+  "notes": "Matte black bottle with perforated grid cap/shoulder; name clearly readable but brand not visible on front — attribution to Fragrance World from bottle design. Not on canonical list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-12.jpg",
+  "visible_text": "LIQUID BRUN",
+  "list_number": 89,
+  "matched_name": "French Avenue Liquid Brun",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Brown/copper faceted bottle with gold square gem — standard (non-limited) edition."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-13 2.jpg",
+  "visible_text": "9 pm / AFNAN / eau de parfum vaporisateur / 100mL 3.4FL.oz",
+  "list_number": 95,
+  "matched_name": "Afnan 9PM (black/original)",
+  "size_ml": 100,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-13 3.jpg",
+  "visible_text": "LIQUID BRUN / LIMITED EDITION",
+  "list_number": 79,
+  "matched_name": "French Avenue Liquid Brun Limited Edition",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Deep red/maroon faceted bottle with gold square gem."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-13.jpg",
+  "visible_text": "club de nuit / precieux / I / ARMAF (on hanging tag)",
+  "list_number": 93,
+  "matched_name": "Armaf Club de Nuit Precieux I",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Glossy black slab bottle, white stone cap, silver chain with Armaf tag."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-14 2.jpg",
+  "visible_text": "MUSAMAM (Arabic script above) / Lattafa",
+  "list_number": 82,
+  "matched_name": "Lattafa Musamam (brown/original)",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Amber/brown juice, black cap, gold snake coiled around neck — original Musamam."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-14 3.jpg",
+  "visible_text": "SUPREMACY / COLLECTOR'S EDITION / AFNAN",
+  "list_number": 91,
+  "matched_name": "Afnan Supremacy Collector's Edition",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Grey speckled stone-finish flask with black ring cap and black crest."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-14.jpg",
+  "visible_text": "MUSAMAM / BLACK INTENSE / Lattafa",
+  "list_number": 85,
+  "matched_name": "Lattafa Musamam Black Intense",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "All-black bottle with black snake coiled around neck."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-15.jpg",
+  "visible_text": "HER CONFESSION / Lattafa",
+  "list_number": 86,
+  "matched_name": "Lattafa Her Confession",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "White bottle, gold molten accents, white female bust cap with gold mask."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-16 2.jpg",
+  "visible_text": "HIS CONFESSION / Lattafa",
+  "list_number": 87,
+  "matched_name": "Lattafa His Confession",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Black bottle, gold molten accents, black male bust cap with gold mask."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-16.jpg",
+  "visible_text": "AJAYEB / DUBAI",
+  "list_number": null,
+  "matched_name": "Lattafa Ajayeb Dubai",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Textured ice-glass bottle, yellow juice, white collar, hammered gold cap, gold plaque reading AJAYEB DUBAI. Not on canonical list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-27 2.jpg",
+  "visible_text": "JAZZAB (on diamond medallion, with Arabic script)",
+  "list_number": null,
+  "matched_name": "Ard Al Zaafaran Jazzab (rose gold)",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "medium",
+  "notes": "Rose-gold lattice cage bottle with diamond-shaped gold medallion; JAZZAB readable on plaque, brand attributed from distinctive bottle. Not on canonical list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-27 3.jpg",
+  "visible_text": "YARA / Lattafa (Arabic script above, gold seal on crossing bands)",
+  "list_number": null,
+  "matched_name": "Lattafa Yara",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Pink cylindrical bottle with gold crossing ribbon bands and round gold seal — Lattafa Yara original (pink). Not on canonical list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-27.jpg",
+  "visible_text": "NUHA / CHERRY BLUSH / KHADLAJ",
+  "list_number": null,
+  "matched_name": "Khadlaj Nuha Cherry Blush",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Dark cherry-red glass bottle with ornate gold filigree crown cap. Not on canonical list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-28.jpg",
+  "visible_text": "NUHA / KHADLAJ (faint at base)",
+  "list_number": null,
+  "matched_name": "Khadlaj Nuha (pink pearlescent — likely Nuha Rose)",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "medium",
+  "notes": "Pearlescent pink bottle fading to smoky base, same Khadlaj crown cap as the Nuha line; no flanker subtitle visible, so exact variant (original vs Nuha Rose) uncertain. Not on canonical list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-28 3.jpg",
+  "visible_text": "KHADLAJ (on gold collar), Arabic script, BON BON, Khadlaj logo lower on bottle",
+  "list_number": null,
+  "matched_name": "Khadlaj Panache Bon Bon",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "medium",
+  "note": "Iridescent rainbow bottle with ornate gold crown cap — Khadlaj Panache line (same family as list #24 Panache Angel Dust), but the name reads BON BON, not Angel Dust."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-29.jpg",
+  "visible_text": "Arabic script, LUJAIN, NICHE EMARATI PERFUMES",
+  "list_number": null,
+  "matched_name": "Niche Emarati Lujain",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Brand is Niche Emarati Perfumes — same brand as list #62 (Niche Emarati Al Jawhara) but this is the Lujain fragrance, a different product."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-31.jpg",
+  "visible_text": "ARMAF (vertical, on white/gold marble bottle)",
+  "list_number": 105,
+  "matched_name": "Armaf Perle D'or",
+  "size_ml": null,
+  "confidence": "medium",
+  "note": "Only the ARMAF wordmark is legible. White marble body with gold veining, white cap, pale gold juice — matches Perle D'or rather than the darker Ombre D'or (#104)."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-32 2.jpg",
+  "visible_text": "Arabic script, Qimmah",
+  "list_number": null,
+  "matched_name": "Lattafa Qimmah Men",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "medium",
+  "note": "Dark green juice with gold lattice cage = the men's Qimmah. List #40 is Qimmah Woman (pink), so this is a different SKU."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-32.jpg",
+  "visible_text": "Arabic script, Falak; box: NUSUK, EXTRAIT DE PARFUM, NATURAL SPRAY - VAPORISATEUR, 100 ML, 80% VOL, 3.4 FL.OZ.",
+  "list_number": 120,
+  "matched_name": "Nusuk Falak",
+  "size_ml": 100,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-39.jpg",
+  "visible_text": "Arabic script, Falak; box: NUSUK, EXTRAIT DE PARFUM, NATURAL SPRAY - VAPORISATEUR, 100 ML, 80% VOL, 3.4 FL.OZ.",
+  "list_number": 120,
+  "matched_name": "Nusuk Falak",
+  "size_ml": 100,
+  "confidence": "high",
+  "note": "Second photo of the same product as PHOTO-2026-07-13-21-07-32.jpg (straight-on angle)."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-40.jpg",
+  "visible_text": "Queen Of Roses, Lattafa Pride; travel sprays labelled MASA (+Arabic), DREAM OF HAZE, ETERNAL OUD, SHEIKH AL SHUYUKH GOLD",
+  "list_number": 88,
+  "matched_name": "Queen of Roses",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Brand resolved: Lattafa (Lattafa Pride collection). Photographed as a gift set — burgundy box with the main rose-gold crystal-studded bottle plus four gold travel sprays (Masa, Dream of Haze, Eternal Oud, Sheikh Al Shuyukh Gold)."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-41 2.jpg",
+  "visible_text": "Arabic script, ROSE PASSION, BINT HOORAN",
+  "list_number": 100,
+  "matched_name": "Bint Hooran Rose Passion",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Bint Hooran is an Ard Al Zaafaran line, confirming the list's guess."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-41.jpg",
+  "visible_text": "MARMARA, FRENCH AVENUE",
+  "list_number": 103,
+  "matched_name": "French Avenue Marmara",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Grey Greek-column bottle with pale gold juice."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-43 2.jpg",
+  "visible_text": "ECLAIRE, Arabic script, Lattafa",
+  "list_number": 6,
+  "matched_name": "Lattafa Eclaire",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Beige/cream original Eclaire (no flanker name on the bottle)."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-43 3.jpg",
+  "visible_text": "Arabic script, AWAAN, Lattafa PRIDE",
+  "list_number": null,
+  "matched_name": "Lattafa Pride Awaan",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Olive-green matte bottle with gold crystal-studded cap. Not on the candidate list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-43.jpg",
+  "visible_text": "ECLAIRE, Arabic script, PISTACHE, Lattafa",
+  "list_number": null,
+  "matched_name": "Lattafa Eclaire Pistache",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Pistachio-green flanker of Eclaire. List #6 covers the plain Eclaire only, so this is a separate SKU."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-44 2.jpg",
+  "visible_text": "LYNKED by AFNAN",
+  "list_number": null,
+  "matched_name": "Afnan Lynked Gold",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "medium",
+  "note": "Brand/line clearly reads LYNKED by AFNAN. Clear glass with gold juice, gold chain-link cap and gold plaque = the gold variant, not list #112 Lynked Black. Confirms the list's spelling guesses (#112/#113) — the line is 'Lynked'."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-44.jpg",
+  "visible_text": "ECLAIRE, Arabic script, BANOFFI, Lattafa",
+  "list_number": null,
+  "matched_name": "Lattafa Eclaire Banoffi",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Yellow/banana flanker of Eclaire — separate SKU from list #6."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-46 2.jpg",
+  "visible_text": "OUD & ROSES (on gold box medallion and on bottle), AHMED AL MAGHRIBI, Arabic عود ورد",
+  "list_number": 115,
+  "matched_name": "Oud & Roses",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Brand identified from box: Ahmed Al Maghribi Perfumes"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-46.jpg",
+  "visible_text": "MUSAMAM (Arabic مسمم), WHITE INTENSE, Lattafa",
+  "list_number": 15,
+  "matched_name": "Lattafa Musamam White Intense",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-47 2.jpg",
+  "visible_text": "Arabic ليان / Layaan (script on bottle front)",
+  "list_number": 22,
+  "matched_name": "Lattafa Layaan",
+  "size_ml": null,
+  "confidence": "medium"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-47.jpg",
+  "visible_text": "Arabic ثروة, THARWAH GOLD, Lattafa PRIDE",
+  "list_number": 72,
+  "matched_name": "Tharwah Gold",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Brand identified: Lattafa Pride"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-48 2.jpg",
+  "visible_text": "Creme of Clouds",
+  "list_number": 117,
+  "matched_name": "Creme of Clouds",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "No brand name visible on the bottle in this photo; only 'Creme of Clouds' script"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-48 3.jpg",
+  "visible_text": "Arabic دلال, DALAL, Lattafa",
+  "list_number": null,
+  "matched_name": "Lattafa Dalal",
+  "size_ml": null,
+  "confidence": "high",
+  "off_list": true
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-48.jpg",
+  "visible_text": "Milky Way, MAISON ASRAR",
+  "list_number": 84,
+  "matched_name": "Milky Way",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Brand identified: Maison Asrar"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-49 2.jpg",
+  "visible_text": "Arabic فرسان, FURSAN",
+  "list_number": 78,
+  "matched_name": "Khadlaj Fursan White",
+  "size_ml": null,
+  "confidence": "medium",
+  "note": "White/gold bottle matches Fursan White; Khadlaj brand name not legible in this shot"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-49 3.jpg",
+  "visible_text": "Vanilla Voyage, MAISON ASRAR",
+  "list_number": 45,
+  "matched_name": "Maison Asrar Vanilla Voyage",
+  "size_ml": 100,
+  "confidence": "high",
+  "note": "Large (100ml-style) bottle, not the 25ml variant"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-49.jpg",
+  "visible_text": "ATHENA (plus small crest/brand mark at bottom of bottle)",
+  "list_number": 102,
+  "matched_name": "Athena",
+  "size_ml": null,
+  "confidence": "medium",
+  "note": "Brand mark on bottle base appears to be Maison Alhambra"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-50 2.jpg",
+  "visible_text": "Eshal VANILLA, PARIS CORNER",
+  "list_number": 90,
+  "matched_name": "Eshal Vanilla",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Brand identified: Paris Corner"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-50 3.jpg",
+  "visible_text": "Arabic أثيري, ATHEERI, Lattafa",
+  "list_number": 83,
+  "matched_name": "Lattafa Atheeri",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-50.jpg",
+  "visible_text": "Arabic أنغام, ANGHAM (gold plaque, clear bottle with gold juice)",
+  "list_number": 7,
+  "matched_name": "Lattafa Angham",
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Gold original Angham, not the Second Song flanker"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-51 2.jpg",
+  "visible_text": "Arabic ترف, TARAF, NICHE EMARATI PERFUMES",
+  "list_number": null,
+  "matched_name": "Niche Emarati Taraf",
+  "size_ml": null,
+  "confidence": "high",
+  "off_list": true,
+  "note": "Same brand as list #62 (Niche Emarati Al Jawhara) but a different fragrance"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-51 3.jpg",
+  "visible_text": "FLORIANA, POUR FEMME, RAYHAAN",
+  "list_number": 99,
+  "matched_name": "Rayhaan Floriana",
+  "size_ml": null,
+  "confidence": "high"
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-51 4.jpg",
+  "visible_text": "IRIDA extrait",
+  "list_number": 77,
+  "matched_name": "Irida Extrait (brand unknown — research)",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Pink faceted crystal-cut glass bottle with angled gold cap, gold plaque reading 'IRIDA extrait'."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-51.jpg",
+  "visible_text": "Marshmallow Blush / PARIS CORNER",
+  "list_number": 76,
+  "matched_name": "Marshmallow Blush (brand unknown — research)",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Brand visible on bottle: Paris Corner. Pink marbled jar-shaped bottle with gold dripping collar and pink ball cap."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-52 2.jpg",
+  "visible_text": "Fakhar Lattafa (plus Arabic script)",
+  "list_number": 59,
+  "matched_name": "Lattafa Fakhar Lattafa Femme",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "White round flacon with rose-gold medallion, fish-scale rose-gold cap — this is the women's (rose gold/white) Fakhar; the men's version is black."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-52.jpg",
+  "visible_text": "RIA / KHADLAJ",
+  "list_number": null,
+  "matched_name": "Khadlaj Ria",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Pink quilted-glass bottle, gold sphere cap with K monogram, gold plaque 'RIA KHADLAJ'. Khadlaj brand but 'Ria' is not on the canonical list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-53.jpg",
+  "visible_text": "Vanilla Seduction / EAU DE PARFUM 100ML 3.4 FL OZ",
+  "list_number": 30,
+  "matched_name": "Maison Asrar Vanilla Seduction",
+  "size_ml": 100,
+  "confidence": "high",
+  "notes": "Dark amber-to-black gradient tall bottle with twisted gold cap, matching Maison Asrar's vanilla series design."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-54 2.jpg",
+  "visible_text": "FIRE on ICE / Lattafa",
+  "list_number": null,
+  "matched_name": "Lattafa (Pride) Fire on Ice",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Round amber-liquid bottle with molded ice-cube shapes inside, ribbed gold cap, 'Lattafa' printed near base. Not on the canonical list."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-54.jpg",
+  "visible_text": "NOW WOMEN",
+  "list_number": 98,
+  "matched_name": "Now Women 100ml (brand unknown — research)",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Pink dome-topped lantern-style bottle with geometric lattice cage shell, black label 'NOW WOMEN' (Rave/Lattafa 'Now' line). Size not readable in photo."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-55 2.jpg",
+  "visible_text": "KHAIR (Arabic calligraphy) / CONFECTION / PARIS CORNER",
+  "list_number": 119,
+  "matched_name": "Khair Confection (brand unknown — research)",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Brand visible on bottle: Paris Corner. Red-to-blue gradient glass with gold Arabic calligraphy and ornate textured gold cap."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-55.jpg",
+  "visible_text": "QAED AL FURSAN (plus Arabic script)",
+  "list_number": 96,
+  "matched_name": "Lattafa Qaed Al Fursan (white/original)",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "White square bottle, gold ribbed cap, gold galloping-horse emblem over geometric pattern — the white/original Qaed Al Fursan."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-57.jpg",
+  "visible_text": "DELILAH BLANC / MAISON ALHAMBRA / NATURAL SPRAY VAPORISATEUR",
+  "list_number": 114,
+  "matched_name": "Delilah Blanc (brand unknown — research)",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Brand visible on bottle: Maison Alhambra. Frosted rounded-shoulder bottle with silver cap and etched crest."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-58.jpg",
+  "visible_text": "DELILAH BLANC / MAISON ALHAMBRA",
+  "list_number": 114,
+  "matched_name": "Delilah Blanc (brand unknown — research)",
+  "size_ml": null,
+  "confidence": "high",
+  "notes": "Same Maison Alhambra Delilah Blanc bottle as PHOTO-2026-07-13-21-07-57.jpg, photographed from a different angle — duplicate product."
+ },
+ {
+  "file": "PHOTO-2026-07-13-21-07-28 2.jpg",
+  "visible_text": "NUHA BONBON; KHADLAJ (on collar); iridescent rainbow bottle, ornate gold crown cap",
+  "list_number": null,
+  "matched_name": "Khadlaj Nuha Bonbon",
+  "off_list": true,
+  "size_ml": null,
+  "confidence": "high",
+  "note": "Same iridescent Nuha/Panache bottle family; label reads NUHA BONBON"
+ }
+]

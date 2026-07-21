@@ -117,9 +117,12 @@ export function SearchBar({
         autoCorrect={false}
       />
       {onFilter ? (
-        <Pressable onPress={onFilter} hitSlop={8} accessibilityRole="button" accessibilityLabel="Filters">
-          <SlidersHorizontal size={20} color={colors.ink} />
-        </Pressable>
+        <>
+          <View style={s.searchDivider} />
+          <Pressable onPress={onFilter} hitSlop={8} accessibilityRole="button" accessibilityLabel="Filters">
+            <SlidersHorizontal size={20} color={colors.ink} />
+          </Pressable>
+        </>
       ) : null}
     </View>
   );
@@ -136,9 +139,12 @@ export function SearchButton({ onPress, onFilter, placeholder = "Search fragranc
         </AppText>
       </Pressable>
       {onFilter ? (
-        <Pressable onPress={onFilter} hitSlop={8} accessibilityRole="button" accessibilityLabel="Filters">
-          <SlidersHorizontal size={20} color={colors.ink} />
-        </Pressable>
+        <>
+          <View style={s.searchDivider} />
+          <Pressable onPress={onFilter} hitSlop={8} accessibilityRole="button" accessibilityLabel="Filters">
+            <SlidersHorizontal size={20} color={colors.ink} />
+          </Pressable>
+        </>
       ) : null}
     </View>
   );
@@ -200,6 +206,7 @@ const s = StyleSheet.create({
   knobOn: { backgroundColor: colors.paper },
   knobOff: { backgroundColor: colors.ink40 },
   field: { flexDirection: "row", alignItems: "center", gap: space.md, height: 52, paddingHorizontal: space.lg, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper },
+  searchDivider: { width: StyleSheet.hairlineWidth, alignSelf: "stretch", marginVertical: space.md, backgroundColor: colors.line },
   input: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },
   placeholder: { fontFamily: font.regular, fontSize: 14, color: colors.ink40 },
   chip: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: space.md, paddingVertical: space.sm },

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
-import { createAuthServerClient } from "@/lib/supabase/auth-server";
+import { createAuthServerClient, requireStaff } from "@/lib/supabase/auth-server";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 export type CouponResult = { ok: true; code: string } | { ok: false; error: string };
@@ -13,6 +13,7 @@ function revalidate(userId: string) {
 }
 
 export async function setCustomerBlocked(id: string, blocked: boolean): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient().from("app_user").update({ is_blocked: blocked }).eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidate(id);
@@ -21,6 +22,7 @@ export async function setCustomerBlocked(id: string, blocked: boolean): Promise<
 
 /** Add (or deduct, with negative delta) loyalty points, recording a ledger entry. */
 export async function grantPoints(userId: string, delta: number, reason: string): Promise<ActionResult> {
+  await requireStaff();
   if (!Number.isInteger(delta) || delta === 0) return { ok: false, error: "Enter a non-zero whole number of points." };
   const db = createAdminClient();
 
@@ -70,6 +72,7 @@ export async function grantPoints(userId: string, delta: number, reason: string)
 
 /** Assign (or clear, with null) the customer's loyalty card / tier. */
 export async function setTier(userId: string, tierId: string | null): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient()
     .from("loyalty_account")
     .upsert({ user_id: userId, current_tier_id: tierId }, { onConflict: "user_id" });
@@ -82,6 +85,7 @@ export async function setTier(userId: string, tierId: string | null): Promise<Ac
  *  The notification rides fn_notify_user (staff-gated in the DB, RLS-scoped to
  *  this one customer): inbox instantly, banner if they're in the app, push if on. */
 export async function issueCoupon(userId: string, customerName: string, percent: number): Promise<CouponResult> {
+  await requireStaff();
   if (!Number.isFinite(percent) || percent <= 0 || percent > 100) return { ok: false, error: "Enter a discount between 1 and 100%." };
   const pct = Math.round(percent);
   const code = `BS-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;

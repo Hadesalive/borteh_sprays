@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/supabase/auth-server";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -10,6 +11,7 @@ export async function setLoyaltyFlag(
   field: "loyalty_enabled" | "promos_enabled" | "tiers_enabled",
   value: boolean,
 ): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient()
     .from("loyalty_config")
     .update({ [field]: value })
@@ -23,6 +25,7 @@ export async function updateLoyaltyRates(
   id: number,
   input: { pointsPerUnit: number; pointValueLe: number; expiryDays: number; referralPoints: number },
 ): Promise<ActionResult> {
+  await requireStaff();
   const { pointsPerUnit, pointValueLe, expiryDays, referralPoints } = input;
   if (![pointsPerUnit, pointValueLe, expiryDays, referralPoints].every((n) => Number.isFinite(n) && n >= 0)) {
     return { ok: false, error: "Enter non-negative numbers." };

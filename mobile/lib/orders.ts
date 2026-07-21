@@ -50,6 +50,7 @@ export async function placeOrder(input: {
   notes?: string;
   promoCode?: string | null;
   redeemPoints?: number;
+  combos?: { combo_id: string; qty: number }[];
 }): Promise<{ orderId: string; orderNumber: string }> {
   const { data, error } = await supabase.rpc("fn_place_order", {
     p_items: input.items,
@@ -60,6 +61,7 @@ export async function placeOrder(input: {
     p_notes: input.notes ?? null,
     p_promo_code: input.promoCode ?? null,
     p_redeem_points: input.redeemPoints ?? 0,
+    p_combos: input.combos ?? [],
   });
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;

@@ -6,11 +6,14 @@ import {
   Package,
   Drop,
   Stack,
+  Cards,
   Sparkle,
   DeviceMobile,
   ChartLineUp,
   UsersThree,
   GearSix,
+  Presentation,
+  TextAa,
   type Icon,
 } from "@phosphor-icons/react";
 
@@ -35,8 +38,15 @@ export const catalogNav: NavItem[] = [
   { title: "Products", href: "/products", icon: Drop },
   { title: "Inventory", href: "/inventory", icon: Package, badge: 4 },
   { title: "Collections", href: "/collections", icon: Stack },
+  { title: "Combos", href: "/combos", icon: Cards },
   { title: "Brands", href: "/brands", icon: Sparkle },
   { title: "Storefront", href: "/storefront", icon: DeviceMobile },
+];
+
+// App Studio — the mobile app's content: what it says and shows (the CMS).
+export const contentNav: NavItem[] = [
+  { title: "Onboarding", href: "/content/onboarding", icon: Presentation },
+  { title: "App copy", href: "/content/copy", icon: TextAa },
 ];
 
 // Insight — visited, not lived in.
@@ -54,6 +64,7 @@ export const settingsItem: NavItem = {
 export const allNavItems: NavItem[] = [
   ...primaryNav,
   ...catalogNav,
+  ...contentNav,
   ...insightNav,
   settingsItem,
 ];

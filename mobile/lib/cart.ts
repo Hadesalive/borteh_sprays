@@ -15,9 +15,19 @@ export type CartItem = {
   productId?: string; // carried for recs event attribution; optional so old persisted carts still load
 };
 
+// A pair the shopper added as a combo. The bottles live in `items` like any other;
+// this only records the INTENT so checkout can claim the deal price. The server
+// re-validates + prices it, so a stale claim (bottle later removed) just yields no
+// discount rather than a bad charge.
+export type ComboClaim = { comboId: string; slug: string; qty: number };
+
 const KEY = "borteh.cart.v1";
 let items: CartItem[] = [];
 const listeners = new Set<() => void>();
+
+const COMBO_KEY = "borteh.combos.v1";
+let combos: ComboClaim[] = [];
+const comboListeners = new Set<() => void>();
 
 function emit() {
   listeners.forEach((l) => l());
@@ -36,14 +46,48 @@ AsyncStorage.getItem(KEY)
   })
   .catch(() => {});
 
+function emitCombos() {
+  comboListeners.forEach((l) => l());
+  AsyncStorage.setItem(COMBO_KEY, JSON.stringify(combos)).catch(() => {});
+}
+
+AsyncStorage.getItem(COMBO_KEY)
+  .then((raw) => {
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      combos = parsed;
+      comboListeners.forEach((l) => l());
+    }
+  })
+  .catch(() => {});
+
 const subscribe = (l: () => void) => {
   listeners.add(l);
   return () => listeners.delete(l);
 };
 const snapshot = () => items;
 
+const subscribeCombos = (l: () => void) => {
+  comboListeners.add(l);
+  return () => comboListeners.delete(l);
+};
+const snapshotCombos = () => combos;
+
 /** The whole bag (cheapest-added first kept in insertion order). */
 export const useCart = () => useSyncExternalStore(subscribe, snapshot, snapshot);
+
+/** Pairs the shopper added as combos — used to claim deal pricing at checkout. */
+export const useCartCombos = () => useSyncExternalStore(subscribeCombos, snapshotCombos, snapshotCombos);
+
+/** Record that a combo was added to the bag (its bottles go in via addToBag). */
+export function addComboClaim(comboId: string, slug: string, qty = 1) {
+  const existing = combos.find((c) => c.comboId === comboId);
+  combos = existing
+    ? combos.map((c) => (c.comboId === comboId ? { ...c, qty: c.qty + qty } : c))
+    : [...combos, { comboId, slug, qty }];
+  emitCombos();
+}
 
 /** Total item count for the tab badge. */
 export const useCartCount = () =>
@@ -76,7 +120,9 @@ export function removeFromBag(variantId: string) {
 
 export function clearBag() {
   items = [];
+  combos = [];
   emit();
+  emitCombos();
 }
 
 export const cartTotalMinor = (list: CartItem[]) => list.reduce((sum, i) => sum + i.priceMinor * i.qty, 0);

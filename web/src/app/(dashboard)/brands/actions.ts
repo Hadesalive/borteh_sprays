@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/supabase/auth-server";
 
 export type BrandInput = {
   name: string;
@@ -24,6 +25,7 @@ function toRow(input: BrandInput) {
 }
 
 export async function createBrand(input: BrandInput): Promise<ActionResult> {
+  await requireStaff();
   if (!input.name.trim() || !input.slug.trim()) return { ok: false, error: "Name and slug are required." };
   const { error } = await createAdminClient().from("brand").insert(toRow(input));
   if (error) return { ok: false, error: error.message };
@@ -32,6 +34,7 @@ export async function createBrand(input: BrandInput): Promise<ActionResult> {
 }
 
 export async function updateBrand(id: string, input: BrandInput): Promise<ActionResult> {
+  await requireStaff();
   if (!input.name.trim() || !input.slug.trim()) return { ok: false, error: "Name and slug are required." };
   const { error } = await createAdminClient().from("brand").update(toRow(input)).eq("id", id);
   if (error) return { ok: false, error: error.message };
@@ -40,6 +43,7 @@ export async function updateBrand(id: string, input: BrandInput): Promise<Action
 }
 
 export async function setBrandFeatured(id: string, featured: boolean): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient().from("brand").update({ is_featured_home: featured }).eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/brands");
@@ -48,6 +52,7 @@ export async function setBrandFeatured(id: string, featured: boolean): Promise<A
 
 /** Soft delete — keeps history and frees the slug (uq index is WHERE deleted_at is null). */
 export async function deleteBrand(id: string): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient()
     .from("brand")
     .update({ deleted_at: new Date().toISOString(), is_active: false })

@@ -51,5 +51,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
+  // __visual is the Playwright screenshot fixture (see src/app/__visual/page.tsx) —
+  // it renders no data and must stay reachable without a session so headless
+  // browsers can screenshot it; the page's own NODE_ENV check still 404s it in prod.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|__visual|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
 };

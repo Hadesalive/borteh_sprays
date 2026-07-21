@@ -13,7 +13,8 @@ import { AppText } from "@/components/Text";
 import { HeaderActions } from "@/components/ui";
 import { useProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
-import { cartTotalMinor, removeFromBag, setQty, useCart } from "@/lib/cart";
+import { cartTotalMinor, removeFromBag, setQty, useCart, useCartCombos } from "@/lib/cart";
+import { resolveComboClaims, useCombos } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
 import { colors, space } from "@/lib/theme";
@@ -28,6 +29,8 @@ export default function Cart() {
   const router = useRouter();
   const session = useSession();
   const items = useCart();
+  const cartCombos = useCartCombos();
+  const combos = useCombos();
   const { data } = useProducts();
 
   const leave = () => (router.canGoBack() ? router.back() : router.navigate("/"));
@@ -42,6 +45,9 @@ export default function Cart() {
         .filter((r): r is NonNullable<typeof r> => r != null),
     [items, data],
   );
+
+  // Combo deal savings the bag currently qualifies for (deterministic, account-free).
+  const { savingsMinor } = useMemo(() => resolveComboClaims(items, cartCombos, combos), [items, cartCombos, combos]);
 
   if (!items.length) {
     return (
@@ -62,6 +68,7 @@ export default function Cart() {
   }
 
   const total = cartTotalMinor(items);
+  const grandTotal = Math.max(0, total - savingsMinor);
   const count = items.reduce((n, i) => n + i.qty, 0);
   const step = (variantId: string, qty: number) => {
     Haptics.selectionAsync();
@@ -126,20 +133,26 @@ export default function Cart() {
             <AppText variant="bodySoft">Subtotal</AppText>
             <AppText variant="body">{formatLe(total)}</AppText>
           </View>
+          {savingsMinor > 0 ? (
+            <View style={s.sumRow}>
+              <AppText variant="bodySoft" style={{ color: colors.accent }}>Pair savings</AppText>
+              <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(savingsMinor)}</AppText>
+            </View>
+          ) : null}
           <View style={s.sumRow}>
             <AppText variant="bodySoft">Delivery</AppText>
             <AppText variant="bodySoft">Confirmed after checkout</AppText>
           </View>
           <View style={s.totalRow}>
             <AppText variant="serif20">Total</AppText>
-            <AppText variant="serif20">{formatLe(total)}</AppText>
+            <AppText variant="serif20">{formatLe(grandTotal)}</AppText>
           </View>
         </View>
       </ScrollView>
 
       {/* sticky checkout */}
       <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
-        <Button title="Checkout" trailing={formatLe(total)} onPress={() => router.push(session ? "/checkout" : "/login")} />
+        <Button title="Checkout" trailing={formatLe(grandTotal)} onPress={() => router.push(session ? "/checkout" : "/login")} />
       </View>
     </View>
   );

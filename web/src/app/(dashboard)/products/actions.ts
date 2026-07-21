@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
-import { createAuthServerClient } from "@/lib/supabase/auth-server";
+import { createAuthServerClient, requireStaff } from "@/lib/supabase/auth-server";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 export type SaveResult = { ok: true; id: string } | { ok: false; error: string };
@@ -59,6 +59,7 @@ function revalidateProduct(productId: string) {
  * Returns the product id (the newly-created one on create).
  */
 export async function saveProduct(payload: ProductPayload): Promise<SaveResult> {
+  await requireStaff();
   const creating = !payload.id;
   if (!payload.name.trim()) return { ok: false, error: "Name is required." };
   if (!payload.brand_id) return { ok: false, error: "Brand is required." };
@@ -86,6 +87,7 @@ export async function receiveStock(input: {
   productId: string;
   reason?: string;
 }): Promise<ActionResult> {
+  await requireStaff();
   if (!Number.isFinite(input.qty) || input.qty <= 0) return { ok: false, error: "Enter a positive quantity." };
   const { error } = await createAdminClient().rpc("fn_receive_stock", {
     p_variant: input.variantId,
@@ -105,6 +107,7 @@ export async function adjustStock(input: {
   productId: string;
   reason?: string;
 }): Promise<ActionResult> {
+  await requireStaff();
   if (!Number.isInteger(input.delta) || input.delta === 0) return { ok: false, error: "Enter a non-zero whole number (e.g. -2 or 3)." };
   const { error } = await createAdminClient().rpc("fn_adjust_stock", {
     p_variant: input.variantId,
@@ -126,6 +129,7 @@ export async function setReviewStatus(input: {
   status: "published" | "rejected" | "pending";
   productId: string;
 }): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient().from("review").update({ status: input.status }).eq("id", input.reviewId);
   if (error) return { ok: false, error: error.message };
   revalidatePath(`/products/${input.productId}`);
@@ -139,6 +143,7 @@ export async function stocktake(input: {
   productId: string;
   reason?: string;
 }): Promise<ActionResult> {
+  await requireStaff();
   if (!Number.isInteger(input.count) || input.count < 0) return { ok: false, error: "Enter the counted quantity (0 or more)." };
   const { error } = await createAdminClient().rpc("fn_stocktake", {
     p_variant: input.variantId,
@@ -158,6 +163,7 @@ export async function stocktake(input: {
 
 /** Upload an image file to Storage and attach it as a product_image (first one is primary). */
 export async function uploadProductImage(formData: FormData): Promise<ActionResult> {
+  await requireStaff();
   const productId = String(formData.get("productId") ?? "");
   const file = formData.get("file");
   if (!productId) return { ok: false, error: "Missing product." };
@@ -194,6 +200,7 @@ export async function uploadProductImage(formData: FormData): Promise<ActionResu
 
 /** Make one image the product's primary (clears the old primary first — one-primary index). */
 export async function setPrimaryImage(input: { imageId: string; productId: string }): Promise<ActionResult> {
+  await requireStaff();
   const admin = createAdminClient();
   await admin.from("product_image").update({ is_primary: false }).eq("product_id", input.productId).eq("is_primary", true);
   const { error } = await admin.from("product_image").update({ is_primary: true }).eq("id", input.imageId);
@@ -204,6 +211,7 @@ export async function setPrimaryImage(input: { imageId: string; productId: strin
 
 /** Persist a new display order (sort_order = position in the list). */
 export async function reorderImages(input: { productId: string; orderedIds: string[] }): Promise<ActionResult> {
+  await requireStaff();
   const admin = createAdminClient();
   for (let i = 0; i < input.orderedIds.length; i++) {
     const { error } = await admin
@@ -219,6 +227,7 @@ export async function reorderImages(input: { productId: string; orderedIds: stri
 
 /** Delete an image (Storage object + row); if it was primary, promote the next one. */
 export async function deleteProductImage(input: { imageId: string; productId: string; storagePath: string }): Promise<ActionResult> {
+  await requireStaff();
   const admin = createAdminClient();
   const { data: img } = await admin.from("product_image").select("is_primary").eq("id", input.imageId).maybeSingle();
   await admin.storage.from(IMAGES_BUCKET).remove([input.storagePath]);

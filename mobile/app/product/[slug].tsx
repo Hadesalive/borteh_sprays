@@ -11,11 +11,13 @@ import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import { ListRow } from "@/components/ListRow";
 import { ProductCard } from "@/components/ProductCard";
+import { ComboRail } from "@/components/ComboRail";
 import { AppText } from "@/components/Text";
 import { FrostCircle, LinkLabel } from "@/components/ui";
 import { type Band, type Concentration, noteLine, type Product, type ProductVariant, useProducts, useSimilarProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { addToBag } from "@/lib/cart";
+import { useCombosForProduct } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { useRestockSub, useToggleRestockSub } from "@/lib/notifications";
 import { productImage } from "@/lib/productImage";
@@ -31,6 +33,7 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
 const ease = () => LayoutAnimation.configureNext(LayoutAnimation.create(220, LayoutAnimation.Types.easeInEaseOut, LayoutAnimation.Properties.opacity));
 
 const GENDER_LABEL: Record<Product["gender"], string> = { male: "Men", female: "Women", unisex: "Unisex" };
+const POS_LABEL = { top: "Top", heart: "Heart", base: "Base" } as const;
 const STOCK: Record<Band, { label: string; tone: "success" | "warning" | "error" }> = {
   in_stock: { label: "In stock", tone: "success" },
   low: { label: "Only a few left", tone: "warning" },
@@ -60,6 +63,7 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [expanded, setExpanded] = useState(false);
   const [descLines, setDescLines] = useState(0);
+  const [notesOpen, setNotesOpen] = useState(false);
   const [added, setAdded] = useState(false);
 
   // Variant selection is derived before the early returns so the restock-subscription
@@ -74,6 +78,7 @@ export default function ProductDetail() {
   const qtyScale = useRef(new Animated.Value(1)).current;
   const heartScale = useRef(new Animated.Value(1)).current;
   const scrollRef = useRef<ScrollView>(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
   const reviewsY = useRef(0);
 
   useEffect(() => {
@@ -94,6 +99,7 @@ export default function ProductDetail() {
     };
   }, [product?.id]);
 
+  const combos = useCombosForProduct(product?.id);
   const { data: similarIds } = useSimilarProducts(product?.id);
   const similar = useMemo(() => {
     if (!product) return [];
@@ -172,6 +178,13 @@ export default function ProductDetail() {
       setAdded(false);
     }, 1600);
   };
+  // Straight to checkout: drop it in the bag and open the bag (which is the checkout surface).
+  const onBuyNow = () => {
+    if (!selected) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    addToBag({ productId: product.id, variantId: selected.id, slug: product.slug, sizeMl: selected.sizeMl, priceMinor: selected.priceMinor }, qty);
+    router.push("/cart");
+  };
   const onNotify = () => {
     if (!selected) return;
     if (!session) {
@@ -189,10 +202,16 @@ export default function ProductDetail() {
   return (
     <View style={s.screen}>
       <StatusBar style="dark" />
-      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 96 }}>
+      <ScrollView
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        onScroll={(e) => scrollY.setValue(e.nativeEvent.contentOffset.y)}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 96 }}
+      >
         <Animated.View style={{ opacity: enter }}>
-          {/* hero */}
-          <View style={[s.hero, { height: heroH }]}>
+          {/* hero — full-bleed, bleeds up under the status bar (extra height = the inset) */}
+          <View style={[s.hero, { height: heroH + insets.top }]}>
             <Image
               source={productImage(product)}
               style={StyleSheet.absoluteFill}
@@ -204,7 +223,7 @@ export default function ProductDetail() {
             />
           </View>
 
-          <View style={s.body}>
+          <View style={[s.body, { paddingTop: space["2xl"] }]}>
             <AppText variant="label" style={{ color: colors.ink60 }}>
               {eyebrow || `${product.brand}  ·  ${product.scentFamily ?? GENDER_LABEL[product.gender]}`}
             </AppText>
@@ -284,8 +303,38 @@ export default function ProductDetail() {
 
             {/* info rows */}
             <View style={{ marginTop: space["3xl"] }}>
-              {notes ? <ListRow title="Notes" value={notes} arrow={false} borderTop /> : null}
-              <ListRow title="Delivery" value="Freetown · cash on delivery" arrow={false} borderTop={!notes} />
+              {product.notes.length ? (
+                <View style={s.notesTop}>
+                  <Pressable
+                    onPress={() => { ease(); setNotesOpen((v) => !v); }}
+                    style={s.notesHead}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: notesOpen }}
+                    accessibilityLabel="Notes"
+                  >
+                    <AppText variant="body" style={s.notesTitle}>Notes</AppText>
+                    {!notesOpen ? (
+                      <AppText variant="body" numberOfLines={1} style={s.notesPreview}>{notes}</AppText>
+                    ) : null}
+                    <AppText variant="body" style={s.notesToggle}>{notesOpen ? "–" : "+"}</AppText>
+                  </Pressable>
+                  {notesOpen ? (
+                    <View style={s.pyramid}>
+                      {(["top", "heart", "base"] as const).map((pos) => {
+                        const names = product.notes.filter((n) => n.position === pos).map((n) => n.name);
+                        if (!names.length) return null;
+                        return (
+                          <View key={pos} style={s.pyramidRow}>
+                            <AppText variant="label" style={s.pyramidLabel}>{POS_LABEL[pos]}</AppText>
+                            <AppText variant="body" style={s.pyramidNotes}>{names.join(" · ")}</AppText>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  ) : null}
+                </View>
+              ) : null}
+              <ListRow title="Delivery" value="Freetown · cash on delivery" arrow={false} borderTop={!product.notes.length} />
               <ListRow
                 title="Reviews"
                 value={product.reviews > 0 ? `${product.rating.toFixed(1)} · ${product.reviews.toLocaleString()}` : "None yet"}
@@ -307,6 +356,9 @@ export default function ProductDetail() {
               </View>
             ) : null}
           </View>
+
+          {/* complete the pair — combos containing this fragrance */}
+          <ComboRail title="Complete the pair" combos={combos} onOpen={(slug) => router.push({ pathname: "/combo/[slug]", params: { slug } })} />
 
           {/* similar scents */}
           {similar.length > 0 ? (
@@ -358,8 +410,22 @@ export default function ProductDetail() {
         </Animated.View>
       </ScrollView>
 
-      {/* status bar always sits on paper — content scrolls under this mask, never under the clock */}
-      <View style={[s.statusMask, { height: insets.top }]} />
+      {/* Status-bar mask: transparent over the hero (the image bleeds under the clock), fading to
+          paper once the hero scrolls away so body text never runs under the clock. */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          s.statusMask,
+          {
+            height: insets.top,
+            opacity: scrollY.interpolate({
+              inputRange: [0, heroH * 0.55, heroH * 0.9],
+              outputRange: [0, 0, 1],
+              extrapolate: "clamp",
+            }),
+          },
+        ]}
+      />
 
       {/* fixed hero controls — frosted for contrast over photography */}
       <Pressable onPress={() => router.back()} style={[s.floatL, { top: insets.top + space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
@@ -370,17 +436,24 @@ export default function ProductDetail() {
       <Pressable onPress={toggleLike} style={[s.floatR, { top: insets.top + space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel={liked ? "Remove from saved" : "Save"}>
         <FrostCircle size={44}>
           <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-            <Heart size={22} color={colors.ink} weight={liked ? "fill" : "regular"} />
+            <Heart size={22} color="#EA2A3E" weight={liked ? "fill" : "regular"} />
           </Animated.View>
         </FrostCircle>
       </Pressable>
 
-      {/* sticky CTA */}
+      {/* floating CTA — no slab; the buttons themselves carry the weight */}
       <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
         {outOfStock ? (
           <Button title={subscribed ? "We'll let you know" : "Notify me when back in stock"} variant="secondary" haptic={false} onPress={onNotify} />
         ) : (
-          <Button title={added ? "Added to bag" : "Add to bag"} trailing={added ? undefined : formatLe(lineTotal)} haptic={false} disabled={!selected} onPress={onAdd} />
+          <View style={s.ctaRow}>
+            <View style={{ flex: 1 }}>
+              <Button title={added ? "Added ✓" : "Add to bag"} variant="secondary" haptic={false} disabled={!selected} onPress={onAdd} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button title="Buy now" trailing={formatLe(lineTotal)} haptic={false} disabled={!selected} onPress={onBuyNow} />
+            </View>
+          </View>
         )}
       </View>
     </View>
@@ -407,6 +480,16 @@ const s = StyleSheet.create({
   stepBtn: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
   qty: { minWidth: 32, textAlign: "center" },
 
+  notesTop: { borderTopWidth: 1, borderTopColor: colors.line, borderBottomWidth: 1, borderBottomColor: colors.line },
+  notesHead: { flexDirection: "row", alignItems: "center", gap: space.md, minHeight: 56 },
+  notesTitle: { color: colors.ink },
+  notesPreview: { flex: 1, textAlign: "right", color: colors.ink60 },
+  notesToggle: { color: colors.ink40, width: 16, textAlign: "center" },
+  pyramid: { paddingBottom: space.lg, gap: space.md },
+  pyramidRow: { flexDirection: "row", gap: space.lg },
+  pyramidLabel: { color: colors.ink40, width: 52, paddingTop: 3 },
+  pyramidNotes: { flex: 1, color: colors.ink },
+
   notice: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space["2xl"], borderWidth: 1, borderColor: colors.line, padding: space.lg },
 
   rail: { paddingHorizontal: space.gutter, gap: space.lg, paddingTop: space.lg },
@@ -417,4 +500,5 @@ const s = StyleSheet.create({
   floatL: { position: "absolute", left: space.gutter, zIndex: 11 },
   floatR: { position: "absolute", right: space.gutter, zIndex: 11 },
   footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.gutter, paddingTop: space.lg, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
+  ctaRow: { flexDirection: "row", gap: space.md },
 });

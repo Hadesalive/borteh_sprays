@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { CaretUpDown, SignOut } from "@phosphor-icons/react";
 
 import { createAuthBrowserClient } from "@/lib/supabase/auth-browser";
-import { primaryNav, catalogNav, insightNav, settingsItem, type NavItem } from "@/lib/nav";
+import { primaryNav, catalogNav, contentNav, insightNav, settingsItem, type NavItem } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -102,6 +102,12 @@ export function AppSidebar({ user }: { user?: { name: string; role: string } }) 
         <SidebarGroup>
           <SidebarGroupContent>
             <NavItems items={catalogNav} />
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarSeparator className="mx-2" />
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <NavItems items={contentNav} />
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarSeparator className="mx-2" />

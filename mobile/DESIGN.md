@@ -37,17 +37,24 @@ Bronze is spent **once per screen** — the active choice or the single link. Ne
 
 ## Spacing · radius · elevation · icons
 - **4px grid:** 4 / 8 / 12 / 16 / 24 / 32 / 48. Screen gutter = 24.
-- **Radius 0 — squared everything.** The only round things are avatars, notification dots,
-  toggle knobs, and `FrostCircle` (`radius.circle`).
-- **Elevation: none.** No drop shadows, no blur, no glass. 1px `line` borders separate layers.
-  **Two sanctioned exceptions:** `FrostCircle` (in `ui.tsx`) — a frosted round bed behind the
-  product-hero back/heart, which float over full-bleed photography with content scrolling under
-  them. Functional contrast only, never decoration. **Card hearts don't get a bed** — they use a
-  paper-filled heart layered under the ink glyph (halo, zero chrome; see `ProductCard`).
-  And `NotificationToast` — the in-app heads-up banner is a solid **ink**, **rounded** card in
-  messenger anatomy: the status glyph rides a semantic color chip (the "avatar"), "Borteh" is
-  the sender. It mimics a *system* notification, not page chrome, so the radius-0 / one-accent
-  rules don't govern it — standing out over any screen IS its function.
+- **Radius 0 on chrome; image-bearing cards round.** Body/UI surfaces (buttons, inputs, list rows,
+  fields) stay squared. The round things are avatars, notification dots, toggle knobs, `FrostCircle`
+  (`radius.circle`), and **image cards**, which carry a soft radius so they don't read as flat slabs:
+  collection cards (16), member card (20), `NotificationToast` (22), and **`ProductCard`** (14 on the
+  image bed). ProductCard's corners are driven by its `shape` prop: `"top"` (both top corners — the
+  default, used on home rails + Saved) and, on the **Shop grid**, a mirrored **petal** — two
+  diagonal-opposite corners soft, two sharp (`"tearLeft"` on the left column, `"tearRight"` on the
+  right, so each pair bookends). Don't flatten these back to 0.
+- **Elevation: none on chrome.** No drop shadows, no blur, no glass on page chrome; 1px `line`
+  borders separate layers. **Sanctioned exceptions:** `FrostCircle` (in `ui.tsx`) — a frosted round
+  bed behind the product-hero back/heart, which float over full-bleed photography with content
+  scrolling under them. Functional contrast only, never decoration. **Card hearts don't get a bed** —
+  they use a paper-filled heart layered under the ink glyph (halo, zero chrome; see `ProductCard`).
+  `NotificationToast` — the in-app heads-up banner is a **dark-glass**, **rounded** card in messenger
+  anatomy that mimics a *system* notification (its own shadow + blur are the point). And **`ProductCard`**
+  carries a *whisper* shadow on its image bed (warm `#1A140E`, opacity ~0.14, offset y+4, radius 9) —
+  just enough depth to lift the photo off the paper, never a floating card. If it reads as a slab,
+  it's too strong.
 - **Status bar rule:** icons are always ink-on-paper. Photo-topped screens keep the photo *below*
   the top inset (Onboarding) or run a fixed paper mask over the inset (Product). Dark scrims
   (Filter, QuickPeek) flip `StatusBar` to `light` while open. Never let imagery or scrolled text
@@ -61,8 +68,11 @@ Bronze is spent **once per screen** — the active choice or the single link. Ne
   "Add to bag — Le 680".
 - **Input / Field** — h52, paper bg, 1px `line` border, squared; label above in 12px uppercase
   `ink60`. Error: `error` border + `error` helper line beneath.
-- **ProductCard** — 3:4 image on a `surface` bed, `ph-heart` (24) top-right; below: serif 20 name,
-  12px `ink60` "brand · notes", 14/500 price. **Flat** — no border, no shadow on the card.
+- **ProductCard** — 3:4 image on a `surface` bed with a soft **14px radius** and a **whisper shadow**
+  for depth (top corners by default; a mirrored **petal** — diagonal corners — on the Shop grid via
+  the `shape` prop), `ph-heart` (24) top-right; below: serif 20 name, 12px `ink60` "brand · notes",
+  14/500 price. No border, no quick-add — the photo leads. The shadow layer is separate from the clip
+  layer (a view with `overflow:"hidden"` can't cast a shadow).
 - **ListRow** — h56, 1px `line` separators, optional left icon (20), trailing value + `ph-arrow-right`
   (20). The workhorse for menus, info rows, orders.
 - **Badge** — squared, 1px border, 12px uppercase; tinted only for semantic states (in stock / low /

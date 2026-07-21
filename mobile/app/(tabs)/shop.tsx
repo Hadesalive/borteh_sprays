@@ -184,8 +184,9 @@ export default function Shop() {
           </View>
         ) : (
           <View style={[s.grid, { marginTop: space.lg }]}>
-            {products.map((p) => (
-              <ProductCard key={p.id} product={p} width={cardW} imageHeight={imgH} />
+            {products.map((p, i) => (
+              // mirror the petal across the pair: left column tears top-left→bottom-right, right column the other diagonal
+              <ProductCard key={p.id} product={p} width={cardW} imageHeight={imgH} shape={i % 2 === 0 ? "tearLeft" : "tearRight"} />
             ))}
           </View>
         )}

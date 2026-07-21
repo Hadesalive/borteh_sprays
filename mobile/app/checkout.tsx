@@ -15,7 +15,8 @@ import { HeaderActions, LinkLabel, ToggleSwitch } from "@/components/ui";
 import { takePendingCoupon, tierFor, useLoyalty, useLoyaltyConfig, useLoyaltyTiers, validatePromo } from "@/lib/account";
 import { useProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
-import { cartTotalMinor, clearBag, useCart } from "@/lib/cart";
+import { cartTotalMinor, clearBag, useCart, useCartCombos } from "@/lib/cart";
+import { resolveComboClaims, useCombos } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { placeOrder } from "@/lib/orders";
 import { colors, font, space } from "@/lib/theme";
@@ -27,6 +28,8 @@ export default function Checkout() {
   const session = useSession();
   const qc = useQueryClient();
   const items = useCart();
+  const cartCombos = useCartCombos();
+  const combos = useCombos();
   const { data: products } = useProducts();
 
   const [name, setName] = useState((session?.user.user_metadata?.display_name as string) || "");
@@ -45,12 +48,19 @@ export default function Checkout() {
   const { data: tiers } = useLoyaltyTiers();
 
   const subtotal = cartTotalMinor(items);
+  // Combo deal savings — the pairs the shopper added, priced by the same rule the
+  // server enforces (only pairs actually backed by the bag). comboPayload is what
+  // we send as p_combos; the server re-derives the number authoritatively.
+  const { savingsMinor: comboSavings, payload: comboPayload } = useMemo(
+    () => resolveComboClaims(items, cartCombos, combos),
+    [items, cartCombos, combos],
+  );
   // The loyalty-card perk is automatic ("N% off every order") — server-applied
   // in fn_place_order; this preview mirrors the same rule via tierFor().
   const tier = tierFor(loyalty, tiers, loyaltyCfg?.tiersEnabled ?? false);
   const tierDiscount = tier ? Math.floor((subtotal * tier.discountPercent) / 100) : 0;
   const promoDiscount = applied?.discountMinor ?? 0;
-  const discount = Math.min(tierDiscount + promoDiscount, subtotal); // combined, capped — matches the server
+  const discount = Math.min(comboSavings + tierDiscount + promoDiscount, subtotal); // combined, capped — matches the server
   // Points preview mirrors the server's rules exactly: capped by balance AND by
   // what's left after the discounts (fn_place_order re-enforces both).
   const pointValue = loyaltyCfg?.pointValueMinor ?? 0;
@@ -58,9 +68,10 @@ export default function Checkout() {
   const redeemPoints = usePoints && canRedeem ? Math.min(loyalty?.points ?? 0, Math.floor((subtotal - discount) / pointValue)) : 0;
   const redeemValue = redeemPoints * pointValue;
   const total = Math.max(0, subtotal - discount - redeemValue);
-  // Split the combined discount back out for the summary (tier is applied first).
-  const shownTier = Math.min(tierDiscount, subtotal);
-  const shownPromo = Math.max(0, discount - shownTier);
+  // Split the combined discount back out for the summary (combo, then tier, then promo).
+  const shownCombo = Math.min(comboSavings, subtotal);
+  const shownTier = Math.min(tierDiscount, subtotal - shownCombo);
+  const shownPromo = Math.max(0, discount - shownCombo - shownTier);
   const lines = useMemo(
     () => items.map((it) => ({ ...it, name: (products ?? []).find((p) => p.slug === it.slug)?.name ?? it.slug })),
     [items, products],
@@ -112,6 +123,7 @@ export default function Checkout() {
         notes,
         promoCode: applied?.code ?? null, // re-validated + priced by the server
         redeemPoints, // balance-checked + capped by the server
+        combos: comboPayload, // pairs to deal-price; server re-validates + reprices
       });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       // recs: strongest signal — one purchase event per product, before the bag is cleared.
@@ -213,6 +225,12 @@ export default function Checkout() {
                 <AppText variant="body">{formatLe(l.priceMinor * l.qty)}</AppText>
               </View>
             ))}
+            {shownCombo > 0 ? (
+              <View style={s.sumRow}>
+                <AppText variant="bodySoft" style={{ color: colors.accent }}>Pair savings</AppText>
+                <AppText variant="body" style={{ color: colors.accent }}>−{formatLe(shownCombo)}</AppText>
+              </View>
+            ) : null}
             {shownTier > 0 && tier ? (
               <View style={s.sumRow}>
                 <AppText variant="bodySoft" style={{ color: colors.accent }}>{tier.name} ({tier.discountPercent}%)</AppText>

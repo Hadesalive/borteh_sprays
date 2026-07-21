@@ -325,3 +325,71 @@ export async function applyReferral(code: string): Promise<string> {
   }
   return data as string;
 }
+
+// ── Leaderboard ───────────────────────────────────────────────────────────────
+// Top customers by lifetime spend. The whole board comes from a security-definer
+// RPC (fn_leaderboard) — the phone never receives the customer table, only ranked
+// rows (name, spend, rank) plus the caller's own row when they rank below the cut.
+
+export type LeaderRow = { rank: number; name: string; spendMinor: number; avatarPath: string | null; isMe: boolean };
+
+export function useLeaderboard(limit = 20) {
+  const session = useSession();
+  return useQuery<LeaderRow[]>({
+    queryKey: ["leaderboard", limit, session?.user.id],
+    enabled: !!session,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("fn_leaderboard", { p_limit: limit });
+      if (error) throw error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return ((data ?? []) as any[]).map((r) => ({
+        rank: Number(r.rank),
+        name: r.name as string,
+        spendMinor: Number(r.spend_minor ?? 0),
+        avatarPath: (r.avatar_path as string | null) ?? null,
+        isMe: !!r.is_me,
+      }));
+    },
+  });
+}
+
+/** Whether the caller currently appears on the public leaderboard (default true). */
+export function useLeaderboardVisible() {
+  const session = useSession();
+  const uid = session?.user.id;
+  return useQuery<boolean>({
+    queryKey: ["leaderboard-visible", uid],
+    enabled: !!uid,
+    staleTime: 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("fn_leaderboard_visible");
+      if (error) throw error;
+      return data == null ? true : !!data;
+    },
+  });
+}
+
+export function useSetLeaderboardVisible() {
+  const qc = useQueryClient();
+  const session = useSession();
+  const uid = session?.user.id;
+  return useMutation({
+    mutationFn: async (show: boolean) => {
+      const { error } = await supabase.rpc("fn_set_leaderboard_visible", { p_show: show });
+      if (error) throw error;
+    },
+    onMutate: async (show) => {
+      await qc.cancelQueries({ queryKey: ["leaderboard-visible", uid] });
+      const prev = qc.getQueryData<boolean>(["leaderboard-visible", uid]);
+      qc.setQueryData(["leaderboard-visible", uid], show);
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev !== undefined) qc.setQueryData(["leaderboard-visible", uid], ctx.prev);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leaderboard"] });
+    },
+  });
+}

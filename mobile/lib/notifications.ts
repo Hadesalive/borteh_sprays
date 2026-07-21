@@ -18,6 +18,7 @@ export type AppNotification = {
   body: string;
   referenceType: string | null; // 'order' | 'product_variant' | …
   referenceId: string | null;
+  imagePath: string | null; // product thumbnail (product_image.storage_path), null for notices
   readAt: string | null;
   createdAt: string;
 };
@@ -31,6 +32,7 @@ export const normalizeNotification = (r: any): AppNotification => ({
   body: r.body,
   referenceType: r.reference_type,
   referenceId: r.reference_id,
+  imagePath: r.image_path ?? null,
   readAt: r.read_at,
   createdAt: r.created_at,
 });
@@ -47,7 +49,7 @@ export function useNotifications() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("notification")
-        .select("id, type, title, body, reference_type, reference_id, read_at, created_at")
+        .select("id, type, title, body, reference_type, reference_id, image_path, read_at, created_at")
         .eq("user_id", uid!)
         .order("created_at", { ascending: false })
         .limit(50);
@@ -74,7 +76,7 @@ export function useNotices() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("notification")
-        .select("id, type, title, body, reference_type, reference_id, read_at, created_at")
+        .select("id, type, title, body, reference_type, reference_id, image_path, read_at, created_at")
         .eq("user_id", uid!)
         .in("type", ["system", "promo"])
         .order("created_at", { ascending: false })
@@ -104,6 +106,34 @@ export function useMarkRead() {
       const prevNotices = qc.getQueryData<AppNotification[]>(["notices", uid]);
       qc.setQueryData<AppNotification[]>(["notifications", uid], patch);
       qc.setQueryData<AppNotification[]>(["notices", uid], patch);
+      return { prev, prevNotices };
+    },
+    onError: (_e, _ids, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["notifications", uid], ctx.prev);
+      if (ctx?.prevNotices) qc.setQueryData(["notices", uid], ctx.prevNotices);
+    },
+  });
+}
+
+/** Delete notifications (swipe-to-delete + clear-all). Optimistic; removes from both caches. */
+export function useDeleteNotifications() {
+  const qc = useQueryClient();
+  const session = useSession();
+  const uid = session?.user.id;
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      if (!ids.length) return;
+      const { error } = await supabase.from("notification").delete().in("id", ids);
+      if (error) throw error;
+    },
+    onMutate: async (ids) => {
+      const drop = (list?: AppNotification[]) => (list ?? []).filter((n) => !ids.includes(n.id));
+      await qc.cancelQueries({ queryKey: ["notifications", uid] });
+      await qc.cancelQueries({ queryKey: ["notices", uid] });
+      const prev = qc.getQueryData<AppNotification[]>(["notifications", uid]);
+      const prevNotices = qc.getQueryData<AppNotification[]>(["notices", uid]);
+      qc.setQueryData<AppNotification[]>(["notifications", uid], drop);
+      qc.setQueryData<AppNotification[]>(["notices", uid], drop);
       return { prev, prevNotices };
     },
     onError: (_e, _ids, ctx) => {

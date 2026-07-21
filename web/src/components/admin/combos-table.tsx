@@ -1,0 +1,108 @@
+"use client";
+
+import Link from "next/link";
+import { useTransition } from "react";
+import { Cards, Trash } from "@phosphor-icons/react";
+
+import { deleteCombo, setComboActive } from "@/app/(dashboard)/combos/actions";
+import { formatLe } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { StatusPill } from "@/components/admin/status-pill";
+import { Toggle } from "@/components/admin/toggle";
+
+export type ComboRow = {
+  id: string;
+  name: string;
+  slug: string;
+  active: boolean;
+  itemCount: number;
+  pairLabel: string;
+  priceMinor: number;
+  /** Merchant's deal price in minor units, or null when priced at the sum. */
+  dealMinor: number | null;
+};
+
+export function CombosTable({ combos }: { combos: ComboRow[] }) {
+  const [pending, start] = useTransition();
+
+  return (
+    <div className={cn("overflow-x-auto", pending && "opacity-60 transition-opacity")}>
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
+            <th className="px-6 py-2.5 font-medium lg:px-10">Combo</th>
+            <th className="px-3 py-2.5 font-medium">Fragrances</th>
+            <th className="px-3 py-2.5 text-right font-medium">Pair price</th>
+            <th className="px-3 py-2.5 font-medium">Active</th>
+            <th className="px-3 py-2.5 font-medium">Status</th>
+            <th className="px-6 py-2.5 lg:px-10" />
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border border-t border-border">
+          {combos.map((c) => (
+            <tr key={c.id} className="group transition-colors hover:bg-muted/40">
+              <td className="px-6 py-3.5 lg:px-10">
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-md bg-muted text-muted-foreground">
+                    <Cards weight="duotone" className="size-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="truncate font-medium">{c.name}</div>
+                    <div className="nums truncate text-xs text-muted-foreground">/{c.slug}</div>
+                  </div>
+                </div>
+              </td>
+              <td className="px-3 py-3.5 text-muted-foreground">
+                <span className="line-clamp-1">{c.pairLabel || `${c.itemCount} fragrances`}</span>
+              </td>
+              <td className="nums px-3 py-3.5 text-right">
+                {c.dealMinor != null && c.dealMinor < c.priceMinor ? (
+                  <span className="inline-flex items-baseline gap-1.5">
+                    <span className="text-muted-foreground line-through">{formatLe(c.priceMinor)}</span>
+                    <span className="font-semibold text-success-soft-foreground">{formatLe(c.dealMinor)}</span>
+                  </span>
+                ) : (
+                  formatLe(c.priceMinor)
+                )}
+              </td>
+              <td className="px-3 py-3.5">
+                <Toggle defaultOn={c.active} label={`Activate ${c.name}`} onChange={(on) => start(async () => { await setComboActive(c.id, on); })} />
+              </td>
+              <td className="px-3 py-3.5">
+                <StatusPill tone={c.active ? "success" : "neutral"} dot>
+                  {c.active ? "Active" : "Hidden"}
+                </StatusPill>
+              </td>
+              <td className="px-6 py-3.5 text-right lg:px-10">
+                <div className="flex items-center justify-end gap-3">
+                  <Link href={`/combos/${c.id}`} className="text-sm font-medium text-primary hover:underline">
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    aria-label={`Delete ${c.name}`}
+                    className="text-muted-foreground transition-colors hover:text-destructive"
+                    onClick={() => {
+                      if (confirm(`Delete the ${c.name} combo? The fragrances stay in the catalog.`)) {
+                        start(async () => { await deleteCombo(c.id); });
+                      }
+                    }}
+                  >
+                    <Trash className="size-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+          {combos.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="px-6 py-16 text-center text-sm text-muted-foreground lg:px-10">
+                No combos yet. Pair two fragrances to create your first.
+              </td>
+            </tr>
+          ) : null}
+        </tbody>
+      </table>
+    </div>
+  );
+}

@@ -1,0 +1,6377 @@
+[
+  {
+    "slug": "fakhar-lattafa-men",
+    "name": "Fakhar Lattafa Men",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "office",
+    "gender": "male",
+    "description": "A fresh-aromatic fougere that opens green and peppery then dries down creamy and woody with tonka and vanilla. An easy everyday men's scent for work and daytime, with good projection in heat.",
+    "release_year": 2021,
+    "scent_family": "Aromatic Fougere Woody",
+    "main_accords": [
+      "aromatic",
+      "woody",
+      "warm spicy",
+      "fresh spicy",
+      "powdery",
+      "sweet"
+    ],
+    "top": [
+      "Violet Leaf",
+      "Nutmeg",
+      "Bergamot"
+    ],
+    "heart": [
+      "Clary Sage",
+      "Geranium",
+      "Orange Blossom",
+      "Coriander"
+    ],
+    "base": [
+      "Tonka Bean",
+      "Patchouli",
+      "Vanilla",
+      "Sandalwood"
+    ],
+    "image_file": null,
+    "source_url": null,
+    "research_note": "The men's flanker of Fakhar Lattafa (the blue/silver bottle sold alongside the women's Fakhar). Fragrantica lists the unisex original 'Fakhar Lattafa' (2015) but has no separate page for the Men version; notes taken from Lattafa's official site and Parfumo.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "fakhar-lattafa-men-100ml",
+        "price_minor": 68000
+      }
+    ]
+  },
+  {
+    "slug": "summer-pink",
+    "name": "Summer Pink",
+    "brand": "Reef Perfumes",
+    "brand_slug": "reef-perfumes",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "A soft fruity-amber scent: juicy pear over warm amber and creamy sandalwood. Light and easy-wearing, good for daytime and warm weather.",
+    "release_year": 2023,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "amber",
+      "woody",
+      "powdery"
+    ],
+    "top": [
+      "Pear"
+    ],
+    "heart": [
+      "Amber"
+    ],
+    "base": [
+      "Sandalwood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Reef-Perfumes/Summer-Pink-88803.html",
+    "research_note": "Reef sells a three-bottle Summer collection - Summer Pink, Summer Yellow and Summer Tiffany (all 2023). 'Reef Summer' most likely means Summer Pink (the best-selling one), but the shop should confirm the bottle colour. Summer Yellow = orange blossom / blackcurrant / vanilla; Summer Tiffany is the third variant.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "summer-pink-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "reef-33",
+    "name": "Reef 33",
+    "brand": "Reef Perfumes",
+    "brand_slug": "reef-perfumes",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "A classic Arabian oud built on saffron, herbal rosemary and deep agarwood. Rich and resinous - best for evenings, weddings and cooler nights.",
+    "release_year": 2020,
+    "scent_family": "Amber Woody",
+    "main_accords": [
+      "woody",
+      "warm spicy",
+      "oud",
+      "aromatic",
+      "leather"
+    ],
+    "top": [
+      "Saffron"
+    ],
+    "heart": [
+      "Rosemary"
+    ],
+    "base": [
+      "Agarwood (Oud)"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Reef-Perfumes/Reef-33-89358.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "reef-33-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "momento",
+    "name": "Momento",
+    "brand": "Riiffs",
+    "brand_slug": "riiffs",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "Sweet and spicy: saffron and sugar over rose and oud, drying down to caramel and warm woods. A dressy evening scent with strong longevity.",
+    "release_year": 2025,
+    "scent_family": "Woody Spicy",
+    "main_accords": [
+      "woody",
+      "sweet",
+      "warm spicy",
+      "amber",
+      "caramel",
+      "rose"
+    ],
+    "top": [
+      "Sugar",
+      "Saffron",
+      "Mandarin Orange"
+    ],
+    "heart": [
+      "Tonka Bean",
+      "Damask Rose",
+      "Agarwood (Oud)"
+    ],
+    "base": [
+      "Caramel",
+      "Amberwood",
+      "Cedar"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Riiffs-Perfumes/Momento-103346.html",
+    "research_note": "Sold as Extrait de Parfum; some retailers list it as EDP.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "momento-100ml",
+        "price_minor": 53000
+      }
+    ]
+  },
+  {
+    "slug": "angham-second-song",
+    "name": "Angham Second Song",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A soft, sweet floral-gourmand: pear and peony over praline, finishing on vanilla and musk. Softer and creamier than the original Angham; suits daytime and everyday wear.",
+    "release_year": 2026,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "floral",
+      "vanilla",
+      "fruity",
+      "powdery",
+      "musky"
+    ],
+    "top": [
+      "Pear Blossom",
+      "Bergamot"
+    ],
+    "heart": [
+      "Peony",
+      "Praline",
+      "Orange Blossom"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Tonka Bean",
+      "Ambroxan"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Angham-Second-Song-123646.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "angham-second-song-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "eclaire",
+    "name": "Eclaire",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A dessert-style gourmand - caramel, milk and sugar over honey, settling into vanilla and praline. Very sweet and cosy; best for cooler evenings and casual wear.",
+    "release_year": 2024,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "caramel",
+      "vanilla",
+      "milky",
+      "honey",
+      "powdery"
+    ],
+    "top": [
+      "Caramel",
+      "Milk",
+      "Sugar"
+    ],
+    "heart": [
+      "Honey",
+      "White Flowers"
+    ],
+    "base": [
+      "Vanilla",
+      "Praline",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-43 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Eclaire-93628.html",
+    "research_note": "Sometimes spelled 'Eclair'. Flankers exist (Eclaire Pistache, Eclaire Banoffi, Eclaire Mist) - this entry is the original.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "eclaire-100ml",
+        "price_minor": 45000
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "angham",
+    "name": "Angham",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "Spicy ginger and pink pepper over lavender, praline and cacao, landing on a thick vanilla-amber base. Widely bought as an affordable stand-in for Burberry Goddess; best for evenings and cooler weather.",
+    "release_year": 2024,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "warm spicy",
+      "aromatic",
+      "cacao",
+      "powdery"
+    ],
+    "top": [
+      "Ginger",
+      "Mandarin Orange",
+      "Pink Pepper"
+    ],
+    "heart": [
+      "Lavender",
+      "Praline",
+      "Cacao",
+      "Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Amber",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-50.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Angham-96768.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "angham-100ml",
+        "price_minor": 53000
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "gelato-raspberry-ripple",
+    "name": "Gelato Raspberry Ripple",
+    "brand": "Arabiyat Prestige",
+    "brand_slug": "arabiyat-prestige",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "A berry ice-cream gourmand: raspberry and strawberry with marshmallow, over vanilla and caramel. Playful and sweet - a young, casual daytime scent.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "vanilla",
+      "caramel",
+      "floral",
+      "powdery"
+    ],
+    "top": [
+      "Marshmallow",
+      "Black Currant",
+      "Strawberry",
+      "Freesia"
+    ],
+    "heart": [
+      "Raspberry",
+      "Magnolia",
+      "Cashmere Wood"
+    ],
+    "base": [
+      "Vanilla",
+      "Caramel",
+      "Moss"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Arabiyat-Prestige/Raspberry-Ripple-115523.html",
+    "research_note": "Fragrantica lists it simply as 'Raspberry Ripple' under Arabiyat Prestige; the bottle and retailers use the fuller 'Gelato Raspberry Ripple'. Part of the Gelato series by My Perfumes.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "gelato-raspberry-ripple-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "badee-al-oud-noble-blush",
+    "name": "Bade'e Al Oud Noble Blush",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "oud-lovers",
+    "gender": "female",
+    "description": "Creamy and dessert-like: milky rose over meringue and almond, finishing on vanilla, sandalwood and musk. Soft and feminine, easy for daytime and office wear.",
+    "release_year": 2024,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "almond",
+      "rose",
+      "milky",
+      "powdery"
+    ],
+    "top": [
+      "Rose Milk"
+    ],
+    "heart": [
+      "Meringue",
+      "Almond"
+    ],
+    "base": [
+      "Vanilla",
+      "Sandalwood",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Badee-Al-Oud-Noble-Blush-122812.html",
+    "research_note": "Also listed on Fragrantica simply as 'Noble Blush' (page 98937). Despite the Bade'e Al Oud name it is a milky gourmand, not an oud scent.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "badee-al-oud-noble-blush-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "detour-noir-exclusif",
+    "name": "Detour Noir Exclusif",
+    "brand": "Al Haramain",
+    "brand_slug": "al-haramain",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "A dark, complex oud: fresh almond-citrus opening, florals with an animalic edge, then a deep oud, coffee and amber base. Heavy and long-lasting - for evenings and special occasions.",
+    "release_year": 2024,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "woody",
+      "amber",
+      "oud",
+      "floral",
+      "animalic",
+      "warm spicy"
+    ],
+    "top": [
+      "Almond",
+      "Mandarin Orange",
+      "Watery Notes",
+      "Bergamot"
+    ],
+    "heart": [
+      "Civet",
+      "Geranium",
+      "Rose",
+      "Water Lily",
+      "Gardenia"
+    ],
+    "base": [
+      "Laotian Oud",
+      "Guaiac Wood",
+      "Vanilla",
+      "Sandalwood",
+      "Patchouli",
+      "Coffee",
+      "Amber",
+      "Oakmoss"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Al-Haramain-Perfumes/Detour-Noir-Exclusif-92659.html",
+    "research_note": "One of three Detour Noir versions (original 2021, Intense 2024, Exclusif 2024) - confirm which bottle the shop stocks.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "detour-noir-exclusif-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "cloud-candy",
+    "name": "Cloud Candy",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A candy-shop gourmand - strawberry and marshmallow over whipped cream, coconut and vanilla musk. Reads like a strawberry milkshake; sweet, casual and popular with younger buyers.",
+    "release_year": 2025,
+    "scent_family": "Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "fruity",
+      "vanilla",
+      "musky",
+      "coconut",
+      "powdery"
+    ],
+    "top": [
+      "Strawberry",
+      "Tangerine",
+      "Freesia"
+    ],
+    "heart": [
+      "Marshmallow",
+      "Coconut",
+      "Whipped Cream"
+    ],
+    "base": [
+      "Vanilla",
+      "Sugar",
+      "White Musk",
+      "Ambroxan"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Cloud-Candy-109598.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "cloud-candy-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "shiyaaka-snow",
+    "name": "Shiyaaka Snow",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "office",
+    "gender": "male",
+    "description": "Bright citrus with a peppery, spicy heart and a dry vetiver finish. Clean and fresh - a good hot-weather and daytime option; often compared to Louis Vuitton Meteore.",
+    "release_year": 2025,
+    "scent_family": "Citrus Aromatic",
+    "main_accords": [
+      "citrus",
+      "fresh spicy",
+      "aromatic",
+      "woody",
+      "green"
+    ],
+    "top": [
+      "Bergamot",
+      "Mandarin Orange"
+    ],
+    "heart": [
+      "Pink Pepper",
+      "Nutmeg",
+      "Neroli"
+    ],
+    "base": [
+      "Cardamom",
+      "Vetiver"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Shiyaaka-Snow-119252.html",
+    "research_note": "Marketed for men; several retailers list it as unisex.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "shiyaaka-snow-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "raneen",
+    "name": "Raneen",
+    "brand": "Asdaaf",
+    "brand_slug": "asdaaf",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Fresh fruit and white flowers over a soft vanilla-musk base. Light, feminine and versatile - suits daytime, work and warm weather.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "fruity",
+      "floral",
+      "sweet",
+      "vanilla",
+      "white floral",
+      "musky"
+    ],
+    "top": [
+      "Pitahaya (Dragon Fruit)",
+      "Pear",
+      "Mandarin Orange"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Jasmine",
+      "Freesia"
+    ],
+    "base": [
+      "Musk",
+      "Vanilla",
+      "Amber",
+      "Tonka Bean"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Asdaaf/Raneen-106906.html",
+    "research_note": "Sold as 'Lattafa Raneen' by many shops but the house on the bottle is Asdaaf, Lattafa's budget sub-brand. Common sizes 80ml and 100ml.",
+    "variants": [
+      {
+        "size_ml": 80,
+        "concentration": "EDP",
+        "sku": "raneen-80ml",
+        "price_minor": 36000
+      },
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "raneen-100ml",
+        "price_minor": 36000
+      }
+    ]
+  },
+  {
+    "slug": "magma-ember-dusk",
+    "name": "Magma Ember Dusk",
+    "brand": "Atralia",
+    "brand_slug": "atralia",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "Warm and spicy: honey and nutmeg over cinnamon and jasmine, drying into vanilla, tonka and cedar. Strong projection and longevity - an evening and cool-weather scent.",
+    "release_year": 2025,
+    "scent_family": "Amber Spicy",
+    "main_accords": [
+      "warm spicy",
+      "sweet",
+      "honey",
+      "vanilla",
+      "woody",
+      "powdery"
+    ],
+    "top": [
+      "Honey",
+      "Orange Blossom",
+      "White Flowers",
+      "Nutmeg"
+    ],
+    "heart": [
+      "Cashmere Wood",
+      "Cinnamon",
+      "Jasmine Sambac"
+    ],
+    "base": [
+      "Vanilla",
+      "Powdery Notes",
+      "Tonka Bean",
+      "Cedarwood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Atralia/Magma-Ember-Dusk-118591.html",
+    "research_note": "The brand is Atralia; 'Magma' is the product line. Sold as an 80ml Extrait de Parfum.",
+    "variants": [
+      {
+        "size_ml": 80,
+        "concentration": "Extrait",
+        "sku": "magma-ember-dusk-80ml",
+        "price_minor": 43000
+      }
+    ]
+  },
+  {
+    "slug": "musamam-white-intense",
+    "name": "Musamam White Intense",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "Creamy coconut and ylang-ylang over a warm sandalwood and benzoin base, opened by spice and citrus. Smooth and slightly tropical - works day or evening, especially in warm weather.",
+    "release_year": 2023,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "woody",
+      "coconut",
+      "warm spicy",
+      "amber",
+      "musky",
+      "citrus"
+    ],
+    "top": [
+      "Spices",
+      "Bergamot",
+      "Orange"
+    ],
+    "heart": [
+      "Coconut",
+      "Ylang-Ylang",
+      "Ambroxan",
+      "Mahonial"
+    ],
+    "base": [
+      "Sandalwood",
+      "Musk",
+      "Benzoin"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-46.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Musamam-White-Intense-85087.html",
+    "research_note": "Also sold as 'Musamam Intense White' by some retailers. Perfumer: Gael Montero.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "musamam-white-intense-100ml",
+        "price_minor": 74000
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "habik-for-women",
+    "name": "Habik For Women",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Crisp pear and bergamot over clean white florals, finishing on soft musk and amber. Fresh and easy - a good office and daytime scent for hot climates.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "fresh",
+      "floral",
+      "fruity",
+      "musky",
+      "green",
+      "amber"
+    ],
+    "top": [
+      "Pear",
+      "Bergamot"
+    ],
+    "heart": [
+      "Lily-of-the-Valley",
+      "Jasmine",
+      "Freesia"
+    ],
+    "base": [
+      "Musk",
+      "Amber",
+      "Oakmoss"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Habik-For-Women-110354.html",
+    "research_note": "There is also a men's Habik; this entry is the women's version.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "habik-for-women-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "opulent-dubai",
+    "name": "Opulent Dubai",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "Juicy mango and citrus with a ginger kick, settling into cedar, ambergris and oakmoss. Bright but grown-up - a versatile unisex pick for daytime and warm weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "citrus",
+      "fruity",
+      "woody",
+      "fresh spicy",
+      "amber",
+      "mossy"
+    ],
+    "top": [
+      "Mango",
+      "Grapefruit",
+      "Lemon",
+      "Ginger"
+    ],
+    "heart": [
+      "Jasmine",
+      "Cedarwood",
+      "Violet"
+    ],
+    "base": [
+      "Woody Notes",
+      "Ambergris",
+      "Oakmoss",
+      "Benzoin"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Opulent-Dubai-105609.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "opulent-dubai-100ml",
+        "price_minor": 52000
+      }
+    ]
+  },
+  {
+    "slug": "pretty-in-pink",
+    "name": "Pretty in Pink",
+    "brand": "Rayhaan",
+    "brand_slug": "rayhaan",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Tart blackcurrant into a rosy floral heart, grounded by vanilla, patchouli and ambroxan. Romantic and feminine with decent strength - suits evenings and gifting.",
+    "release_year": 2023,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "fruity",
+      "floral",
+      "sweet",
+      "rose",
+      "woody",
+      "amber"
+    ],
+    "top": [
+      "Cassis (Black Currant)"
+    ],
+    "heart": [
+      "May Rose",
+      "Freesia"
+    ],
+    "base": [
+      "Vanilla",
+      "Patchouli",
+      "Woody Notes",
+      "Ambroxan"
+    ],
+    "image_file": null,
+    "source_url": null,
+    "research_note": "Part of Rayhaan's Color Collection (Rayhaan is a house under Afnan Perfumes). No Fragrantica page found; notes confirmed via Rayhaan's official site, Wikiparfum and Parfumo. Release year approximate.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "pretty-in-pink-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "soiree",
+    "name": "Soiree",
+    "brand": "Maison Asrar",
+    "brand_slug": "maison-asrar",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A rich vanilla-caramel gourmand with fruit and soft florals through the middle. Warm and dressy - made for evenings, parties and cooler nights.",
+    "release_year": 2024,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "caramel",
+      "fruity",
+      "powdery",
+      "floral"
+    ],
+    "top": [
+      "Vanilla",
+      "Toffee",
+      "Praline",
+      "Apple",
+      "Plum"
+    ],
+    "heart": [
+      "Ylang-Ylang",
+      "Heliotrope",
+      "White Flowers",
+      "Lavender"
+    ],
+    "base": [
+      "Vanilla",
+      "Caramel",
+      "Woody Notes",
+      "Ambergris"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/MAISON-ASRAR/Soiree-97682.html",
+    "research_note": "Written 'Soiree' on Fragrantica, 'Soiree' with accent on the bottle. Sold in a 110ml bottle.",
+    "variants": [
+      {
+        "size_ml": 110,
+        "concentration": "EDP",
+        "sku": "soiree-110ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "obaiah-abaya-arabs",
+    "name": "Obaiah (Abaya Arabs)",
+    "brand": "Reef Perfumes",
+    "brand_slug": "reef-perfumes",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "Juicy pineapple against smoky leather and deep oud. Bold and long-lasting - an evening and special-occasion scent, not a light daytime one.",
+    "release_year": 2021,
+    "scent_family": "Leather Woody",
+    "main_accords": [
+      "leather",
+      "oud",
+      "fruity",
+      "woody",
+      "smoky",
+      "sweet"
+    ],
+    "top": [
+      "Pineapple"
+    ],
+    "heart": [
+      "Leather"
+    ],
+    "base": [
+      "Agarwood (Oud)"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Reef-Perfumes/Abaya-Arabs-88807.html",
+    "research_note": "From Reef's Arabs collection, sold as 'Obaiah', 'Obaiah Arabs' or 'Arabs of Obaiah'. Fragrantica lists the same pineapple/leather/oud composition under 'Abaya Arabs' (2021).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "obaiah-abaya-arabs-100ml",
+        "price_minor": 52000
+      }
+    ]
+  },
+  {
+    "slug": "victoria",
+    "name": "Victoria",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A sweet gourmand that opens with zesty lemon meringue over creamy vanilla, softened by fresh neroli in the middle. Easy daytime wear and good for warm weather when you want something sweet but not heavy.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "citrus",
+      "creamy",
+      "fruity",
+      "floral"
+    ],
+    "top": [
+      "Lemon Meringue Pie"
+    ],
+    "heart": [
+      "Neroli"
+    ],
+    "base": [
+      "Vanilla"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Victoria-102906.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "victoria-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "layaan",
+    "name": "Layaan",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "A fresh feminine floral led by crisp green pear and mandarin over a bouquet of jasmine, lily-of-the-valley and gardenia, drying down to clean musk and cedar. Suits daytime, office and everyday wear.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "floral",
+      "fruity",
+      "white floral",
+      "musky",
+      "woody",
+      "fresh"
+    ],
+    "top": [
+      "Green Pear",
+      "Mandarin Orange"
+    ],
+    "heart": [
+      "Jasmine",
+      "Lily-of-the-Valley",
+      "Gardenia"
+    ],
+    "base": [
+      "Musk",
+      "Cedarwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-47 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Layaan-117123.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 75,
+        "concentration": "EDP",
+        "sku": "layaan-75ml",
+        "price_minor": 46000
+      },
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "layaan-100ml",
+        "price_minor": 46000
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "pure-crystal",
+    "name": "Pure Crystal",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "A bright citrus opening of grapefruit and bitter orange turns warm and boozy with cognac, ginger and cinnamon, settling into amber, vanilla and woods. Versatile unisex scent that works day or evening.",
+    "release_year": 2025,
+    "scent_family": "Citrus Aromatic",
+    "main_accords": [
+      "citrus",
+      "warm spicy",
+      "amber",
+      "woody",
+      "aromatic",
+      "sweet"
+    ],
+    "top": [
+      "Red Berries",
+      "Bitter Orange",
+      "Cinnamon",
+      "Grapefruit",
+      "Bergamot"
+    ],
+    "heart": [
+      "Cognac",
+      "Ginger",
+      "Clary Sage"
+    ],
+    "base": [
+      "Amber",
+      "Vanilla",
+      "Sandalwood",
+      "Vetiver",
+      "Cardamom",
+      "Musk",
+      "Patchouli"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Pure-Crystal-118006.html",
+    "research_note": "Brand identified as Lattafa (released under the Lattafa Pride line). Not to be confused with Lattafa Mahasin Crystal or Karen Low Pure Crystal.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "pure-crystal-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "panache-angel-dust",
+    "name": "Panache Angel Dust",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A rich creamy vanilla with fruity mandarin and red currant up top and a boozy rum-and-tuberose heart. Sweet and cosy — best for evenings and cooler weather.",
+    "release_year": 2026,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "creamy",
+      "fruity",
+      "musky",
+      "white floral"
+    ],
+    "top": [
+      "Vanilla",
+      "Mandarin Orange",
+      "Red Currant"
+    ],
+    "heart": [
+      "Tuberose",
+      "Sandalwood",
+      "Rum"
+    ],
+    "base": [
+      "Vanilla",
+      "Whipped Cream",
+      "Musk",
+      "Benzoin"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Panache-Angel-Dust-124604.html",
+    "research_note": "Widely compared to YSL Libre Vanilla Couture.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "panache-angel-dust-100ml",
+        "price_minor": 48500
+      }
+    ]
+  },
+  {
+    "slug": "hawas-viper",
+    "name": "Hawas Viper",
+    "brand": "Rasasi",
+    "brand_slug": "rasasi",
+    "category_slug": "signature",
+    "gender": "male",
+    "description": "A dark spicy masculine built on tobacco, coffee and cinnamon with a herbal saffron opening and a warm tonka-balsam finish. Strong evening and cold-weather scent.",
+    "release_year": 2025,
+    "scent_family": "Amber Woody",
+    "main_accords": [
+      "warm spicy",
+      "tobacco",
+      "sweet",
+      "aromatic",
+      "woody",
+      "coffee"
+    ],
+    "top": [
+      "Saffron",
+      "Cannabis",
+      "Thyme",
+      "Green Notes",
+      "Davana"
+    ],
+    "heart": [
+      "Tobacco",
+      "Coffee",
+      "Cinnamon",
+      "Violet",
+      "Raspberry"
+    ],
+    "base": [
+      "Gurjan Balsam",
+      "Musk",
+      "Tonka Bean"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Rasasi/Hawas-Viper-113594.html",
+    "research_note": "Confirmed as Rasasi — part of the Hawas line.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "hawas-viper-100ml",
+        "price_minor": 68000
+      }
+    ]
+  },
+  {
+    "slug": "vanilla-aura",
+    "name": "Vanilla Aura",
+    "brand": "Maison Asrar",
+    "brand_slug": "maison-asrar",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A rich gourmand vanilla layered with chocolate and caramel over amber and sandalwood, lifted at the start by bergamot and lemon. Warm and comforting — best for evenings and cooler weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "caramel",
+      "cacao",
+      "warm spicy",
+      "woody"
+    ],
+    "top": [
+      "Lily-of-the-Valley",
+      "Bergamot",
+      "Lemon"
+    ],
+    "heart": [
+      "Vanilla",
+      "Chocolate",
+      "Caramel"
+    ],
+    "base": [
+      "Vanilla",
+      "Amber",
+      "Sandalwood",
+      "Tonka Bean"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/MAISON-ASRAR/Vanilla-Aura-117517.html",
+    "research_note": "Popularly cited as an affordable alternative to Guerlain Vanille Planifolia.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "vanilla-aura-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "tahira",
+    "name": "Tahira",
+    "brand": "Riiffs",
+    "brand_slug": "riiffs",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A creamy almond and fruit opening leads into rose and gardenia, finishing on vanilla and tonka. Sweet and soft, suited to evening wear.",
+    "release_year": 2026,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "almond",
+      "floral",
+      "vanilla",
+      "fruity",
+      "powdery"
+    ],
+    "top": [
+      "Almond",
+      "Dragon Fruit"
+    ],
+    "heart": [
+      "Rose de Mai",
+      "Gardenia"
+    ],
+    "base": [
+      "Vanilla Absolute",
+      "Tonka Bean",
+      "Patchouli"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Riiffs-Perfumes/Tahira-135283.html",
+    "research_note": "Brand identified as Riiffs. Note: other 'Tahira' products exist (Musk Tahira by Arabiyat and by Ayat Perfumes) — confirm packaging with supplier if it is a musk oil rather than a spray.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "tahira-100ml",
+        "price_minor": 48500
+      }
+    ]
+  },
+  {
+    "slug": "elixir",
+    "name": "Elixir",
+    "brand": "Atralia",
+    "brand_slug": "atralia",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "A fresh minty lavender opening that settles into sweet amber, vanilla and tonka. A crowd-pleasing masculine-leaning fougere, commonly bought as an alternative to Jean Paul Gaultier Le Male Elixir.",
+    "release_year": 2024,
+    "scent_family": "Amber Fougere",
+    "main_accords": [
+      "aromatic",
+      "vanilla",
+      "amber",
+      "lavender",
+      "sweet",
+      "fresh spicy"
+    ],
+    "top": [
+      "Mint",
+      "Lavender",
+      "Bergamot"
+    ],
+    "heart": [
+      "Amber",
+      "Benzoin",
+      "Pineapple"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka Bean",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Atralia/Elixir-100252.html",
+    "research_note": "Atralia is the brand; the product name is simply 'Elixir'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "elixir-100ml",
+        "price_minor": 38500
+      }
+    ]
+  },
+  {
+    "slug": "hawas-black",
+    "name": "Hawas Black",
+    "brand": "Rasasi",
+    "brand_slug": "rasasi",
+    "category_slug": "summer",
+    "gender": "male",
+    "description": "A fresh fruity masculine opening with pineapple and grapefruit over woody patchouli and oakmoss. Long-lasting and versatile — works for office, day or night.",
+    "release_year": 2024,
+    "scent_family": "Aromatic Fruity",
+    "main_accords": [
+      "fruity",
+      "woody",
+      "citrus",
+      "aromatic",
+      "mossy",
+      "amber"
+    ],
+    "top": [
+      "Bergamot",
+      "Pineapple",
+      "Grapefruit"
+    ],
+    "heart": [
+      "Patchouli",
+      "Cedarwood",
+      "Jasmine"
+    ],
+    "base": [
+      "Oakmoss",
+      "Woody Notes",
+      "Amber"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Rasasi/Hawas-Black-96817.html",
+    "research_note": "Confirmed as Rasasi — part of the Hawas line.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "hawas-black-100ml",
+        "price_minor": 69500
+      }
+    ]
+  },
+  {
+    "slug": "vanilla-seduction",
+    "name": "Vanilla Seduction",
+    "brand": "Maison Asrar",
+    "brand_slug": "maison-asrar",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A sweet gourmand with juicy plum leading into vanilla, brown sugar and caramel, resting on tonka, amber and musk. Warm and feminine, suited to evenings and cooler weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "caramel",
+      "fruity",
+      "amber",
+      "musky"
+    ],
+    "top": [
+      "Plum",
+      "Jasmine",
+      "Lily-of-the-Valley"
+    ],
+    "heart": [
+      "Vanilla",
+      "Brown Sugar",
+      "Caramel"
+    ],
+    "base": [
+      "Tonka Bean",
+      "Amber",
+      "Patchouli",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-53.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/MAISON-ASRAR/Vanilla-Seduction-117518.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "vanilla-seduction-100ml",
+        "price_minor": 43500
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "badee-al-oud-sublime",
+    "name": "Bade'e Al Oud Sublime",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "Opens with a bright burst of apple and lychee alongside dewy rose, settling into plum, vanilla and mossy patchouli. Fruity and easy to wear for both men and women, day or evening.",
+    "release_year": 2023,
+    "scent_family": "Woody Aromatic",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "woody",
+      "rose",
+      "vanilla",
+      "fresh"
+    ],
+    "top": [
+      "Apple",
+      "Litchi",
+      "Rose"
+    ],
+    "heart": [
+      "Plum",
+      "Jasmine"
+    ],
+    "base": [
+      "Moss",
+      "Vanilla",
+      "Patchouli"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Bade-e-Al-Oud-Sublime-83309.html",
+    "research_note": "Correct spelling is Bade'e Al Oud Sublime.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "badee-al-oud-sublime-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "rose-oud",
+    "name": "Rose Oud",
+    "brand": "Matin Martin",
+    "brand_slug": "matin-martin",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "A classic Arabian rose-and-oud pairing opened by saffron and bergamot, with geranium and jasmine over sandalwood and cedar. Rich and traditional — best for evenings and special occasions.",
+    "release_year": null,
+    "scent_family": "Floral Woody",
+    "main_accords": [
+      "rose",
+      "woody",
+      "oud",
+      "warm spicy",
+      "floral",
+      "saffron"
+    ],
+    "top": [
+      "Saffron",
+      "Bergamot"
+    ],
+    "heart": [
+      "Rose",
+      "Geranium",
+      "Jasmine"
+    ],
+    "base": [
+      "Oud",
+      "Sandalwood",
+      "Cedar"
+    ],
+    "image_file": null,
+    "source_url": null,
+    "research_note": "Matin Martin has a Fragrantica designer page but no individual entry for Rose Oud was located; notes verified from the brand site and retailers.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "rose-oud-100ml",
+        "price_minor": 30000
+      }
+    ]
+  },
+  {
+    "slug": "creamy-pistachio",
+    "name": "Creamy Pistachio",
+    "brand": "Gulf Orchid",
+    "brand_slug": "gulf-orchid",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A nutty gourmand built on pistachio, milk and vanilla with a light floral heart of neroli and rose. Sweet and creamy — good for casual daily wear and cooler evenings.",
+    "release_year": 2024,
+    "scent_family": "Gourmand Floral",
+    "main_accords": [
+      "nutty",
+      "creamy",
+      "sweet",
+      "vanilla",
+      "milky",
+      "floral"
+    ],
+    "top": [
+      "Bergamot",
+      "Pistachio",
+      "Apple"
+    ],
+    "heart": [
+      "Neroli",
+      "Cedarwood",
+      "Rose"
+    ],
+    "base": [
+      "Vanilla",
+      "Milk",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Gulf-Orchid/Creamy-Pistachio-110403.html",
+    "research_note": "Distinct from Gulf Orchid's separate 'Pistachio' release.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "creamy-pistachio-100ml",
+        "price_minor": 31500
+      }
+    ]
+  },
+  {
+    "slug": "empire-victor",
+    "name": "Empire Victor",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A bright lemon and bergamot opening gives way to caramel and jasmine over vanilla and musk. Sweet but fresh enough for daytime, and works for both men and women.",
+    "release_year": 2024,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "caramel",
+      "vanilla",
+      "citrus",
+      "floral",
+      "musky"
+    ],
+    "top": [
+      "Lemon",
+      "Bergamot"
+    ],
+    "heart": [
+      "Caramel",
+      "Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Empire-Victor-102002.html",
+    "research_note": "Sometimes listed by retailers as 'Empire Victory'; the correct name is Empire Victor.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "empire-victor-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "nebras-elixir",
+    "name": "Nebras Elixir",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A sweet creamy gourmand of milk candy and whipped cream over sugar cane, drying to vanilla, ambroxan and musk. Soft, cosy and easy to wear for anyone.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "creamy",
+      "powdery",
+      "musky",
+      "amber"
+    ],
+    "top": [
+      "Milk Candy",
+      "Whipped Cream"
+    ],
+    "heart": [
+      "Sugar Cane",
+      "Heliotrope"
+    ],
+    "base": [
+      "Vanilla",
+      "Ambroxan",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Nebras-Elixir-113906.html",
+    "research_note": "Confirmed as Lattafa, released under the Lattafa Pride sub-line.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "nebras-elixir-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "teriaq-intense",
+    "name": "Teriaq Intense",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "A warm spicy amber with saffron and cinnamon over boozy plum, finishing on tonka and benzoin. Rich and long-lasting — an evening and cold-weather scent.",
+    "release_year": 2024,
+    "scent_family": "Amber Spicy",
+    "main_accords": [
+      "warm spicy",
+      "amber",
+      "sweet",
+      "boozy",
+      "cinnamon",
+      "balsamic"
+    ],
+    "top": [
+      "Saffron",
+      "Bergamot"
+    ],
+    "heart": [
+      "Plum Liquor",
+      "Cinnamon"
+    ],
+    "base": [
+      "Amber",
+      "Tonka Bean",
+      "Benzoin"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-11 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Teriaq-Intense-99586.html",
+    "research_note": "Composed by perfumer Quentin Bisch. Intense flanker of Lattafa Teriaq.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "teriaq-intense-100ml",
+        "price_minor": 47500
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "coco-blanco",
+    "name": "Coco Blanco",
+    "brand": "Gulf Orchid",
+    "brand_slug": "gulf-orchid",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A rich coconut and caramel gourmand with buttery honey and tonka over vanilla and amber. Very sweet and tropical — good for evenings and casual wear.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "coconut",
+      "sweet",
+      "caramel",
+      "vanilla",
+      "creamy",
+      "honey"
+    ],
+    "top": [
+      "Coconut",
+      "Caramel",
+      "Butter"
+    ],
+    "heart": [
+      "Honey",
+      "Tonka Bean",
+      "Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Amber"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Gulf-Orchid/Coco-Blanco-114147.html",
+    "research_note": "Sold by some retailers under the translated name 'White Coconut'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "coco-blanco-100ml",
+        "price_minor": 36000
+      }
+    ]
+  },
+  {
+    "slug": "limitless",
+    "name": "Limitless",
+    "brand": "Matin Martin",
+    "brand_slug": "matin-martin",
+    "category_slug": "office",
+    "gender": "male",
+    "description": "A crisp masculine aromatic opening with juniper and blood orange, moving into lavender and geranium over cedar, patchouli and vetiver. Clean and versatile for daily and office wear.",
+    "release_year": 2021,
+    "scent_family": "Woody Aromatic",
+    "main_accords": [
+      "aromatic",
+      "woody",
+      "lavender",
+      "citrus",
+      "earthy",
+      "fresh spicy"
+    ],
+    "top": [
+      "Juniper Berries",
+      "Citruses",
+      "Blood Orange"
+    ],
+    "heart": [
+      "Lavender",
+      "Geranium",
+      "Pimento"
+    ],
+    "base": [
+      "Cedar",
+      "Patchouli",
+      "Vetiver"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Matin-Martin/LIMITLESS-EAU-DE-PARFUM-75196.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "limitless-100ml",
+        "price_minor": 35000
+      }
+    ]
+  },
+  {
+    "slug": "vintage-radio",
+    "name": "Vintage Radio",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "A dry woody scent with aromatic lavender and sage up top, plum and smoky palo santo in the heart, on a sandalwood base. Refined and unisex — suits evenings and cooler weather.",
+    "release_year": 2023,
+    "scent_family": "Woody Aromatic",
+    "main_accords": [
+      "woody",
+      "aromatic",
+      "lavender",
+      "warm spicy",
+      "fruity",
+      "sandalwood"
+    ],
+    "top": [
+      "Lavender",
+      "Sage",
+      "Bergamot"
+    ],
+    "heart": [
+      "Plum",
+      "Palo Santo",
+      "Black Pepper"
+    ],
+    "base": [
+      "Sandalwood",
+      "Oud"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Vintage-Radio-89454.html",
+    "research_note": "Brand is Lattafa (Lattafa Pride sub-line), NOT Fragrance World.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "vintage-radio-100ml",
+        "price_minor": 42000
+      }
+    ]
+  },
+  {
+    "slug": "qimmah-for-women",
+    "name": "Qimmah for Women",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A creamy gourmand of almond and coffee over jasmine and tuberose, finishing on vanilla, cacao and sandalwood. Warm and sweet — best for evenings and cooler weather.",
+    "release_year": 2022,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "almond",
+      "vanilla",
+      "sweet",
+      "coffee",
+      "cacao",
+      "white floral"
+    ],
+    "top": [
+      "Almond",
+      "Coffee"
+    ],
+    "heart": [
+      "Jasmine",
+      "Tuberose",
+      "Tonka Bean"
+    ],
+    "base": [
+      "Vanilla",
+      "Cacao",
+      "Sandalwood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Qimmah-for-Women-82793.html",
+    "research_note": "Full product name is 'Qimmah for Women'; a separate 'Qimmah for Men' also exists.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "qimmah-for-women-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "sweet-like-candy",
+    "name": "Sweet Like Candy",
+    "brand": "Gulf Orchid",
+    "brand_slug": "gulf-orchid",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A very sweet gourmand: creme brulee and brown sugar over vanilla, with a light rose-jasmine floral and a warm oud-amber base. Best for evenings and cooler weather; a little goes a long way.",
+    "release_year": 2022,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "caramel",
+      "warm spicy",
+      "powdery",
+      "woody"
+    ],
+    "top": [
+      "Vanilla",
+      "Orchid",
+      "Jasmine"
+    ],
+    "heart": [
+      "Vanilla",
+      "Creme Brulee",
+      "Tonka Bean",
+      "Rose",
+      "Leather"
+    ],
+    "base": [
+      "Brown Sugar",
+      "Sugar",
+      "Patchouli",
+      "Amber",
+      "Musk",
+      "Oud"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Gulf-Orchid/Sweet-Like-Candy-110401.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "sweet-like-candy-100ml",
+        "price_minor": 34000
+      }
+    ]
+  },
+  {
+    "slug": "hawas-for-her-eclat",
+    "name": "Hawas For Her Eclat",
+    "brand": "Rasasi",
+    "brand_slug": "rasasi",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "A juicy pear-and-lychee opening with a creamy pistachio twist, settling into rose and soft vanilla musk. Bright enough for daytime but sweet enough for a night out.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "vanilla",
+      "floral",
+      "musky",
+      "woody"
+    ],
+    "top": [
+      "Litchi",
+      "Pear",
+      "Bergamot",
+      "Pistachio"
+    ],
+    "heart": [
+      "Rose",
+      "Incense"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Amber",
+      "Woody Notes"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Rasasi/Hawas-For-Her-Eclat-112708.html",
+    "research_note": "Full name is 'Hawas For Her Eclat'; perfumer Amandine Galliano.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "hawas-for-her-eclat-100ml",
+        "price_minor": 68000
+      }
+    ]
+  },
+  {
+    "slug": "la-fede-white-forest-strawberry",
+    "name": "La Fede White Forest Strawberry",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Sweet-tart strawberry and blackberry over jasmine and rose, drying down creamy with vanilla and sandalwood. An easy everyday sweet fragrance for younger women.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "vanilla",
+      "floral",
+      "woody",
+      "creamy"
+    ],
+    "top": [
+      "Strawberry",
+      "Blackberry"
+    ],
+    "heart": [
+      "Jasmine",
+      "Rose"
+    ],
+    "base": [
+      "Vanilla",
+      "Sandalwood",
+      "Amber"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/La-Fede-White-Forest-Strawberry-109595.html",
+    "research_note": "Words reordered by the shop; the real product is 'La Fede White Forest Strawberry' by Khadlaj Perfumes (La Fede is Khadlaj's sub-line).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "la-fede-white-forest-strawberry-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "zenith",
+    "name": "Zenith",
+    "brand": "Riiffs",
+    "brand_slug": "riiffs",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A rich creamy vanilla and coconut scent softened by powdery jasmine and clean musk. Comforting and long-lasting; suits evenings and cool weather.",
+    "release_year": 2025,
+    "scent_family": "Floral Gourmand",
+    "main_accords": [
+      "vanilla",
+      "creamy",
+      "sweet",
+      "coconut",
+      "powdery",
+      "woody"
+    ],
+    "top": [
+      "Vanilla",
+      "Creamy Notes",
+      "Coconut"
+    ],
+    "heart": [
+      "Fruity Notes",
+      "Powdery Notes",
+      "Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Woody Notes"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Riiffs-Perfumes/Zenith-124649.html",
+    "research_note": "Sold as Extrait de Parfum, 100ml.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "zenith-100ml",
+        "price_minor": 59500
+      }
+    ]
+  },
+  {
+    "slug": "vanilla-voyage",
+    "name": "Vanilla Voyage",
+    "brand": "Maison Asrar",
+    "brand_slug": "maison-asrar",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A buttery caramel and honey gourmand that settles into deep vanilla, tonka and amber. Warm and dessert-like, best worn in the evening or cooler weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "caramel",
+      "honey",
+      "warm spicy",
+      "powdery"
+    ],
+    "top": [
+      "Butter",
+      "Caramel"
+    ],
+    "heart": [
+      "Honey",
+      "Tonka Bean",
+      "Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Amber",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-49 3.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/MAISON-ASRAR/Vanilla-Voyage-101562.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "vanilla-voyage-100ml",
+        "price_minor": 43500
+      },
+      {
+        "size_ml": 25,
+        "concentration": "EDP",
+        "sku": "vanilla-voyage-25ml",
+        "price_minor": 18000
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "detour-noir",
+    "name": "Detour Noir",
+    "brand": "Al Haramain",
+    "brand_slug": "al-haramain",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "Crisp apple and lavender over a creamy vanilla-and-sandalwood base, widely worn as an affordable alternative to Parfums de Marly Layton. A versatile evening scent that also works for the office.",
+    "release_year": 2021,
+    "scent_family": "Amber Spicy",
+    "main_accords": [
+      "woody",
+      "aromatic",
+      "vanilla",
+      "fresh spicy",
+      "lavender",
+      "sweet"
+    ],
+    "top": [
+      "Apple",
+      "Lavender",
+      "Jasmine",
+      "Violet"
+    ],
+    "heart": [
+      "Vanilla",
+      "Patchouli",
+      "Bergamot",
+      "Mandarin Orange"
+    ],
+    "base": [
+      "Sandalwood",
+      "Cardamom",
+      "Pepper",
+      "Guaiac Wood",
+      "Geranium"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Al-Haramain-Perfumes/Detour-Noir-70748.html",
+    "research_note": "Base Detour Noir (2021). Al Haramain also sells Detour Noir Intense and Detour Noir Exclusif (both 2024) — confirm which flanker the shop stocks.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "detour-noir-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "king-of-arabia",
+    "name": "King Of Arabia",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "A smooth suede-leather scent lifted by raspberry and cedar, with vanilla softening the drydown. Smells expensive, lasts a long time, and works for both men and women in the evening.",
+    "release_year": 2024,
+    "scent_family": "Leather",
+    "main_accords": [
+      "leather",
+      "woody",
+      "fruity",
+      "sweet",
+      "powdery",
+      "vanilla"
+    ],
+    "top": [
+      "Raspberry",
+      "Bergamot"
+    ],
+    "heart": [
+      "Cedarwood",
+      "Orris",
+      "Osmanthus"
+    ],
+    "base": [
+      "Leather",
+      "Patchouli",
+      "Vanilla"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/King-Of-Arabia-113195.html",
+    "research_note": "Brand identified as Lattafa (Lattafa Pride line). A different 'King of Arabia' by Scent Salim also exists, but the Lattafa Pride one is the widely-stocked product.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "king-of-arabia-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "silver-elixir",
+    "name": "Silver Elixir",
+    "brand": "Maison Asrar",
+    "brand_slug": "maison-asrar",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "A sharp citrus-and-pepper opening over smoky incense, vetiver and leather. A masculine-leaning, formal scent for evenings and cooler days.",
+    "release_year": 2024,
+    "scent_family": "Woody Spicy",
+    "main_accords": [
+      "woody",
+      "spicy",
+      "citrus",
+      "leather",
+      "earthy",
+      "musky"
+    ],
+    "top": [
+      "Lemon",
+      "Pink Pepper",
+      "Bergamot"
+    ],
+    "heart": [
+      "Incense",
+      "Spicy Notes",
+      "Patchouli",
+      "Vetiver"
+    ],
+    "base": [
+      "Leather",
+      "Ambergris",
+      "Musk",
+      "Moss"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/MAISON-ASRAR/Silver-Elixir-101222.html",
+    "research_note": "Often spelled 'Silver Elixer' on Maison Asrar / Gulf Orchid retail listings.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "silver-elixir-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "pink-marshmallow",
+    "name": "Pink Marshmallow",
+    "brand": "Gulf Orchid",
+    "brand_slug": "gulf-orchid",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "Juicy strawberry and raspberry over whipped cream, drying down to soft marshmallow, vanilla and musk. A playful, cuddly sweet scent for casual daytime wear.",
+    "release_year": 2025,
+    "scent_family": "Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "fruity",
+      "vanilla",
+      "creamy",
+      "musky",
+      "floral"
+    ],
+    "top": [
+      "Strawberry",
+      "Raspberry",
+      "Lemon"
+    ],
+    "heart": [
+      "Whipped Cream",
+      "Orange Blossom",
+      "Ambroxan"
+    ],
+    "base": [
+      "Marshmallow",
+      "Vanilla",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Gulf-Orchid/Marshmallow-114149.html",
+    "research_note": "Fragrantica lists the entry simply as 'Marshmallow'; the bottle and all retailers sell it as 'Pink Marshmallow'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "pink-marshmallow-100ml",
+        "price_minor": 38500
+      }
+    ]
+  },
+  {
+    "slug": "oh-honey",
+    "name": "Oh Honey!",
+    "brand": "Maison Asrar",
+    "brand_slug": "maison-asrar",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "Crisp apple and blackcurrant open onto a thick honey heart, finishing on sandalwood and vanilla. Sweet but not sugary, and equally wearable by men or women.",
+    "release_year": 2025,
+    "scent_family": "Fruity Sweet",
+    "main_accords": [
+      "sweet",
+      "honey",
+      "fruity",
+      "woody",
+      "vanilla",
+      "warm spicy"
+    ],
+    "top": [
+      "Apple",
+      "Blackcurrant",
+      "Citruses",
+      "Spices"
+    ],
+    "heart": [
+      "Honey",
+      "White Flowers",
+      "Cedar"
+    ],
+    "base": [
+      "Orcanox",
+      "Sandalwood",
+      "Vanilla"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/MAISON-ASRAR/Oh-Honey-107234.html",
+    "research_note": "Official name carries an exclamation mark: 'Oh Honey!'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "oh-honey-100ml",
+        "price_minor": 42000
+      }
+    ]
+  },
+  {
+    "slug": "hawas-for-her",
+    "name": "Hawas for Her",
+    "brand": "Rasasi",
+    "brand_slug": "rasasi",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Fresh pomegranate, apple and grapefruit over powdery iris and jasmine, landing on a soft praline base. A crowd-pleasing, versatile scent for day or office wear.",
+    "release_year": 2015,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "fruity",
+      "floral",
+      "sweet",
+      "citrus",
+      "powdery",
+      "woody"
+    ],
+    "top": [
+      "Pomegranate",
+      "Apple",
+      "Grapefruit"
+    ],
+    "heart": [
+      "Iris",
+      "Jasmine Sambac",
+      "Citruses"
+    ],
+    "base": [
+      "Praline",
+      "Patchouli",
+      "Vetiver"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Rasasi/Hawas-for-Her-67146.html",
+    "research_note": "Perfumers Claire Liegent and Dominique Ropion. The original 2015 release, not the 2025 Eclat flanker.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "hawas-for-her-100ml",
+        "price_minor": 65000
+      }
+    ]
+  },
+  {
+    "slug": "afeef",
+    "name": "Afeef",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "everyday",
+    "gender": "unisex",
+    "description": "Soft peach and pink pepper leading into creamy tuberose and orange blossom, with a praline-sandalwood drydown. Elegant and feminine-leaning; good for daytime and occasions.",
+    "release_year": 2024,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "white floral",
+      "sweet",
+      "fruity",
+      "woody",
+      "powdery",
+      "amber"
+    ],
+    "top": [
+      "Peach",
+      "Pink Pepper",
+      "Bergamot"
+    ],
+    "heart": [
+      "Tuberose",
+      "Orange Blossom",
+      "Jasmine"
+    ],
+    "base": [
+      "Praline",
+      "Sandalwood",
+      "Amber",
+      "Patchouli"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Afeef-100126.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "afeef-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "hawas-ice",
+    "name": "Hawas Ice",
+    "brand": "Rasasi",
+    "brand_slug": "rasasi",
+    "category_slug": "office",
+    "gender": "male",
+    "description": "A cool, citrus-and-apple take on the Hawas formula, with anise and cardamom over clean musk and driftwood. Ideal for hot weather and everyday daytime wear.",
+    "release_year": 2023,
+    "scent_family": "Aromatic Fruity",
+    "main_accords": [
+      "citrus",
+      "fresh",
+      "fruity",
+      "aromatic",
+      "musky",
+      "woody"
+    ],
+    "top": [
+      "Apple",
+      "Italian Lemon",
+      "Sicilian Bergamot",
+      "Star Anise"
+    ],
+    "heart": [
+      "Plum",
+      "Orange Blossom",
+      "Cardamom"
+    ],
+    "base": [
+      "Musk",
+      "Amber",
+      "Driftwood",
+      "Moss"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Rasasi/Hawas-Ice-89050.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "hawas-ice-100ml",
+        "price_minor": 74000
+      }
+    ]
+  },
+  {
+    "slug": "gharam",
+    "name": "Gharam",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "Juicy pear and pineapple over magnolia and jasmine, finishing sweet and woody with praline and cashmere wood. A cheerful, sweet scent for casual and evening wear.",
+    "release_year": 2024,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "fruity",
+      "floral",
+      "woody",
+      "amber",
+      "powdery"
+    ],
+    "top": [
+      "Pear",
+      "Pineapple",
+      "Tangerine"
+    ],
+    "heart": [
+      "Magnolia",
+      "Jasmine Sambac"
+    ],
+    "base": [
+      "Praline",
+      "Amber",
+      "Musk",
+      "Cashmere Wood",
+      "Sandalwood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Gharam-110430.html",
+    "research_note": "Brand not given by the shop. Assigned to Lattafa (Lattafa Pride line) as the most widely distributed 'Gharam'. Other same-name products exist: Arabian Oud Gharam, Swiss Arabian Gharaam, Hamidi Gharam, Ahwak Gharam — confirm the bottle.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "gharam-100ml",
+        "price_minor": 42000
+      }
+    ]
+  },
+  {
+    "slug": "shahama",
+    "name": "Shahama",
+    "brand": "Matin Martin",
+    "brand_slug": "matin-martin",
+    "category_slug": "oud-lovers",
+    "gender": "male",
+    "description": "A traditional Arabian oud-and-leather scent with fruity, spicy top notes and a deep balsamic woody base. Strong and long-lasting; suited to evenings, weddings and formal occasions.",
+    "release_year": 2021,
+    "scent_family": "Woody Oud",
+    "main_accords": [
+      "woody",
+      "oud",
+      "leather",
+      "warm spicy",
+      "fruity",
+      "balsamic"
+    ],
+    "top": [
+      "Fruity Notes",
+      "Spicy Notes",
+      "Ozonic Notes"
+    ],
+    "heart": [
+      "Agarwood (Oud)",
+      "Carnation",
+      "Geranium"
+    ],
+    "base": [
+      "Leather",
+      "Balsamic Notes",
+      "Woody Notes"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Matin-Martin/SHAHAMA-EAU-DE-PARFUM-75193.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "shahama-100ml",
+        "price_minor": 32500
+      }
+    ]
+  },
+  {
+    "slug": "queen-of-arabia",
+    "name": "Queen Of Arabia",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "Creamy coconut with a salty sea-air twist over sandalwood, drying down to vanilla and amber. Soft, milky and elegant — good for warm weather and daytime.",
+    "release_year": 2024,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "coconut",
+      "vanilla",
+      "creamy",
+      "salty",
+      "woody",
+      "powdery"
+    ],
+    "top": [
+      "Coconut",
+      "Salt"
+    ],
+    "heart": [
+      "Sandalwood",
+      "Heliotrope"
+    ],
+    "base": [
+      "Vanilla",
+      "Amber"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Queen-Of-Arabia-113075.html",
+    "research_note": "Brand identified as Lattafa (Lattafa Pride line); the feminine counterpart to King Of Arabia.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "queen-of-arabia-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "rumiel",
+    "name": "Rumiel",
+    "brand": "Arabiyat Prestige",
+    "brand_slug": "arabiyat-prestige",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A boozy dessert scent: rum and creamy milk with banana, cinnamon and nutmeg over vanilla and tonka. Rich and warm — best for nights out and cool weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla Gourmand",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "warm spicy",
+      "boozy",
+      "creamy",
+      "woody"
+    ],
+    "top": [
+      "Banana",
+      "Cinnamon",
+      "Nutmeg"
+    ],
+    "heart": [
+      "Rum",
+      "Milk",
+      "Raspberry"
+    ],
+    "base": [
+      "Patchouli",
+      "Vanilla",
+      "Musk",
+      "Tonka Bean"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Arabiyat-Prestige/Rumiel-125390.html",
+    "research_note": "Perfumer Mustafa Firoz. Retailer note lists vary; the Fragrantica pyramid above is used.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "rumiel-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "naughty-vanilla",
+    "name": "Naughty Vanilla",
+    "brand": "Gulf Orchid",
+    "brand_slug": "gulf-orchid",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A nutty gourmand of almond, honey and pistachio over creamy vanilla ice cream and tonka. Sweet and comforting; ideal for evening and cooler weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "nutty",
+      "honey",
+      "creamy",
+      "almond"
+    ],
+    "top": [
+      "Almond",
+      "Honey",
+      "Bergamot"
+    ],
+    "heart": [
+      "Pistachio",
+      "Ice Cream",
+      "Orange Blossom"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka Bean",
+      "Amber"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Gulf-Orchid/Naughty-Vanilla-114148.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "naughty-vanilla-100ml",
+        "price_minor": 36000
+      }
+    ]
+  },
+  {
+    "slug": "fakhar-lattafa-femme",
+    "name": "Fakhar Lattafa Femme",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "A big white-floral bouquet — tuberose, jasmine and gardenia — brightened by pomegranate and softened by vanilla and musk. A dressy, feminine scent for occasions and evenings.",
+    "release_year": 2021,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "white floral",
+      "floral",
+      "fruity",
+      "sweet",
+      "vanilla",
+      "musky"
+    ],
+    "top": [
+      "Fruity Notes",
+      "Lily",
+      "Pomegranate",
+      "Aldehydes"
+    ],
+    "heart": [
+      "Tuberose",
+      "Jasmine",
+      "Gardenia",
+      "Ylang-Ylang",
+      "Honeysuckle",
+      "Rose",
+      "Peony"
+    ],
+    "base": [
+      "Vanilla",
+      "Ambroxan",
+      "White Musk",
+      "Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-52 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Fakhar-Lattafa-30864.html",
+    "research_note": "Sold as 'Fakhar Lattafa Femme' / 'Fakhar Women' (the pink bottle). Fragrantica indexes it under 'Fakhar Lattafa'; year varies by source (2015 on Fragrantica's entry, 2021 on most retail listings). Do not confuse with Fakhar Rose (2022) or Fakhar Platin (2025).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "fakhar-lattafa-femme-100ml",
+        "price_minor": 63500
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "khamrah-waha",
+    "name": "Khamrah Waha",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "A fresh, salty-aquatic Khamrah flanker: yuzu and ginger over cucumber and sea salt, with a soft vanilla-musk base. Unlike the sweet original Khamrah, this one is made for heat and daytime wear.",
+    "release_year": 2026,
+    "scent_family": "Aromatic Aquatic",
+    "main_accords": [
+      "fresh",
+      "aquatic",
+      "citrus",
+      "salty",
+      "aromatic",
+      "musky"
+    ],
+    "top": [
+      "Bergamot",
+      "Yuzu",
+      "Juniper",
+      "Ginger"
+    ],
+    "heart": [
+      "Cucumber",
+      "Sea Salt",
+      "Iris",
+      "Sage"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka Bean",
+      "Musk",
+      "Akigalawood",
+      "Ambrofix"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Khamrah-Waha-132409.html",
+    "research_note": "Not a misspelling — Khamrah Waha is a real 2026 Lattafa release (perfumer Jordi Fernandez). It is a fresh aquatic, very different from Khamrah / Khamrah Qahwa.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "khamrah-waha-100ml",
+        "price_minor": 74000
+      }
+    ]
+  },
+  {
+    "slug": "badee-al-oud-amethyst",
+    "name": "Bade'e Al Oud Amethyst",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "A sweet rose-and-oud blend with warm vanilla and amber in the base, soft and creamy rather than smoky. Long-lasting and best suited to evenings, cooler weather and formal occasions.",
+    "release_year": 2021,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "oud",
+      "sweet",
+      "rose",
+      "vanilla",
+      "amber",
+      "woody"
+    ],
+    "top": [
+      "Pink Pepper",
+      "Bergamot"
+    ],
+    "heart": [
+      "Turkish Rose",
+      "Bulgarian Rose",
+      "Jasmine"
+    ],
+    "base": [
+      "Agarwood (Oud)",
+      "Amber",
+      "Vanilla"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Bade-e-Al-Oud-Amethyst-68214.html",
+    "research_note": "Shop spelling 'Badee Al Oud' corresponds to Lattafa's Bade'e Al Oud line.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "badee-al-oud-amethyst-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "niche-emarati-al-jawhara",
+    "name": "Niche Emarati Al Jawhara",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "A rich plum-and-cinnamon fragrance over a resinous labdanum and patchouli base, sweet and slightly boozy. A dressy evening scent that performs well in cooler air.",
+    "release_year": 2024,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "fruity",
+      "warm spicy",
+      "amber",
+      "sweet",
+      "patchouli",
+      "floral"
+    ],
+    "top": [
+      "Davana"
+    ],
+    "heart": [
+      "Plum",
+      "Cinnamon",
+      "Osmanthus"
+    ],
+    "base": [
+      "Labdanum",
+      "Patchouli",
+      "Musk",
+      "Ambroxan"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Niche-Emarati-Al-Jawhara-99144.html",
+    "research_note": "Niche Emarati is a Lattafa sub-line; Al Jawhara means 'the jewel'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "niche-emarati-al-jawhara-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "marshmallow",
+    "name": "Marshmallow",
+    "brand": "Gulf Orchid",
+    "brand_slug": "gulf-orchid",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A dessert-like gourmand of red berries, whipped cream and soft marshmallow vanilla. Playful and casual, good for daytime wear and younger customers.",
+    "release_year": 2025,
+    "scent_family": "Gourmand",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "fruity",
+      "creamy",
+      "musky",
+      "gourmand"
+    ],
+    "top": [
+      "Strawberry",
+      "Raspberry",
+      "Lemon"
+    ],
+    "heart": [
+      "Whipped Cream",
+      "Orange Blossom",
+      "Ambroxan"
+    ],
+    "base": [
+      "Marshmallow",
+      "Vanilla",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Gulf-Orchid/Marshmallow-114149.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "marshmallow-100ml",
+        "price_minor": 34000
+      }
+    ]
+  },
+  {
+    "slug": "london-the-city-of-contrast",
+    "name": "London The City of Contrast",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "Bright citrus and ginger opening that settles into creamy tuberose and neroli over soft musk and sandalwood. Fresh and versatile, suited to daytime and warm weather.",
+    "release_year": 2026,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "citrus",
+      "floral",
+      "white floral",
+      "musky",
+      "fresh spicy",
+      "vanilla"
+    ],
+    "top": [
+      "Tangerine",
+      "Lemon",
+      "Pink Pepper"
+    ],
+    "heart": [
+      "Neroli",
+      "Tuberose",
+      "Apple",
+      "Ginger"
+    ],
+    "base": [
+      "Musk",
+      "Vanilla",
+      "Sandalwood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/London-The-City-of-Contrast-129937.html",
+    "research_note": "Brand is Lattafa (Lattafa Pride line); full name is 'London The City of Contrast'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "london-the-city-of-contrast-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "hawas-elixir",
+    "name": "Hawas Elixir",
+    "brand": "Rasasi",
+    "brand_slug": "rasasi",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "An unusual mix of cool mint and lavender over dark chocolate, drying down to sweet tonka and vanilla. Leans masculine and works best in the evening and cooler weather.",
+    "release_year": 2024,
+    "scent_family": "Aromatic Gourmand",
+    "main_accords": [
+      "aromatic",
+      "sweet",
+      "cacao",
+      "lavender",
+      "vanilla",
+      "fresh spicy"
+    ],
+    "top": [
+      "Mugwort",
+      "Bergamot",
+      "Spearmint"
+    ],
+    "heart": [
+      "Dark Chocolate",
+      "Lavender",
+      "Benzoin"
+    ],
+    "base": [
+      "White Musk",
+      "Tonka Bean",
+      "Vanilla"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Rasasi/Hawas-Elixir-110808.html",
+    "research_note": "Confirmed as Rasasi; part of the Rasasi Hawas line.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "hawas-elixir-100ml",
+        "price_minor": 65000
+      }
+    ]
+  },
+  {
+    "slug": "banana-split",
+    "name": "Banana Split",
+    "brand": "Gulf Orchid",
+    "brand_slug": "gulf-orchid",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A tropical dessert scent of banana, pineapple and peach over creamy milk, closing on vanilla and caramel. Fun and casual, best for daytime and younger wearers.",
+    "release_year": 2025,
+    "scent_family": "Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "fruity",
+      "vanilla",
+      "caramel",
+      "tropical",
+      "creamy"
+    ],
+    "top": [
+      "Banana",
+      "Pineapple",
+      "Peach",
+      "Orange"
+    ],
+    "heart": [
+      "Milk",
+      "Lily-of-the-Valley",
+      "Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Caramel",
+      "Musk",
+      "Sandalwood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Gulf-Orchid/Banana-Split-114150.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "banana-split-100ml",
+        "price_minor": 32500
+      }
+    ]
+  },
+  {
+    "slug": "hawas-lava-gold",
+    "name": "Hawas Lava Gold",
+    "brand": "Rasasi",
+    "brand_slug": "rasasi",
+    "category_slug": "summer",
+    "gender": "male",
+    "description": "Juicy pineapple and citrus up top giving way to leather, saffron and oud on a mossy amber base. A bold masculine evening scent with strong projection.",
+    "release_year": 2026,
+    "scent_family": "Amber Woody",
+    "main_accords": [
+      "fruity",
+      "woody",
+      "leather",
+      "amber",
+      "patchouli",
+      "sweet"
+    ],
+    "top": [
+      "Pineapple",
+      "Grapefruit",
+      "Apple",
+      "Lemon"
+    ],
+    "heart": [
+      "Leather",
+      "Saffron",
+      "Oud",
+      "Raspberry"
+    ],
+    "base": [
+      "Patchouli",
+      "Amber",
+      "Moss",
+      "Caramel"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Rasasi/Hawas-Lava-Gold-130939.html",
+    "research_note": "A flanker in the Rasasi Hawas line.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "hawas-lava-gold-100ml",
+        "price_minor": 68000
+      }
+    ]
+  },
+  {
+    "slug": "lady-roza",
+    "name": "Lady Roza",
+    "brand": "Matin Martin",
+    "brand_slug": "matin-martin",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "A bright fruity rose with litchi and rhubarb over a clean cedar and vetiver base. Feminine and easy to wear for daytime, office and warm weather.",
+    "release_year": 2021,
+    "scent_family": "Floral Woody",
+    "main_accords": [
+      "rose",
+      "floral",
+      "fruity",
+      "woody",
+      "fresh",
+      "musky"
+    ],
+    "top": [
+      "Litchi",
+      "Rhubarb",
+      "Bergamot"
+    ],
+    "heart": [
+      "Rose",
+      "Peony"
+    ],
+    "base": [
+      "Cedar",
+      "Cashmeran",
+      "Vetiver"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Matin-Martin/LADY-ROZA-EAU-DE-PARFUM-75197.html",
+    "research_note": "Widely compared to Chanel Chance Eau Tendre / rose-litchi style scents.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "lady-roza-100ml",
+        "price_minor": 29000
+      }
+    ]
+  },
+  {
+    "slug": "aristo",
+    "name": "Aristo",
+    "brand": "Arabiyat Prestige",
+    "brand_slug": "arabiyat-prestige",
+    "category_slug": "office",
+    "gender": "male",
+    "description": "A bright citrus and ginger opening over jasmine and magnolia, landing on soft vanilla, musk and sandalwood. A clean, dressy scent for daytime and office wear.",
+    "release_year": 2025,
+    "scent_family": "Woody Floral Musk",
+    "main_accords": [
+      "citrus",
+      "woody",
+      "floral",
+      "vanilla",
+      "musky",
+      "patchouli"
+    ],
+    "top": [
+      "Ginger Flower",
+      "Mandarin",
+      "Orange",
+      "Lemon"
+    ],
+    "heart": [
+      "Jasmine",
+      "Patchouli",
+      "Magnolia"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Sandalwood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Arabiyat-Prestige/Aristo-125391.html",
+    "research_note": "Arabiyat Prestige is a line by My Perfumes (MPF), Dubai. Perfumer: Elodie Bernard.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "aristo-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "khamrah",
+    "name": "Khamrah",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "A spiced dessert scent built on dates, cinnamon and praline over vanilla and warm resins, slightly boozy. Very long-lasting and best for evenings, weddings and cooler weather.",
+    "release_year": 2022,
+    "scent_family": "Amber Spicy Gourmand",
+    "main_accords": [
+      "warm spicy",
+      "sweet",
+      "vanilla",
+      "cinnamon",
+      "boozy",
+      "amber"
+    ],
+    "top": [
+      "Cinnamon",
+      "Nutmeg",
+      "Bergamot"
+    ],
+    "heart": [
+      "Dates",
+      "Praline",
+      "Tuberose",
+      "Mahonial"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka Bean",
+      "Amberwood",
+      "Myrrh",
+      "Benzoin",
+      "Akigalawood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Khamrah-75805.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "khamrah-100ml",
+        "price_minor": 69500
+      }
+    ]
+  },
+  {
+    "slug": "khamrah-qahwa",
+    "name": "Khamrah Qahwa",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "The coffee version of Khamrah: cardamom and cinnamon over praline, with roasted coffee and vanilla in the base. Rich and comforting, made for evenings and cold weather.",
+    "release_year": 2023,
+    "scent_family": "Amber Vanilla Gourmand",
+    "main_accords": [
+      "sweet",
+      "warm spicy",
+      "vanilla",
+      "coffee",
+      "cinnamon",
+      "nutty"
+    ],
+    "top": [
+      "Cinnamon",
+      "Cardamom",
+      "Ginger"
+    ],
+    "heart": [
+      "Praline",
+      "Candied Fruits",
+      "White Flowers"
+    ],
+    "base": [
+      "Vanilla",
+      "Coffee",
+      "Tonka Bean",
+      "Benzoin",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Khamrah-Qahwa-88175.html",
+    "research_note": "Flanker of Khamrah; 'Qahwa' means coffee.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "khamrah-qahwa-100ml",
+        "price_minor": 63500
+      }
+    ]
+  },
+  {
+    "slug": "tharwah-gold",
+    "name": "Tharwah Gold",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A sweet lavender and orange blossom floral over creamy vanilla and amber, often compared to YSL Libre Intense. Feminine and versatile, good day or evening.",
+    "release_year": 2022,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "floral",
+      "white floral",
+      "lavender",
+      "amber"
+    ],
+    "top": [
+      "Lavender",
+      "Bergamot"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Egyptian Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Amber",
+      "Vetiver"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-47.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Tharwah-Gold-82004.html",
+    "research_note": "Brand is Lattafa (Lattafa Pride line).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "tharwah-gold-100ml",
+        "price_minor": 50500
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "amber-oud-gold-edition",
+    "name": "Amber Oud Gold Edition",
+    "brand": "Al Haramain",
+    "brand_slug": "al-haramain",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "A sweet fruity amber with melon and pineapple over vanilla and soft woods, known for very heavy projection and longevity. A crowd-pleasing evening scent, best applied sparingly.",
+    "release_year": 2018,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "sweet",
+      "amber",
+      "fruity",
+      "vanilla",
+      "woody",
+      "musky"
+    ],
+    "top": [
+      "Bergamot",
+      "Green Notes"
+    ],
+    "heart": [
+      "Melon",
+      "Pineapple",
+      "Sweet Notes",
+      "Amber"
+    ],
+    "base": [
+      "Woody Notes",
+      "Vanilla",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-10.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Al-Haramain-Perfumes/Amber-Oud-Gold-Edition-51816.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 120,
+        "concentration": "EDP",
+        "sku": "amber-oud-gold-edition-120ml",
+        "price_minor": 74500
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "oud-madness",
+    "name": "Oud Madness",
+    "brand": "Fragrance World",
+    "brand_slug": "fragrance-world",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "A dense saffron-and-rose opening leading into resinous oud, patchouli and leather. A serious oud scent for evenings and formal occasions; inspired by Maison Crivelli Oud Maracuja.",
+    "release_year": 2024,
+    "scent_family": "Woody Oud",
+    "main_accords": [
+      "oud",
+      "woody",
+      "leather",
+      "warm spicy",
+      "amber",
+      "rose"
+    ],
+    "top": [
+      "Saffron",
+      "Turkish Rose"
+    ],
+    "heart": [
+      "Agarwood (Oud)",
+      "Indonesian Patchouli Leaf",
+      "Benzoin"
+    ],
+    "base": [
+      "Leather",
+      "Amber",
+      "Vanilla",
+      "Labdanum"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Fragrance-World/Oud-Madness-107605.html",
+    "research_note": "Brand identified as Fragrance World (Dubai).",
+    "variants": [
+      {
+        "size_ml": 60,
+        "concentration": "EDP",
+        "sku": "oud-madness-60ml",
+        "price_minor": 20500
+      }
+    ]
+  },
+  {
+    "slug": "miss-armaf-attitude",
+    "name": "Miss Armaf Attitude",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A sweet almond-and-coffee floral over tuberose and orange blossom, drying to vanilla and tonka. Widely bought as an affordable alternative to Carolina Herrera Good Girl; evening wear.",
+    "release_year": 2023,
+    "scent_family": "Floral Gourmand",
+    "main_accords": [
+      "sweet",
+      "white floral",
+      "vanilla",
+      "almond",
+      "coffee",
+      "tuberose"
+    ],
+    "top": [
+      "Almond",
+      "Rose",
+      "Jasmine",
+      "Bergamot"
+    ],
+    "heart": [
+      "Tuberose",
+      "Orange Blossom",
+      "Narcissus",
+      "Coffee"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka Bean",
+      "Amber",
+      "Sandalwood",
+      "Cedar"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Attitude-87096.html",
+    "research_note": "Sold as both 'Miss Armaf Attitude' and 'Miss Attitude'; Fragrantica lists it simply as 'Attitude' by Armaf.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "miss-armaf-attitude-100ml",
+        "price_minor": 42000
+      }
+    ]
+  },
+  {
+    "slug": "marshmallow-blush",
+    "name": "Marshmallow Blush",
+    "brand": "Paris Corner",
+    "brand_slug": "paris-corner",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Sugared strawberry and raspberry over a soft marshmallow-musk base, sweet and cosy. A casual daytime scent, popular as a cheaper stand-in for Kayali Yum Boujee Marshmallow.",
+    "release_year": 2025,
+    "scent_family": "Gourmand",
+    "main_accords": [
+      "sweet",
+      "fruity",
+      "musky",
+      "vanilla",
+      "citrus",
+      "gourmand"
+    ],
+    "top": [
+      "Strawberry",
+      "Raspberry",
+      "Lemon"
+    ],
+    "heart": [
+      "Ambroxan",
+      "Orange Blossom"
+    ],
+    "base": [
+      "Marshmallow",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-51.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/PARIS-CORNER/Marshmallow-Blush-102791.html",
+    "research_note": "Brand identified as Paris Corner (Dubai). Do not confuse with Gulf Orchid Marshmallow (item 63).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "marshmallow-blush-100ml",
+        "price_minor": 42000
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "irida",
+    "name": "Irida",
+    "brand": "French Avenue",
+    "brand_slug": "french-avenue",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "A soft cherry-and-ginger opening over blooming jasmine, settling into clean musk and amber. Easy-wearing and versatile, suitable day or evening.",
+    "release_year": 2024,
+    "scent_family": "Fruity Floral",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "floral",
+      "musky",
+      "amber",
+      "fresh spicy"
+    ],
+    "top": [
+      "Cherry",
+      "Ginger"
+    ],
+    "heart": [
+      "Jasmine"
+    ],
+    "base": [
+      "Musk",
+      "Pink Pepper",
+      "Amber"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-51 4.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/French-Avenue/Irida-99796.html",
+    "research_note": "Sold as 'Irida Extrait de Parfum' by French Avenue, a sub-brand of Fragrance World (Dubai). A different, iris-based 'Irida Extrait' exists by Angelos Creations Olfactives — this entry is the French Avenue one, which is what Gulf shops stock.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "irida-100ml",
+        "price_minor": 51500
+      }
+    ],
+    "is_featured": true
+  },
+  {
+    "slug": "fursan-white",
+    "name": "Fursan White",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A creamy coconut and almond scent over vanilla and light cedar, soft and skin-like. A comfortable everyday feminine fragrance that suits warm weather.",
+    "release_year": 2024,
+    "scent_family": "Gourmand Floral",
+    "main_accords": [
+      "coconut",
+      "sweet",
+      "vanilla",
+      "almond",
+      "musky",
+      "creamy"
+    ],
+    "top": [
+      "Bergamot",
+      "Jasmine"
+    ],
+    "heart": [
+      "Musk",
+      "Coconut",
+      "Almond"
+    ],
+    "base": [
+      "Vanilla",
+      "Cedarwood",
+      "Nutmeg"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-49 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Fursan-White-102361.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "fursan-white-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "liquid-brun-limited-edition",
+    "name": "Liquid Brun Limited Edition",
+    "brand": "French Avenue",
+    "brand_slug": "french-avenue",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A spiced lavender and orange blossom opening over guaiac wood, finishing sweet with vanilla, tonka and amber. Strong and long-lasting; an evening and cool-weather scent.",
+    "release_year": 2025,
+    "scent_family": "Amber Fougere",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "amber",
+      "aromatic",
+      "woody",
+      "warm spicy"
+    ],
+    "top": [
+      "Citrus",
+      "Cardamom",
+      "Lavender"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Guaiac Wood",
+      "Rose"
+    ],
+    "base": [
+      "Vanilla",
+      "Amber",
+      "Tonka Bean",
+      "Oakmoss"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-13 3.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/French-Avenue/Liquid-Brun-Limited-Edition-123526.html",
+    "research_note": "Separate release from the original Liquid Brun (2024, EDP); the Limited Edition is an extrait and is also sold in 150ml.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "liquid-brun-limited-edition-100ml",
+        "price_minor": 78000
+      },
+      {
+        "size_ml": 150,
+        "concentration": "Extrait",
+        "sku": "liquid-brun-limited-edition-150ml",
+        "price_minor": 87500
+      }
+    ]
+  },
+  {
+    "slug": "9-pm-night-out",
+    "name": "9 PM Night Out",
+    "brand": "Afnan",
+    "brand_slug": "afnan",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "Bright fruit and cognac up front turning into suede, toffee and cardamom over a woody tonka base. A going-out scent built for evenings, with strong projection.",
+    "release_year": 2026,
+    "scent_family": "Fruity Amber",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "suede",
+      "warm spicy",
+      "woody",
+      "tonka"
+    ],
+    "top": [
+      "Dragon Fruit",
+      "Bergamot",
+      "Cognac",
+      "Lavender",
+      "Apple"
+    ],
+    "heart": [
+      "Cardamom",
+      "Mahonial",
+      "Suede",
+      "Toffee",
+      "Cedar"
+    ],
+    "base": [
+      "Tonka Bean",
+      "Akigalawood",
+      "Ambrofix",
+      "Patchouli"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Afnan/9-PM-Night-Out-123313.html",
+    "research_note": "Newest flanker in Afnan's 9PM line; sold as an Extrait de Parfum.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "9-pm-night-out-100ml",
+        "price_minor": 71500
+      }
+    ]
+  },
+  {
+    "slug": "essence-of-casablanca",
+    "name": "Essence of Casablanca",
+    "brand": "Swiss Arabian",
+    "brand_slug": "swiss-arabian",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "A juicy fruity-amber scent that opens on ripe apple and grape then settles into patchouli, vanilla, musk and amber. Rich and sweet, best for evenings and cooler weather; longevity is strong at 8+ hours.",
+    "release_year": 2023,
+    "scent_family": "Amber Woody",
+    "main_accords": [
+      "fruity",
+      "amber",
+      "sweet",
+      "warm spicy",
+      "vanilla",
+      "woody"
+    ],
+    "top": [
+      "Grapes",
+      "Apple"
+    ],
+    "heart": [
+      "Patchouli",
+      "Orris"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Amber",
+      "Balsamic notes"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-42.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Swiss-Arabian/ESSENCE-OF-CASABLANCA-85514.html",
+    "research_note": "Marketed as Extrait de Parfum; perfumer Isabel Gil Trujillo. Distinct from the older Swiss Arabian 'Casablanca' (2016).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "essence-of-casablanca-100ml",
+        "price_minor": 54500
+      }
+    ]
+  },
+  {
+    "slug": "musamam",
+    "name": "Musamam",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "A dry woody-spicy fragrance led by saffron and lavender over cedar, amberwood and incense. Masculine-leaning and formal — good for evenings, work and cooler days.",
+    "release_year": 2022,
+    "scent_family": "Woody Aromatic",
+    "main_accords": [
+      "woody",
+      "warm spicy",
+      "amber",
+      "aromatic",
+      "smoky"
+    ],
+    "top": [
+      "Saffron",
+      "Italian Mandarin",
+      "Lavender"
+    ],
+    "heart": [
+      "Amberwood",
+      "Virginia Cedar",
+      "Geranium"
+    ],
+    "base": [
+      "Akigalawood",
+      "Incense",
+      "Labdanum"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-14 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Musamam-84720.html",
+    "research_note": "The original brown/gold bottle. Later flankers include Musamam White Intense (2023) and Musamam Black Intense (2025).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "musamam-100ml",
+        "price_minor": 72500
+      }
+    ]
+  },
+  {
+    "slug": "atheeri",
+    "name": "Atheeri",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A soft, airy floral-gourmand built on jasmine and orchid over creamy vanilla and amberwood. Light and easy to wear — suits daytime, office and warm weather.",
+    "release_year": 2025,
+    "scent_family": "Floral Gourmand",
+    "main_accords": [
+      "sweet",
+      "floral",
+      "vanilla",
+      "honey",
+      "white floral",
+      "woody"
+    ],
+    "top": [
+      "Passion Flower",
+      "Dew Drop"
+    ],
+    "heart": [
+      "Orchid",
+      "Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Amberwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-50 3.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Atheeri-105152.html",
+    "research_note": "Marketed by Lattafa as feminine-leaning but sold as unisex.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "atheeri-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "milky-way",
+    "name": "Milky Way",
+    "brand": "Maison Asrar",
+    "brand_slug": "maison-asrar",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A creamy gourmand of milk, caramel and vanilla over soft sandalwood and tonka. Warm, comforting and dessert-like — best for evenings and cooler weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "creamy",
+      "caramel",
+      "woody",
+      "powdery"
+    ],
+    "top": [
+      "Milk",
+      "Plum",
+      "Caramel"
+    ],
+    "heart": [
+      "Cashmere Wood",
+      "Orris",
+      "Jasmine",
+      "Ylang-Ylang"
+    ],
+    "base": [
+      "Sandalwood",
+      "Vanilla",
+      "Tonka Bean"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-48.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/MAISON-ASRAR/Milky-Way-119201.html",
+    "research_note": "Identified as Maison Asrar (Dubai house) Milky Way — the widely sold viral version. Other unrelated 'Milky Way' perfumes exist from Neesh and Marcoccia.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "milky-way-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "musamam-black-intense",
+    "name": "Musamam Black Intense",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "A darker, gourmand take on Musamam: aromatic lavender and sage over cedar, drying down to cocoa, tonka and maple. Bold and cosy — an evening and cold-weather scent.",
+    "release_year": 2025,
+    "scent_family": "Woody Aromatic",
+    "main_accords": [
+      "woody",
+      "aromatic",
+      "warm spicy",
+      "sweet",
+      "cacao",
+      "amber"
+    ],
+    "top": [
+      "Lavender",
+      "Nutmeg",
+      "Sage",
+      "Bergamot"
+    ],
+    "heart": [
+      "Cedarwood",
+      "Geranium",
+      "Rosyfolia",
+      "Mahonial"
+    ],
+    "base": [
+      "Cocoapulse (cocoa)",
+      "Tonka Bean",
+      "Maple",
+      "Ambrofix",
+      "Patchouli"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-14.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Musamam-Black-Intense-119987.html",
+    "research_note": "Perfumer Jordi Fernandez. Flanker of the 2022 Musamam.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "musamam-black-intense-100ml",
+        "price_minor": 65000
+      }
+    ]
+  },
+  {
+    "slug": "her-confession",
+    "name": "Her Confession",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A warm spicy-floral vanilla: cinnamon and tuberose over a creamy vanilla, musk and tonka base. Sensual and cosy — best for evenings and special occasions.",
+    "release_year": 2024,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "warm spicy",
+      "sweet",
+      "white floral",
+      "musky",
+      "powdery"
+    ],
+    "top": [
+      "Cinnamon",
+      "Mystikal"
+    ],
+    "heart": [
+      "Tuberose",
+      "Jasmine",
+      "Incense",
+      "Mahonial"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Tonka Bean"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-15.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Her-Confession-96864.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "her-confession-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "his-confession",
+    "name": "His Confession",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "male",
+    "description": "A spicy amber for men: cinnamon and lavender over iris and benzoin, finishing on vanilla, tonka, cedar and incense. Warm and refined — evenings and cooler weather.",
+    "release_year": 2024,
+    "scent_family": "Amber Spicy",
+    "main_accords": [
+      "warm spicy",
+      "vanilla",
+      "amber",
+      "woody",
+      "powdery",
+      "aromatic"
+    ],
+    "top": [
+      "Cinnamon",
+      "Lavender",
+      "Mandarin"
+    ],
+    "heart": [
+      "Iris",
+      "Benzoin",
+      "Cypress",
+      "Mahonial"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka Bean",
+      "Amber",
+      "Incense",
+      "Cedarwood",
+      "Patchouli"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-16 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/His-Confession-96866.html",
+    "research_note": "Masculine counterpart to Her Confession.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "his-confession-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "queen-of-roses",
+    "name": "Queen of Roses",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "A spicy rose with pink pepper and saffron over a warm amber, musk and vanilla base. Rich and feminine — suits evenings, weddings and cooler weather.",
+    "release_year": 2026,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "rose",
+      "warm spicy",
+      "amber",
+      "sweet",
+      "woody",
+      "musky"
+    ],
+    "top": [
+      "Pink Pepper",
+      "Rose"
+    ],
+    "heart": [
+      "Saffron",
+      "Patchouli"
+    ],
+    "base": [
+      "Amber",
+      "Musk",
+      "Vanilla"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-40.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Queen-of-Roses-131312.html",
+    "research_note": "Identified as Lattafa (Lattafa Pride line) Queen of Roses. Not to be confused with Lattafa Queen of Arabia or Montale Aoud Queen Roses.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "queen-of-roses-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "liquid-brun",
+    "name": "Liquid Brun",
+    "brand": "French Avenue",
+    "brand_slug": "french-avenue",
+    "category_slug": "gourmand-sweet",
+    "gender": "male",
+    "description": "A sweet gourmand-woody scent: spicy cinnamon and cardamom over bourbon vanilla, praline and guaiac wood. Strong performer (8-10 hours) — made for nights out and cool weather.",
+    "release_year": 2024,
+    "scent_family": "Woody Gourmand",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "warm spicy",
+      "woody",
+      "caramel",
+      "amber"
+    ],
+    "top": [
+      "Cinnamon",
+      "Orange Blossom",
+      "Cardamom",
+      "Bergamot"
+    ],
+    "heart": [
+      "Bourbon Vanilla",
+      "Elemi"
+    ],
+    "base": [
+      "Praline",
+      "Ambroxan",
+      "Guaiac Wood",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-12.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/French-Avenue/Liquid-Brun-94713.html",
+    "research_note": "French Avenue is a Dubai (Fragrance World group) house. A Liquid Brun Limited Edition followed in 2025.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "liquid-brun-100ml",
+        "price_minor": 62000
+      }
+    ]
+  },
+  {
+    "slug": "eshal-vanilla",
+    "name": "Eshal Vanilla",
+    "brand": "Paris Corner",
+    "brand_slug": "paris-corner",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A soft sugary gourmand: sweet sugar and light florals over vanilla, caramel and musk. Gentle and creamy — an easy everyday scent with good longevity.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "caramel",
+      "musky",
+      "floral",
+      "powdery"
+    ],
+    "top": [
+      "Sugar",
+      "Sweet Notes"
+    ],
+    "heart": [
+      "Rose",
+      "Jasmine"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Caramel"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-50 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/PARIS-CORNER/Eshal-Vanilla-110740.html",
+    "research_note": "Brand identified as Paris Corner (Dubai). Sometimes sold as 'Eshal Vanilla Musk'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "eshal-vanilla-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "supremacy-collectors-edition-pour-homme",
+    "name": "Supremacy Collector's Edition Pour Homme",
+    "brand": "Afnan",
+    "brand_slug": "afnan",
+    "category_slug": "summer",
+    "gender": "male",
+    "description": "A fruity-smoky masculine built on pineapple and bergamot over birch, amber and oakmoss. Confident and versatile — works day or night, all year.",
+    "release_year": 2024,
+    "scent_family": "Amber Fougere",
+    "main_accords": [
+      "fruity",
+      "amber",
+      "woody",
+      "aromatic",
+      "musky",
+      "fresh spicy"
+    ],
+    "top": [
+      "Pineapple",
+      "Bergamot",
+      "White Flowers",
+      "Apple"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Birch",
+      "Amber"
+    ],
+    "base": [
+      "Oakmoss",
+      "Musk",
+      "Ambergris"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-14 3.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Afnan/Supremacy-Collector-s-Edition-Pour-Homme-98689.html",
+    "research_note": "Perfumer Imran Fazlani. Widely compared to Creed Aventus.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "supremacy-collectors-edition-pour-homme-100ml",
+        "price_minor": 62000
+      }
+    ]
+  },
+  {
+    "slug": "ramz-lattafa-silver",
+    "name": "Ramz Lattafa Silver",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A fresh-sweet blend: pear, mint and lavender up top settling into cardamom, vanilla and amber. Clean and versatile — good for daytime, office and warm weather.",
+    "release_year": 2021,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "aromatic",
+      "fresh spicy",
+      "amber",
+      "sweet",
+      "woody"
+    ],
+    "top": [
+      "Pear",
+      "Lavender",
+      "Mint",
+      "Bergamot"
+    ],
+    "heart": [
+      "Cardamom",
+      "Sage"
+    ],
+    "base": [
+      "Vanilla",
+      "Amber",
+      "Musk",
+      "Patchouli"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Ramz-Lattafa-Silver-71868.html",
+    "research_note": "Full name 'Ramz Lattafa Silver'. Sibling to Ramz Lattafa Gold.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "ramz-lattafa-silver-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-precieux-i",
+    "name": "Club de Nuit Precieux I",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "A richer, sweeter reading of the Club de Nuit fruity-woody signature — pineapple and pepper over oakmoss, ambroxan, leather and vanilla. Strong and long-lasting; best for evenings and formal occasions.",
+    "release_year": 2024,
+    "scent_family": "Amber Woody",
+    "main_accords": [
+      "fruity",
+      "woody",
+      "amber",
+      "sweet",
+      "musky",
+      "citrus"
+    ],
+    "top": [
+      "Pineapple",
+      "Lemon",
+      "Bergamot",
+      "Caramel",
+      "Pink Pepper",
+      "Pear",
+      "Black Pepper"
+    ],
+    "heart": [
+      "Oakmoss",
+      "White Wood",
+      "Jasmine",
+      "Lily-of-the-Valley",
+      "Anise"
+    ],
+    "base": [
+      "Ambroxan",
+      "White Musk",
+      "Cedar",
+      "Patchouli",
+      "Amber",
+      "Leather",
+      "Vanilla"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-13.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-de-Nuit-Precieux-I-93272.html",
+    "research_note": "Sold as a 55ml Extrait de Parfum. Part of the Precieux series (I through IV).",
+    "variants": [
+      {
+        "size_ml": 55,
+        "concentration": "Extrait",
+        "sku": "club-de-nuit-precieux-i-55ml",
+        "price_minor": 48000
+      }
+    ]
+  },
+  {
+    "slug": "9pm-elixir",
+    "name": "9PM Elixir",
+    "brand": "Afnan",
+    "brand_slug": "afnan",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "A spicy leather-amber: nutmeg and cardamom over smooth leather, drying to labdanum, vanilla and patchouli. Darker and more grown-up than the original 9PM — an evening and cold-weather scent.",
+    "release_year": 2025,
+    "scent_family": "Amber Leather",
+    "main_accords": [
+      "warm spicy",
+      "leather",
+      "amber",
+      "vanilla",
+      "sweet",
+      "woody"
+    ],
+    "top": [
+      "Nutmeg",
+      "Elemi",
+      "Cardamom"
+    ],
+    "heart": [
+      "Pimento",
+      "Lavandin",
+      "Leather"
+    ],
+    "base": [
+      "Cistus (Rock Rose)",
+      "Labdanum",
+      "Vanilla",
+      "Patchouli"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-11.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Afnan/9PM-Elixir-111894.html",
+    "research_note": "Also listed by some retailers as '9PM Elixir Intense'. Sold as an Extrait de Parfum.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "9pm-elixir-100ml",
+        "price_minor": 80000
+      }
+    ]
+  },
+  {
+    "slug": "9pm",
+    "name": "9PM",
+    "brand": "Afnan",
+    "brand_slug": "afnan",
+    "category_slug": "gourmand-sweet",
+    "gender": "male",
+    "description": "A loud sweet vanilla scent: apple and cinnamon over a thick vanilla, tonka and amber base. Heavy projection and long wear — a night-out and cool-weather favourite.",
+    "release_year": 2020,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "warm spicy",
+      "amber",
+      "fruity",
+      "powdery"
+    ],
+    "top": [
+      "Apple",
+      "Cinnamon",
+      "Wild Lavender",
+      "Bergamot"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Lily-of-the-Valley"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka Bean",
+      "Amber",
+      "Patchouli"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-13 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Afnan/9pm-65414.html",
+    "research_note": "The original black bottle. Often compared to Jean Paul Gaultier Ultra Male.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "9pm-100ml",
+        "price_minor": 65000
+      }
+    ]
+  },
+  {
+    "slug": "qaed-al-fursan",
+    "name": "Qaed Al Fursan",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "A fruity-woody oud: bright pineapple and saffron over cedar, amber and agarwood. Rich but wearable — good for evenings, gatherings and cooler weather.",
+    "release_year": 2016,
+    "scent_family": "Woody Amber",
+    "main_accords": [
+      "fruity",
+      "woody",
+      "amber",
+      "oud",
+      "warm spicy",
+      "sweet"
+    ],
+    "top": [
+      "Pineapple",
+      "Saffron"
+    ],
+    "heart": [
+      "Balsam Fir",
+      "Jasmine"
+    ],
+    "base": [
+      "Cedar",
+      "Amber",
+      "Agarwood (Oud)"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-55.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Qaed-Al-Fursan-67996.html",
+    "research_note": "The original release. Flankers include Qaed Al Fursan Unlimited (2022, blue) and Untamed (2025).",
+    "variants": [
+      {
+        "size_ml": 90,
+        "concentration": "EDP",
+        "sku": "qaed-al-fursan-90ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-bling",
+    "name": "Club de Nuit Bling",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "A bright, glossy scent: citrus opening into clean florals and sparkling musk over soft woods and vanilla. Fresh and easy — good for daytime and warm weather.",
+    "release_year": 2025,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "citrus",
+      "floral",
+      "musky",
+      "woody",
+      "vanilla",
+      "fresh"
+    ],
+    "top": [
+      "Citrus"
+    ],
+    "heart": [
+      "Floral notes (Flower Prism)",
+      "Sparkling Musk (Stardust)"
+    ],
+    "base": [
+      "Velvet Woods",
+      "Vanilla"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-17.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-de-Nuit-Bling-117624.html",
+    "research_note": "Armaf lists poetic note names ('Flower Prism', 'Stardust') rather than literal materials; commonly sold in 75ml.",
+    "variants": [
+      {
+        "size_ml": 75,
+        "concentration": "EDP",
+        "sku": "club-de-nuit-bling-75ml",
+        "price_minor": 65000
+      }
+    ]
+  },
+  {
+    "slug": "now-women",
+    "name": "Now Women",
+    "brand": "Rave",
+    "brand_slug": "rave",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A sweet fruity-floral: red fruits and orange over marshmallow, jasmine and creamy vanilla. Playful and easy to wear — good for daytime and younger customers.",
+    "release_year": 2023,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "fruity",
+      "vanilla",
+      "floral",
+      "musky",
+      "powdery"
+    ],
+    "top": [
+      "Red Fruits",
+      "Orange"
+    ],
+    "heart": [
+      "Marshmallow",
+      "Jasmine",
+      "Lily-of-the-Valley"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Moss"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-54.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/RAVE/Now-Women-85088.html",
+    "research_note": "Brand is Rave, a line marketed by Lattafa Perfumes Industries LLC. Widely sold as an affordable take on Burberry Her.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "now-women-100ml",
+        "price_minor": 30000
+      }
+    ]
+  },
+  {
+    "slug": "floriana",
+    "name": "Floriana",
+    "brand": "Rayhaan",
+    "brand_slug": "rayhaan",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "A creamy white-floral: orange blossom and bergamot opening onto tuberose and jasmine, settling on vanilla, cedar and white musk. Elegant and feminine — suits evenings and occasions.",
+    "release_year": 2023,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "white floral",
+      "vanilla",
+      "woody",
+      "amber",
+      "musky",
+      "sweet"
+    ],
+    "top": [
+      "Orange Blossom",
+      "Bergamot"
+    ],
+    "heart": [
+      "Tuberose",
+      "Indian Jasmine",
+      "Amberwood",
+      "Ambergris"
+    ],
+    "base": [
+      "Madagascar Vanilla",
+      "Fir Resin",
+      "White Musk",
+      "Virginia Cedar"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-51 3.jpg",
+    "source_url": null,
+    "research_note": "No Fragrantica page found; notes confirmed from Rayhaan Perfumes' own site, Parfumo (https://www.parfumo.com/Perfumes/rayhaan/floriana) and Wikiparfum. Rayhaan is a Lattafa-group brand.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "floriana-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "bint-hooran-rose-passion",
+    "name": "Bint Hooran Rose Passion",
+    "brand": "Ard Al Zaafaran",
+    "brand_slug": "ard-al-zaafaran",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "A sweet berry-floral: blackcurrant and strawberry over gardenia, finishing on syrupy vanilla, musk and sandalwood. Fun and youthful — good for daytime and casual wear.",
+    "release_year": 2024,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "vanilla",
+      "floral",
+      "musky",
+      "amber"
+    ],
+    "top": [
+      "Blackcurrant",
+      "Green Mandarin"
+    ],
+    "heart": [
+      "Strawberry",
+      "Gardenia"
+    ],
+    "base": [
+      "Musk",
+      "Vanilla",
+      "Syrup",
+      "Amber",
+      "Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-41 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Ard-Al-Zaafaran/Bint-Hooran-Rose-Passion-103434.html",
+    "research_note": "Brand confirmed as Ard Al Zaafaran. Flanker of the original Bint Hooran.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "bint-hooran-rose-passion-100ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "kiss",
+    "name": "Kiss",
+    "brand": "Rayhaan",
+    "brand_slug": "rayhaan",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A very sweet dessert-style scent: red berries and coconut over condensed milk, caramel and vanilla. Best for evenings out and cooler days — it is rich and carries far, so apply sparingly.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "fruity",
+      "caramel",
+      "coconut",
+      "creamy"
+    ],
+    "top": [
+      "Strawberry",
+      "Coconut",
+      "Praline",
+      "Raspberry"
+    ],
+    "heart": [
+      "Condensed Milk",
+      "Caramel",
+      "Orange Blossom",
+      "White Blossom"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka Bean",
+      "Sandalwood",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Rayhaan/Kiss-124585.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "kiss-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "athena",
+    "name": "Athena",
+    "brand": "Maison Alhambra",
+    "brand_slug": "maison-alhambra",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "Bright citrus opening into creamy white flowers, settling on vanilla and soft woods. An easy everyday feminine scent that works for daytime and office wear.",
+    "release_year": 2025,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "white floral",
+      "citrus",
+      "vanilla",
+      "woody",
+      "sweet",
+      "powdery"
+    ],
+    "top": [
+      "Tangerine",
+      "Pink Pepper",
+      "Bergamot"
+    ],
+    "heart": [
+      "Jasmine Sambac",
+      "Ylang-Ylang",
+      "Lily of the Valley"
+    ],
+    "base": [
+      "Vanilla",
+      "Sandalwood",
+      "Patchouli"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-49.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Maison-Alhambra/Athena-103018.html",
+    "research_note": "Brand not given on the shop list. Several houses make an 'Athena'; Maison Alhambra (Lattafa group, Dubai) is by far the most widely distributed in this market, so it is the assumed match. Alternatives if the bottle differs: Athena by Athena Fragrances (Egypt, 2021, oud/leather, unisex).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "athena-100ml",
+        "price_minor": 52000
+      }
+    ]
+  },
+  {
+    "slug": "marmara",
+    "name": "Marmara",
+    "brand": "French Avenue",
+    "brand_slug": "french-avenue",
+    "category_slug": "everyday",
+    "gender": "unisex",
+    "description": "A clean, mineral saffron opening that turns smooth, powdery and woody — in the style of Marc-Antoine Barrois Ganymede. Unisex, good for work and daytime, with strong projection.",
+    "release_year": 2025,
+    "scent_family": "Amber Woody",
+    "main_accords": [
+      "powdery",
+      "woody",
+      "musky",
+      "amber",
+      "metallic",
+      "warm spicy"
+    ],
+    "top": [
+      "Saffron",
+      "Bergamot",
+      "Black Pepper"
+    ],
+    "heart": [
+      "Powdery Notes",
+      "Ambroxan",
+      "Cashmere Wood"
+    ],
+    "base": [
+      "Musk",
+      "White Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-41.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/French-Avenue/Marmara-122624.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "marmara-100ml",
+        "price_minor": 42000
+      }
+    ]
+  },
+  {
+    "slug": "ombre-dor",
+    "name": "Ombre d'Or",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "Saffron and rose over a metallic, incense-tinged amber-wood base. A dressy evening scent for men or women; part of Armaf's Kintsugi-inspired pair with Perle d'Or.",
+    "release_year": 2025,
+    "scent_family": "Amber Spicy",
+    "main_accords": [
+      "warm spicy",
+      "woody",
+      "amber",
+      "metallic",
+      "incense",
+      "rose"
+    ],
+    "top": [
+      "Musk",
+      "Lime"
+    ],
+    "heart": [
+      "Metallic Notes",
+      "Saffron",
+      "Rose",
+      "Iris"
+    ],
+    "base": [
+      "Woody Notes",
+      "Incense",
+      "Amber"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Ombre-d-Or-109771.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 75,
+        "concentration": "EDP",
+        "sku": "ombre-dor-75ml",
+        "price_minor": 42000
+      }
+    ]
+  },
+  {
+    "slug": "perle-dor",
+    "name": "Perle d'Or",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "Creamy coconut milk and caramel over orange blossom, drying down to warm vanilla and musk. A soft, comforting sweet scent suited to evenings and cooler weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "coconut",
+      "caramel",
+      "amber",
+      "musky"
+    ],
+    "top": [
+      "Bergamot",
+      "Clary Sage",
+      "Pink Pepper"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Coconut Milk",
+      "Caramel",
+      "Aquatic Notes"
+    ],
+    "base": [
+      "White Musk",
+      "Vanilla",
+      "Amber",
+      "Patchouli"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-31.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Perle-d-Or-112769.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 75,
+        "concentration": "EDP",
+        "sku": "perle-dor-75ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-sillage",
+    "name": "Club de Nuit Sillage",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "A bright citrus-and-ginger opening over light florals with a clean ambroxan-woody base. Fresh and versatile — good for daytime, work and hot weather, and shareable between men and women.",
+    "release_year": 2020,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "citrus",
+      "woody",
+      "musky",
+      "floral",
+      "fresh",
+      "amber"
+    ],
+    "top": [
+      "Bergamot",
+      "Lemon",
+      "Lime",
+      "Black Currant",
+      "Violet Leaf",
+      "Ginger"
+    ],
+    "heart": [
+      "Rose",
+      "Jasmine",
+      "Iris"
+    ],
+    "base": [
+      "Ambroxan",
+      "Musk",
+      "Sandalwood",
+      "Cedar"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-38.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-de-Nuit-Sillage-64105.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 105,
+        "concentration": "EDP",
+        "sku": "club-de-nuit-sillage-105ml",
+        "price_minor": 74000
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-untold",
+    "name": "Club de Nuit Untold",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "signature",
+    "gender": "unisex",
+    "description": "Saffron and jasmine over a dense amberwood base — the well-known Baccarat Rouge 540-style profile in a woodier, drier form. Long-lasting; suits evenings and cooler weather.",
+    "release_year": 2022,
+    "scent_family": "Amber Woody",
+    "main_accords": [
+      "woody",
+      "amber",
+      "warm spicy",
+      "fresh spicy",
+      "aromatic"
+    ],
+    "top": [
+      "Saffron",
+      "Jasmine"
+    ],
+    "heart": [
+      "Amberwood",
+      "Ambergris"
+    ],
+    "base": [
+      "Fir Resin",
+      "Cedar"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-18.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-de-Nuit-Untold-78476.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 105,
+        "concentration": "EDP",
+        "sku": "club-de-nuit-untold-105ml",
+        "price_minor": 72500
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-maleka",
+    "name": "Club de Nuit Maleka",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Juicy lychee and pink pepper over powdery iris, finishing on praline and sandalwood. A modern, polished feminine scent by perfumer Olivier Cresp for both day and evening.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "powdery",
+      "woody",
+      "amber",
+      "iris"
+    ],
+    "top": [
+      "Lychee",
+      "Bergamot",
+      "Pink Pepper"
+    ],
+    "heart": [
+      "Orris (Iris Root)"
+    ],
+    "base": [
+      "Praline",
+      "Ambroxan",
+      "Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-15.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-De-Nuit-Maleka-106168.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 105,
+        "concentration": "EDP",
+        "sku": "club-de-nuit-maleka-105ml",
+        "price_minor": 66500
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-woman",
+    "name": "Club de Nuit Woman",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Citrus and peach opening into rose and jasmine, settling on musk, vanilla and patchouli. A cheerful all-purpose women's scent for daytime and casual wear.",
+    "release_year": 2015,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "fruity",
+      "citrus",
+      "floral",
+      "sweet",
+      "musky",
+      "patchouli"
+    ],
+    "top": [
+      "Orange",
+      "Bergamot",
+      "Grapefruit",
+      "Peach"
+    ],
+    "heart": [
+      "Rose",
+      "Jasmine",
+      "Geranium",
+      "Litchi"
+    ],
+    "base": [
+      "Patchouli",
+      "Musk",
+      "Vanilla",
+      "Vetiver"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-19 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-de-Nuit-Woman-27655.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 105,
+        "concentration": "EDP",
+        "sku": "club-de-nuit-woman-105ml",
+        "price_minor": 62000
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-imperiale",
+    "name": "Club de Nuit Impériale",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "Lychee and bergamot lifted by nutmeg, over Turkish rose and peony, drying to vanilla, incense and cedar. A soft, dressy women's scent for evenings and special occasions.",
+    "release_year": 2022,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "floral",
+      "vanilla",
+      "woody",
+      "sweet",
+      "musky",
+      "powdery"
+    ],
+    "top": [
+      "Litchi",
+      "Bergamot",
+      "Nutmeg"
+    ],
+    "heart": [
+      "Turkish Rose",
+      "Vanilla",
+      "Musk",
+      "Peony"
+    ],
+    "base": [
+      "Vanilla",
+      "Incense",
+      "Cashmeran",
+      "Cedar"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-39.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-de-Nuit-White-Imperiale-78474.html",
+    "research_note": "Sold as both 'Club de Nuit Impériale' and 'Club de Nuit White Imperiale' — the same women's 105 ml EDP; Fragrantica lists it under the 'White Imperiale' name.",
+    "variants": [
+      {
+        "size_ml": 105,
+        "concentration": "EDP",
+        "sku": "club-de-nuit-imperiale-105ml",
+        "price_minor": 66500
+      }
+    ]
+  },
+  {
+    "slug": "victoria-blend",
+    "name": "Victoria Blend",
+    "brand": "Habib",
+    "brand_slug": "habib",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "Almond and coffee over rich white flowers, drying down to vanilla, praline and warm woods. A bold, long-lasting evening scent for women who want to be noticed.",
+    "release_year": 2025,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "sweet",
+      "almond",
+      "vanilla",
+      "coffee",
+      "white floral",
+      "warm spicy"
+    ],
+    "top": [
+      "Bergamot",
+      "Almond",
+      "Coffee",
+      "Lemon"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Bulgarian Rose",
+      "Jasmine Sambac",
+      "Tuberose",
+      "Orris"
+    ],
+    "base": [
+      "Cashmere Wood",
+      "Sandalwood",
+      "Tonka Bean",
+      "Patchouli",
+      "Cinnamon",
+      "Vanilla",
+      "Praline",
+      "Cedar",
+      "Amber",
+      "Cacao",
+      "Musk"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Habib-Perfume/Victoria-Blend-127200.html",
+    "research_note": "Brand is 'Habib Perfume' (Habib Perfumes), a UAE house — confirmed.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "victoria-blend-100ml",
+        "price_minor": 30000
+      }
+    ]
+  },
+  {
+    "slug": "lynked-freedom",
+    "name": "Lynked Freedom",
+    "brand": "Afnan",
+    "brand_slug": "afnan",
+    "category_slug": "office",
+    "gender": "male",
+    "description": "Fresh grapefruit and sage into lavender and cardamom, with a lightly sweet caramel-vetiver finish. A clean, masculine daily-wear scent that also works for evenings.",
+    "release_year": 2025,
+    "scent_family": "Aromatic Fougere",
+    "main_accords": [
+      "aromatic",
+      "citrus",
+      "fresh spicy",
+      "lavender",
+      "sweet",
+      "woody"
+    ],
+    "top": [
+      "Bergamot",
+      "Grapefruit",
+      "Sage"
+    ],
+    "heart": [
+      "Lavender",
+      "Cardamom",
+      "Juniper Berries"
+    ],
+    "base": [
+      "Caramel",
+      "Oriental Notes",
+      "Vetiver"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Afnan/Lynked-Freedom-119003.html",
+    "research_note": "'Lynked Black' is the retail shorthand for Afnan Lynked Freedom, which is sold in a black bottle and marketed on Amazon/Target as 'Lynked Freedom (Black)'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "lynked-freedom-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "lynked-forever",
+    "name": "Lynked Forever",
+    "brand": "Afnan",
+    "brand_slug": "afnan",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "Mandarin and berries opening into creamy gardenia and tuberose, finishing on coconut, musk and sandalwood. A soft, feminine tropical-floral for daytime and warm weather.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "white floral",
+      "fruity",
+      "coconut",
+      "creamy",
+      "woody",
+      "musky"
+    ],
+    "top": [
+      "Mandarin Orange",
+      "Berries"
+    ],
+    "heart": [
+      "Gardenia",
+      "Tuberose",
+      "Ylang-Ylang"
+    ],
+    "base": [
+      "Coconut",
+      "Musk",
+      "Dry Woods",
+      "Sandalwood"
+    ],
+    "image_file": null,
+    "source_url": "https://www.fragrantica.com/perfume/Afnan/Lynked-Forever-119002.html",
+    "research_note": "'Lynkever' is a misspelling/shorthand of Afnan Lynked Forever, the women's half of the 2025 Lynked series.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "lynked-forever-100ml",
+        "price_minor": 53000
+      }
+    ]
+  },
+  {
+    "slug": "delilah-blanc",
+    "name": "Delilah Blanc",
+    "brand": "Maison Alhambra",
+    "brand_slug": "maison-alhambra",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "A bright citrus-and-peach opening over orange blossom, settling into clean musk and light vanilla. Fresh and easy to wear — good for daytime, work and hot weather.",
+    "release_year": 2024,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "citrus",
+      "fruity",
+      "white floral",
+      "musky",
+      "fresh",
+      "vanilla"
+    ],
+    "top": [
+      "Bergamot",
+      "White Peach",
+      "Mandarin Orange"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Vetiver"
+    ],
+    "base": [
+      "Musk",
+      "Vanilla"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-57.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Maison-Alhambra/Delilah-Blanc-109599.html",
+    "research_note": "Brand identified as Maison Alhambra (Lattafa group, Dubai).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "delilah-blanc-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "oud-and-roses",
+    "name": "Oud & Roses",
+    "brand": "Ahmed Al Maghribi",
+    "brand_slug": "ahmed-al-maghribi",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "The classic Arabian pairing of Turkish rose with oud, backed by frankincense, sandalwood and amber. Rich and traditional — best for evenings, weddings and formal occasions.",
+    "release_year": 2016,
+    "scent_family": "Floral Woody Oriental",
+    "main_accords": [
+      "rose",
+      "oud",
+      "woody",
+      "incense",
+      "amber",
+      "floral"
+    ],
+    "top": [
+      "Lemon",
+      "Lavender",
+      "Peony",
+      "Turkish Rose"
+    ],
+    "heart": [
+      "Frankincense",
+      "Sandalwood",
+      "White Florals"
+    ],
+    "base": [
+      "Agarwood (Oud)",
+      "Amber",
+      "Guaiac Wood",
+      "Oakmoss"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-46 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Ahmed-Al-Maghribi/Oud-Roses-66616.html",
+    "research_note": "Brand not given on the shop list and several houses use this exact name. Ahmed Al Maghribi's Oud & Roses (2016) is the best-known and most widely distributed; check the bottle. Alternative: Oud & Roses by Olive Perfumes (2021, rose / oud / patchouli / vanilla).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "oud-and-roses-100ml",
+        "price_minor": 32500
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-lionheart-man",
+    "name": "Club de Nuit Lionheart Man",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "gourmand-sweet",
+    "gender": "male",
+    "description": "Cool mint and lavender opening that warms into vanilla, benzoin, honey and tobacco. A cosy, sweet masculine scent best for evenings and cooler weather.",
+    "release_year": 2025,
+    "scent_family": "Amber Fougere",
+    "main_accords": [
+      "sweet",
+      "tobacco",
+      "vanilla",
+      "aromatic",
+      "honey",
+      "warm spicy"
+    ],
+    "top": [
+      "Mint",
+      "Lavender"
+    ],
+    "heart": [
+      "Vanilla",
+      "Benzoin"
+    ],
+    "base": [
+      "Honey",
+      "Tonka Bean",
+      "Tobacco"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-19.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-De-Nuit-Lionheart-Man-102026.html",
+    "research_note": "Full retail name is Club de Nuit Lionheart Man; often labelled simply 'Lionheart Man'.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "club-de-nuit-lionheart-man-100ml",
+        "price_minor": 69500
+      }
+    ]
+  },
+  {
+    "slug": "creme-of-clouds",
+    "name": "Creme of Clouds",
+    "brand": "Fragrance World",
+    "brand_slug": "fragrance-world",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A dessert scent of caramelised sugar, whipped cream, coconut milk and vanilla — inspired by Theodoros Kalotinis Creme Brulee. Very sweet; suits evenings, cool weather and anyone who likes gourmand perfumes.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla (Gourmand)",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "caramel",
+      "coconut",
+      "creamy",
+      "sugar"
+    ],
+    "top": [
+      "Burnt Sugar"
+    ],
+    "heart": [
+      "Whipped Cream"
+    ],
+    "base": [
+      "Vanilla",
+      "Coconut Milk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-48 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Fragrance-World/Creme-of-Clouds-102885.html",
+    "research_note": "Brand identified as Fragrance World (Dubai).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "creme-of-clouds-100ml",
+        "price_minor": 31500
+      }
+    ]
+  },
+  {
+    "slug": "casablanca-sa",
+    "name": "Casablanca",
+    "brand": "Swiss Arabian",
+    "brand_slug": "swiss-arabian",
+    "category_slug": "summer",
+    "gender": "unisex",
+    "description": "Apple and grape over soft woods and iris, landing on caramel, amber and suede. A warm, slightly sweet unisex scent for evenings and cooler days.",
+    "release_year": 2016,
+    "scent_family": "Amber Fruity",
+    "main_accords": [
+      "fruity",
+      "amber",
+      "caramel",
+      "woody",
+      "sweet",
+      "leather"
+    ],
+    "top": [
+      "Apple",
+      "Grapes"
+    ],
+    "heart": [
+      "White Woods",
+      "Iris",
+      "Patchouli"
+    ],
+    "base": [
+      "Caramel",
+      "Amber",
+      "Suede",
+      "Musk",
+      "Peru Balsam"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-43.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Swiss-Arabian/Casablanca-42181.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "casablanca-sa-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "khair-confection",
+    "name": "Khair Confection",
+    "brand": "Paris Corner",
+    "brand_slug": "paris-corner",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "Juicy pear and whipped cream over jasmine and ylang-ylang, finishing on marshmallow, vanilla and sandalwood. A sweet, candy-like scent for casual daytime wear and younger customers.",
+    "release_year": 2024,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "fruity",
+      "vanilla",
+      "creamy",
+      "white floral",
+      "woody"
+    ],
+    "top": [
+      "Pear",
+      "Whipped Cream"
+    ],
+    "heart": [
+      "Cashmeran",
+      "Jasmine",
+      "Ylang-Ylang"
+    ],
+    "base": [
+      "Vanilla",
+      "Marshmallow",
+      "Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-55 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/PARIS-CORNER/Khair-Confection-99069.html",
+    "research_note": "Brand identified as Paris Corner (UAE); also sold as a 100 ml perfume oil.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "khair-confection-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "falak",
+    "name": "Falak",
+    "brand": "Nusuk",
+    "brand_slug": "nusuk",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "Brown sugar, caramel and biscuit over vanilla and toffee with a musky praline finish. A cosy, very sweet unisex gourmand — popular on social media; best for evenings and cooler weather.",
+    "release_year": 2024,
+    "scent_family": "Amber Vanilla (Gourmand)",
+    "main_accords": [
+      "sweet",
+      "caramel",
+      "vanilla",
+      "amber",
+      "musky",
+      "nutty"
+    ],
+    "top": [
+      "Brown Sugar",
+      "Caramel",
+      "Biscuit"
+    ],
+    "heart": [
+      "Vanilla Bean",
+      "Toffee",
+      "Amber"
+    ],
+    "base": [
+      "White Musk",
+      "Praline"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-32.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Nusuk/Falak-118092.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "falak-100ml",
+        "price_minor": 63500
+      }
+    ]
+  },
+  {
+    "slug": "club-de-nuit-intense-man",
+    "name": "Club de Nuit Intense Man",
+    "brand": "Armaf",
+    "brand_slug": "armaf",
+    "category_slug": "signature",
+    "gender": "male",
+    "description": "A smoky pineapple-and-birch fragrance built on the famous Creed Aventus profile: bright fruit up top, dry smoked wood underneath. Strong projection and long wear, best for evenings, work and cooler weather.",
+    "release_year": 2015,
+    "scent_family": "Woody Fruity",
+    "main_accords": [
+      "woody",
+      "fruity",
+      "smoky",
+      "citrus",
+      "fresh spicy",
+      "aromatic"
+    ],
+    "top": [
+      "Lemon",
+      "Pineapple",
+      "Bergamot",
+      "Black Currant",
+      "Apple"
+    ],
+    "heart": [
+      "Birch",
+      "Jasmine",
+      "Rose"
+    ],
+    "base": [
+      "Musk",
+      "Ambergris",
+      "Patchouli",
+      "Vanilla"
+    ],
+    "image_file": "PHOTO-2026-07-12-21-02-14.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Armaf/Club-de-Nuit-Intense-Man-34696.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 105,
+        "concentration": "EDT",
+        "sku": "club-de-nuit-intense-man-105ml",
+        "price_minor": 66500
+      }
+    ]
+  },
+  {
+    "slug": "amber-oud-gold-edition-extreme",
+    "name": "Amber Oud Gold Edition Extreme",
+    "brand": "Al Haramain",
+    "brand_slug": "al-haramain",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "A stronger, sweeter take on the popular Amber Oud Gold: juicy melon and pineapple over warm cedar, vanilla and musk. Very long-lasting and heavy in projection, suited to evening wear and special occasions.",
+    "release_year": 2022,
+    "scent_family": "Amber Woody",
+    "main_accords": [
+      "sweet",
+      "woody",
+      "fruity",
+      "amber",
+      "musky",
+      "vanilla"
+    ],
+    "top": [
+      "Green Notes",
+      "Bergamot"
+    ],
+    "heart": [
+      "Sweet Notes",
+      "Melon",
+      "Pineapple",
+      "Cedar",
+      "Amber"
+    ],
+    "base": [
+      "Woody Notes",
+      "Musk",
+      "Vanilla",
+      "Myrrh"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-09.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Al-Haramain-Perfumes/Amber-Oud-Gold-Edition-Extreme-Pure-Perfume-78612.html",
+    "research_note": "Sold as \"Pure Perfume\" / Extrait de Parfum. Distinct from the standard Amber Oud Gold Edition.",
+    "variants": [
+      {
+        "size_ml": 60,
+        "concentration": "Extrait",
+        "sku": "amber-oud-gold-edition-extreme-60ml",
+        "price_minor": 51500
+      },
+      {
+        "size_ml": 100,
+        "concentration": "Extrait",
+        "sku": "amber-oud-gold-edition-extreme-100ml",
+        "price_minor": 78000
+      }
+    ]
+  },
+  {
+    "slug": "amber-oud-ruby-edition",
+    "name": "Amber Oud Ruby Edition",
+    "brand": "Al Haramain",
+    "brand_slug": "al-haramain",
+    "category_slug": "oud-lovers",
+    "gender": "unisex",
+    "description": "Saffron and bitter almond over cedar and jasmine, drying down to warm ambergris and musk. A rich, slightly spicy-nutty scent that works well in the evening and in cooler weather.",
+    "release_year": 2022,
+    "scent_family": "Woody Floral",
+    "main_accords": [
+      "woody",
+      "warm spicy",
+      "almond",
+      "floral",
+      "amber",
+      "musky"
+    ],
+    "top": [
+      "Saffron",
+      "Bitter Almond"
+    ],
+    "heart": [
+      "Cedar",
+      "Egyptian Jasmine"
+    ],
+    "base": [
+      "Ambergris",
+      "Woody Notes",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-10 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Al-Haramain-Perfumes/Amber-Oud-Ruby-Edition-73208.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 60,
+        "concentration": "EDP",
+        "sku": "amber-oud-ruby-edition-60ml",
+        "price_minor": 42000
+      },
+      {
+        "size_ml": 120,
+        "concentration": "EDP",
+        "sku": "amber-oud-ruby-edition-120ml",
+        "price_minor": 71000
+      }
+    ]
+  },
+  {
+    "slug": "intense-noir-le-parfum",
+    "name": "Intense Noir Le Parfum",
+    "brand": "Fragrance World",
+    "brand_slug": "fragrance-world",
+    "category_slug": "summer",
+    "gender": "male",
+    "description": "A fruity-smoky masculine scent: pineapple and blackcurrant over smoked birch wood with a soft vanilla-musk finish. An affordable take on the Aventus style, good for daily wear and evenings.",
+    "release_year": 2022,
+    "scent_family": "Woody Fruity",
+    "main_accords": [
+      "fruity",
+      "woody",
+      "smoky",
+      "musky",
+      "sweet"
+    ],
+    "top": [
+      "Pineapple",
+      "Bergamot",
+      "Black Currant",
+      "Apple"
+    ],
+    "heart": [
+      "Black Birch"
+    ],
+    "base": [
+      "Vanilla",
+      "Oakmoss",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-12 2.jpg",
+    "source_url": null,
+    "research_note": "No Fragrantica entry located; notes confirmed across multiple UAE/retail listings. Marketed as inspired by Creed Aventus.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "intense-noir-le-parfum-100ml",
+        "price_minor": 38500
+      }
+    ]
+  },
+  {
+    "slug": "ajayeb-dubai",
+    "name": "Ajayeb Dubai",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A sweet gourmand centred on coffee and butterscotch, lifted by saffron and a touch of pineapple. Cosy and dessert-like, best for evenings and cool weather.",
+    "release_year": 2023,
+    "scent_family": "Gourmand",
+    "main_accords": [
+      "sweet",
+      "coffee",
+      "vanilla",
+      "caramel",
+      "woody",
+      "warm spicy"
+    ],
+    "top": [
+      "Saffron",
+      "Pineapple"
+    ],
+    "heart": [
+      "Coffee",
+      "Violet Leaves"
+    ],
+    "base": [
+      "Butterscotch",
+      "Vanilla",
+      "Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-16.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Ajayeb-Dubai-84223.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "ajayeb-dubai-100ml",
+        "price_minor": 49000
+      }
+    ]
+  },
+  {
+    "slug": "jazzab-gold",
+    "name": "Jazzab Gold",
+    "brand": "Ard Al Zaafaran",
+    "brand_slug": "ard-al-zaafaran",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "A sweet berry-and-rose scent with vanilla, amber and a light oud base. Playful and feminine, good for daytime and casual evening wear.",
+    "release_year": 2021,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "floral",
+      "vanilla",
+      "amber",
+      "woody"
+    ],
+    "top": [
+      "Strawberry",
+      "Raspberry",
+      "Orange",
+      "Lemon"
+    ],
+    "heart": [
+      "Floral Notes",
+      "Rose",
+      "Spicy Notes",
+      "Cedarwood"
+    ],
+    "base": [
+      "Musk",
+      "Amber",
+      "Vanilla",
+      "Oud"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-27 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Ard-Al-Zaafaran/Jazzab-Gold-124587.html",
+    "research_note": "The rose-gold bottle is the product sold as \"Jazzab Gold\"; Ard Al Zaafaran markets it simply as Jazzab in some markets.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "jazzab-gold-100ml",
+        "price_minor": 52000
+      }
+    ]
+  },
+  {
+    "slug": "yara",
+    "name": "Yara",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "A creamy, powdery vanilla with tropical fruit and a soft floral opening. Very sweet and long-lasting on skin and clothes; a popular everyday scent for women.",
+    "release_year": 2020,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "vanilla",
+      "sweet",
+      "powdery",
+      "fruity",
+      "woody",
+      "musky"
+    ],
+    "top": [
+      "Orchid",
+      "Heliotrope",
+      "Tangerine"
+    ],
+    "heart": [
+      "Gourmand Accord",
+      "Tropical Fruits"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-27 3.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Yara-76880.html",
+    "research_note": "The original Yara (pink-purple bottle), not the Yara Moi or Yara Tous flankers.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "yara-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "nuha-cherry-blush",
+    "name": "Nuha Cherry Blush",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "gourmand-sweet",
+    "gender": "female",
+    "description": "Boozy cherry and raspberry over rose and jasmine, settling into warm vanilla, tonka and sandalwood. Rich and sweet, best for evenings and going out.",
+    "release_year": 2025,
+    "scent_family": "Amber Floral",
+    "main_accords": [
+      "cherry",
+      "sweet",
+      "vanilla",
+      "boozy",
+      "fruity",
+      "woody"
+    ],
+    "top": [
+      "Cherry",
+      "Rum",
+      "Red Wine"
+    ],
+    "heart": [
+      "Raspberry",
+      "Jasmine",
+      "Rose",
+      "Orris",
+      "Cedar"
+    ],
+    "base": [
+      "Vanilla",
+      "Tonka",
+      "Sandalwood",
+      "Labdanum",
+      "Vetiver",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-27.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Nuha-Cherry-Blush-103794.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 85,
+        "concentration": "EDP",
+        "sku": "nuha-cherry-blush-85ml",
+        "price_minor": 52000
+      }
+    ]
+  },
+  {
+    "slug": "nuha",
+    "name": "Nuha",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "Creamy coconut and apple over a rose-jasmine heart with powdery heliotrope, finishing on vanilla and soft woods. Feminine and easy to wear day or evening.",
+    "release_year": 2023,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "floral",
+      "vanilla",
+      "powdery",
+      "sweet",
+      "woody",
+      "coconut"
+    ],
+    "top": [
+      "Coconut",
+      "Apple"
+    ],
+    "heart": [
+      "Heliotrope",
+      "Jasmine",
+      "Rose"
+    ],
+    "base": [
+      "Vanilla",
+      "Cashmeran",
+      "Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-28.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Nuha-92074.html",
+    "research_note": "There is no Khadlaj flanker called \"Nuha Rose\". The pink pearlescent bottle with the jewelled gold cap is the ORIGINAL Nuha (2023), which carries rose in its heart. The other Nuha flankers are Vanilla Pearl, Cherry Blush and Bon Bon.",
+    "variants": [
+      {
+        "size_ml": 85,
+        "concentration": "EDP",
+        "sku": "nuha-85ml",
+        "price_minor": 45000
+      }
+    ]
+  },
+  {
+    "slug": "nuha-bon-bon",
+    "name": "Nuha Bon Bon",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A milky strawberry-and-peach gourmand with an ice-cream and orange blossom heart over rich vanilla. Sweet and dessert-like, good for casual daytime wear.",
+    "release_year": 2026,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "sweet",
+      "vanilla",
+      "fruity",
+      "creamy",
+      "floral",
+      "milky"
+    ],
+    "top": [
+      "Strawberry",
+      "Milk",
+      "Peach"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Ice Cream"
+    ],
+    "base": [
+      "Vanilla Absolute"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-28 3.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Nuha-Bon-Bon-123576.html",
+    "research_note": "SAME PRODUCT as list items 10 and 11 — merged into this single entry. No Khadlaj product called \"Panache Bon Bon\" exists; the iridescent bottle with the ornate gold crown cap is Nuha Bon Bon. The Panache line (e.g. Panache Angel Dust) uses similar styling, which is the likely source of the confusion.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "nuha-bon-bon-100ml",
+        "price_minor": 49000
+      }
+    ]
+  },
+  {
+    "slug": "niche-emarati-lujain",
+    "name": "Niche Emarati Lujain",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "everyday",
+    "gender": "unisex",
+    "description": "A rich white-floral scent — rose, jasmine sambac and tuberose — resting on creamy sandalwood, vanilla and tonka. Elegant and warm, suited to evenings and formal occasions.",
+    "release_year": 2024,
+    "scent_family": "Floral Woody Musk",
+    "main_accords": [
+      "floral",
+      "white floral",
+      "vanilla",
+      "woody",
+      "sweet",
+      "powdery"
+    ],
+    "top": [
+      "Rose",
+      "Pink Pepper"
+    ],
+    "heart": [
+      "Jasmine Sambac",
+      "Tuberose"
+    ],
+    "base": [
+      "Sandalwood",
+      "Vanilla",
+      "Tonka Bean"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-29.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Lujain-109556.html",
+    "research_note": "Niche Emarati is a Lattafa sub-line; sold as \"Niche Emarati Lujain\".",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "niche-emarati-lujain-100ml",
+        "price_minor": 50500
+      }
+    ]
+  },
+  {
+    "slug": "qimmah-for-men",
+    "name": "Qimmah for Men",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "signature",
+    "gender": "male",
+    "description": "A dry, masculine woody-aromatic: oud and cedar with a herbal lavender-sage heart over patchouli and vetiver. Serious and mature, good for work and evening wear.",
+    "release_year": 2022,
+    "scent_family": "Woody Aromatic",
+    "main_accords": [
+      "woody",
+      "aromatic",
+      "earthy",
+      "oud",
+      "herbal",
+      "lavender"
+    ],
+    "top": [
+      "Agarwood (Oud)",
+      "Cedar"
+    ],
+    "heart": [
+      "Lavender",
+      "Sage",
+      "Rosemary"
+    ],
+    "base": [
+      "Patchouli",
+      "Vetiver"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-32 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Qimmah-for-Men-82792.html",
+    "research_note": "The dark green juice in the gold lattice cage bottle is the men's version; there is a matching Qimmah for Women.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "qimmah-for-men-100ml",
+        "price_minor": 42000
+      }
+    ]
+  },
+  {
+    "slug": "awaan",
+    "name": "Awaan",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "office",
+    "gender": "unisex",
+    "description": "Bright orange and bergamot over orange blossom and jasmine, grounded in musk and sandalwood. Clean and fresh — a good daytime and hot-weather choice for men or women.",
+    "release_year": 2022,
+    "scent_family": "Aromatic Fruity",
+    "main_accords": [
+      "citrus",
+      "white floral",
+      "woody",
+      "musky",
+      "fresh",
+      "sweet"
+    ],
+    "top": [
+      "Orange",
+      "Bergamot"
+    ],
+    "heart": [
+      "Orange Blossom",
+      "Jasmine"
+    ],
+    "base": [
+      "Musk",
+      "Sandalwood",
+      "Patchouli"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-43 3.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Awaan-84307.html",
+    "research_note": "Sold under the Lattafa Pride sub-line; olive-green matte bottle.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "awaan-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "eclaire-pistache",
+    "name": "Eclaire Pistache",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A creamy pistachio dessert scent with cacao, whipped cream and coconut over milky vanilla. Sweet and comforting, best for casual wear and cooler evenings.",
+    "release_year": 2025,
+    "scent_family": "Gourmand",
+    "main_accords": [
+      "nutty",
+      "sweet",
+      "creamy",
+      "vanilla",
+      "cacao",
+      "coconut"
+    ],
+    "top": [
+      "Pistachio Cream",
+      "Pistachio"
+    ],
+    "heart": [
+      "Cacao",
+      "Whipped Cream",
+      "Coconut"
+    ],
+    "base": [
+      "Vanilla",
+      "Milk",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-43.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Eclaire-Pistache-113777.html",
+    "research_note": "Pistachio-green flanker of Lattafa Eclaire (2024).",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "eclaire-pistache-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "lynked-forever-gold",
+    "name": "Lynked Forever Gold",
+    "brand": "Afnan",
+    "brand_slug": "afnan",
+    "category_slug": "date-night",
+    "gender": "female",
+    "description": "Juicy mandarin and berries opening onto rich gardenia and tuberose, drying down to creamy coconut, musk and sandalwood. Feminine and glamorous, suited to evenings and occasions.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "white floral",
+      "fruity",
+      "coconut",
+      "creamy",
+      "musky",
+      "woody"
+    ],
+    "top": [
+      "Mandarin Orange",
+      "Berries"
+    ],
+    "heart": [
+      "Gardenia",
+      "Tuberose",
+      "Ylang-Ylang"
+    ],
+    "base": [
+      "Coconut",
+      "Musk",
+      "Dry Woods",
+      "Sandalwood"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-44 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Afnan/Lynked-Forever-119002.html",
+    "research_note": "Afnan does not make a product literally named \"Lynked Gold\". The gold bottle is retailed as \"Lynked Forever Gold\" and is listed on Fragrantica simply as Lynked Forever. The men's counterpart in the same line is Lynked Freedom.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "lynked-forever-gold-100ml",
+        "price_minor": 53000
+      }
+    ]
+  },
+  {
+    "slug": "eclaire-banoffi",
+    "name": "Eclaire Banoffi",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A banoffee-pie gourmand: banana and caramel over vanilla cream with a biscuit and praline base. Very sweet and playful, best for casual wear and cooler weather.",
+    "release_year": 2025,
+    "scent_family": "Gourmand",
+    "main_accords": [
+      "sweet",
+      "caramel",
+      "vanilla",
+      "fruity",
+      "creamy",
+      "musky"
+    ],
+    "top": [
+      "Banana",
+      "Dulce de Leche"
+    ],
+    "heart": [
+      "Vanilla",
+      "Whipped Cream"
+    ],
+    "base": [
+      "Biscuit",
+      "Praline",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-44.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Eclaire-Banoffi-113778.html",
+    "research_note": "Yellow/banana flanker of Lattafa Eclaire.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "eclaire-banoffi-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "dalal",
+    "name": "Dalal",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Crisp apple and mandarin over jasmine and ylang-ylang, settling into warm vanilla and musk. A soft, feminine everyday scent that works well in the daytime.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity Gourmand",
+    "main_accords": [
+      "fruity",
+      "floral",
+      "vanilla",
+      "sweet",
+      "musky",
+      "white floral"
+    ],
+    "top": [
+      "Apple",
+      "Mandarin Orange"
+    ],
+    "heart": [
+      "Jasmine",
+      "Ylang-Ylang",
+      "Orange"
+    ],
+    "base": [
+      "Vanilla",
+      "Musk",
+      "Oakmoss"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-48 3.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Dalal-119588.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "dalal-100ml",
+        "price_minor": 46000
+      }
+    ]
+  },
+  {
+    "slug": "taraf",
+    "name": "Taraf",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "Juicy cherry and strawberry over lily of the valley and jasmine, finishing on soft amber, vanilla and musk. Bright and youthful — an easy daytime scent.",
+    "release_year": 2025,
+    "scent_family": "Floral Fruity",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "floral",
+      "vanilla",
+      "musky",
+      "amber"
+    ],
+    "top": [
+      "Cherry",
+      "Strawberry"
+    ],
+    "heart": [
+      "Lily of the Valley",
+      "Jasmine"
+    ],
+    "base": [
+      "Amber",
+      "Vanilla",
+      "Musk"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-51 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Taraf-108458.html",
+    "research_note": "Retailed as \"Niche Emarati Taraf\"; Fragrantica lists it simply as Taraf under Lattafa Perfumes.",
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "taraf-100ml",
+        "price_minor": 47500
+      }
+    ]
+  },
+  {
+    "slug": "ria",
+    "name": "Ria",
+    "brand": "Khadlaj",
+    "brand_slug": "khadlaj",
+    "category_slug": "summer",
+    "gender": "female",
+    "description": "A sparkling berry scent — raspberry, cherry and strawberry with grapefruit — over clean musk and patchouli. Fun and fresh, ideal for daytime and warm weather.",
+    "release_year": 2025,
+    "scent_family": "Fruity Musk",
+    "main_accords": [
+      "fruity",
+      "sweet",
+      "musky",
+      "citrus",
+      "woody",
+      "berry"
+    ],
+    "top": [
+      "Raspberry",
+      "Mandarin Orange",
+      "Cherry",
+      "Strawberry"
+    ],
+    "heart": [
+      "Grapefruit",
+      "Musk"
+    ],
+    "base": [
+      "Patchouli",
+      "Blackcurrant"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-52.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Khadlaj-Perfumes/Ria-118985.html",
+    "research_note": null,
+    "variants": [
+      {
+        "size_ml": 100,
+        "concentration": "EDP",
+        "sku": "ria-100ml",
+        "price_minor": 43500
+      }
+    ]
+  },
+  {
+    "slug": "fire-on-ice",
+    "name": "Fire On Ice",
+    "brand": "Lattafa",
+    "brand_slug": "lattafa",
+    "category_slug": "gourmand-sweet",
+    "gender": "unisex",
+    "description": "A boozy cognac-and-raspberry opening with cinnamon, moving into caramel and rose over oak, cedar and ambroxan. Warm and rich — an evening and cold-weather scent for men or women.",
+    "release_year": 2025,
+    "scent_family": "Amber Vanilla",
+    "main_accords": [
+      "boozy",
+      "sweet",
+      "caramel",
+      "warm spicy",
+      "woody",
+      "amber"
+    ],
+    "top": [
+      "Cognac",
+      "Raspberry",
+      "Cinnamon"
+    ],
+    "heart": [
+      "Caramel",
+      "Rose Petals",
+      "Moss"
+    ],
+    "base": [
+      "Oak",
+      "Myrrh",
+      "Cedarwood",
+      "Ambroxan"
+    ],
+    "image_file": "PHOTO-2026-07-13-21-07-54 2.jpg",
+    "source_url": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Fire-On-Ice-111414.html",
+    "research_note": "Sold under the Lattafa Pride sub-line; widely compared to Kilian Angels' Share.",
+    "variants": [
+      {
+        "size_ml": 110,
+        "concentration": "EDP",
+        "sku": "fire-on-ice-110ml",
+        "price_minor": 42000
+      }
+    ]
+  }
+]

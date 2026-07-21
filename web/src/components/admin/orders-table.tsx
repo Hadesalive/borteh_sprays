@@ -7,6 +7,8 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { formatLe } from "@/lib/format";
 import { Chip, type Tone } from "@/components/admin/chip";
+import { Button } from "@/components/ui/button";
+import { PAGE_SIZE } from "@/lib/queries/orders";
 
 export type OrderRow = {
   id: string;
@@ -26,7 +28,17 @@ export type SummaryStat = { n: string; label: string; tone: string };
 
 const th = "px-3 py-1.5 text-left text-xs font-medium text-muted-foreground";
 
-export function OrdersTable({ orders, summary }: { orders: OrderRow[]; summary: SummaryStat[] }) {
+export function OrdersTable({
+  orders,
+  summary,
+  page,
+  total,
+}: {
+  orders: OrderRow[];
+  summary: SummaryStat[];
+  page: number;
+  total: number;
+}) {
   const router = useRouter();
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
@@ -124,6 +136,37 @@ export function OrdersTable({ orders, summary }: { orders: OrderRow[]; summary: 
           </div>
         ) : null}
       </div>
+
+      {total > orders.length && (
+        <nav
+          aria-label="Orders pagination"
+          className="flex items-center justify-between border-t border-border px-3 py-2 text-xs text-muted-foreground"
+        >
+          <span className="nums">
+            {page * PAGE_SIZE + 1}–{page * PAGE_SIZE + orders.length} of {total}
+          </span>
+          <div className="flex gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              disabled={page === 0}
+              render={<a href={`/orders?page=${page - 1}`} />}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              disabled={(page + 1) * PAGE_SIZE >= total}
+              render={<a href={`/orders?page=${page + 1}`} />}
+            >
+              Next
+            </Button>
+          </div>
+        </nav>
+      )}
     </div>
   );
 }

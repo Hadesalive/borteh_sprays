@@ -6,7 +6,6 @@ import {
   CashRegister,
   MagnifyingGlass,
   Package,
-  Plus,
   Truck,
 } from "@phosphor-icons/react";
 
@@ -25,7 +24,6 @@ import {
 const quickActions = [
   { title: "New point-of-sale sale", href: "/pos", icon: CashRegister },
   { title: "Receive stock", href: "/inventory/receive", icon: Package },
-  { title: "Create order", href: "/orders/new", icon: Plus },
   { title: "Open dispatch board", href: "/dispatch", icon: Truck },
 ];
 

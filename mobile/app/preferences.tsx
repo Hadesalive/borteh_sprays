@@ -8,7 +8,7 @@ import { Button } from "@/components/Button";
 import { EmptyState } from "@/components/EmptyState";
 import { AppText } from "@/components/Text";
 import { ToggleSwitch } from "@/components/ui";
-import { useNotifPrefs, useUpdateNotifPref } from "@/lib/account";
+import { useLeaderboardVisible, useNotifPrefs, useSetLeaderboardVisible, useUpdateNotifPref } from "@/lib/account";
 import { useSession } from "@/lib/auth";
 import { disablePush, enablePush, usePushStatus } from "@/lib/push";
 import { colors, space } from "@/lib/theme";
@@ -24,6 +24,8 @@ export default function Preferences() {
   const { data: prefs } = useNotifPrefs();
   const update = useUpdateNotifPref();
   const pushStatus = usePushStatus();
+  const { data: onBoard } = useLeaderboardVisible();
+  const setOnBoard = useSetLeaderboardVisible();
 
   const pushOn = pushStatus === "enabled" && (prefs?.pushEnabled ?? false);
 
@@ -85,6 +87,21 @@ export default function Preferences() {
                 }}
               />
             </View>
+
+            <AppText variant="label" style={s.eyebrow}>Privacy</AppText>
+            <View style={s.row}>
+              <View style={s.rowText}>
+                <AppText variant="body">Show me on the leaderboard</AppText>
+                <AppText variant="caption" style={{ marginTop: 2 }}>Your name appears among the top buyers. Turn off to stay private.</AppText>
+              </View>
+              <ToggleSwitch
+                value={onBoard ?? true}
+                onToggle={(v) => {
+                  Haptics.selectionAsync();
+                  setOnBoard.mutate(v);
+                }}
+              />
+            </View>
           </View>
         )}
       </ScrollView>
@@ -96,4 +113,5 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   row: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
   rowText: { flex: 1, minWidth: 0 },
+  eyebrow: { color: colors.ink60, marginTop: space["3xl"], marginBottom: space.sm },
 });
