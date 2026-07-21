@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/supabase/auth-server";
 
 export type ComboItemInput = { variantId: string; qty: number };
 export type ComboInput = {
@@ -35,6 +36,7 @@ function itemRows(comboId: string, items: ComboItemInput[]) {
 }
 
 export async function createCombo(input: ComboInput): Promise<ActionResult> {
+  await requireStaff();
   const err = validate(input);
   if (err) return { ok: false, error: err };
   const db = createAdminClient();
@@ -51,6 +53,7 @@ export async function createCombo(input: ComboInput): Promise<ActionResult> {
 }
 
 export async function updateCombo(id: string, input: ComboInput): Promise<ActionResult> {
+  await requireStaff();
   const err = validate(input);
   if (err) return { ok: false, error: err };
   const db = createAdminClient();
@@ -69,6 +72,7 @@ export async function updateCombo(id: string, input: ComboInput): Promise<Action
 }
 
 export async function setComboActive(id: string, active: boolean): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient().from("combo").update({ is_active: active }).eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/combos");
@@ -77,6 +81,7 @@ export async function setComboActive(id: string, active: boolean): Promise<Actio
 
 /** Soft delete — frees the slug (uq index is WHERE deleted_at is null). */
 export async function deleteCombo(id: string): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient()
     .from("combo")
     .update({ deleted_at: new Date().toISOString(), is_active: false })

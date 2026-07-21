@@ -6,6 +6,7 @@ import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } f
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
+import { EngravedCrest } from "@/components/EngravedCrest";
 import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
@@ -72,10 +73,18 @@ export default function SignUp() {
   return (
     <View style={s.screen}>
       <StatusBar style="dark" />
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: space["3xl"], paddingHorizontal: space.gutter }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space.lg, paddingHorizontal: space.gutter }}
+        >
           <BackButton onPress={() => router.back()} />
 
+          <View style={s.crestWrap}>
+            <EngravedCrest />
+          </View>
           <View style={{ marginTop: space["2xl"] }}>
             <AppText variant="display">Create your account.</AppText>
             <AppText variant="bodySoft" style={{ marginTop: space.sm }}>Faster checkout, order tracking, and restock alerts.</AppText>
@@ -108,15 +117,19 @@ export default function SignUp() {
               error={refErr ?? undefined}
             />
           </View>
-        </ScrollView>
 
-        <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
-          <Button title={busy ? "Creating account…" : "Create account"} onPress={submit} disabled={busy} />
-          <View style={s.altRow}>
-            <AppText variant="bodySoft">Already have an account?</AppText>
-            <LinkLabel label="Sign in" onPress={() => router.replace("/login")} />
+          {/* Flexible spacer: button hugs the bottom when there's room, and collapses so the
+              keyboard lifts it right under the form instead of stranding a gap. */}
+          <View style={s.spacer} />
+
+          <View style={s.footer}>
+            <Button title={busy ? "Creating account…" : "Create account"} onPress={submit} disabled={busy} />
+            <View style={s.altRow}>
+              <AppText variant="bodySoft">Already have an account?</AppText>
+              <LinkLabel label="Sign in" onPress={() => router.replace("/login")} />
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </View>
   );
@@ -124,7 +137,9 @@ export default function SignUp() {
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
+  crestWrap: { alignItems: "center", marginTop: space["2xl"] },
   form: { gap: space.lg, marginTop: space["3xl"] },
-  footer: { paddingHorizontal: space.gutter, paddingTop: space.lg, gap: space.md, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
+  spacer: { flexGrow: 1, minHeight: space["2xl"] },
+  footer: { gap: space.md, paddingTop: space.xl },
   altRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm },
 });

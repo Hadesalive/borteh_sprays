@@ -1,8 +1,10 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Session } from "@supabase/supabase-js";
 import { useSyncExternalStore } from "react";
 import { supabase } from "./supabase";
 import { mergeAnonEvents } from "./track";
 import { syncScentPrefs } from "./scentPrefs";
+import { syncQuizPrefs } from "./quiz";
 
 // Phone + password auth (no OTP — SMS is too costly, ADR-004). Supabase needs an email/password
 // pair, so we map the phone to a synthetic, non-deliverable email; the real phone lives in
@@ -28,7 +30,12 @@ supabase.auth.onAuthStateChange((event, s) => {
   // anonymous events for the user. Idempotent, so repeat fires are harmless.
   if (event === "SIGNED_IN") {
     mergeAnonEvents();
-    syncScentPrefs(); // push any onboarding-captured scent prefs now that we have a user
+    // Push onboarding-captured preferences. The richer quiz wins; only fall back to the legacy
+    // scent-prefs sync when no quiz answers were stored (e.g. onboarded before the quiz shipped,
+    // or edited the simple settings picker while signed out).
+    syncQuizPrefs().then((didQuiz) => {
+      if (!didQuiz) syncScentPrefs();
+    });
   }
 });
 
@@ -91,6 +98,24 @@ export async function signIn({ phone, password }: { phone: string; password: str
 
 export async function signOut() {
   await supabase.auth.signOut();
+}
+
+/**
+ * Permanently delete the signed-in account (Apple Guideline 5.1.1(v)). The server
+ * (fn_delete_account) purges personal data and either removes the login outright or, when
+ * transaction history must be retained, anonymizes it and disables sign-in. Either way the
+ * session is ended and locally-cached preferences are cleared. Returns 'deleted' | 'anonymized'.
+ */
+export async function deleteAccount(): Promise<"deleted" | "anonymized"> {
+  const { data, error } = await supabase.rpc("fn_delete_account");
+  if (error) throw error;
+  try {
+    await AsyncStorage.multiRemove(["borteh.quiz.v1", "borteh.scentprefs.v1"]);
+  } catch {
+    /* non-fatal */
+  }
+  await supabase.auth.signOut();
+  return (data as "deleted" | "anonymized") ?? "deleted";
 }
 
 /** Phone + name recovery: verify the account, set a new password, then sign in. */

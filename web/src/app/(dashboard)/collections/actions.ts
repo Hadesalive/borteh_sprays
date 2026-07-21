@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/supabase/auth-server";
 
 export type CollectionInput = {
   name: string;
@@ -22,6 +23,7 @@ function toRow(input: CollectionInput) {
 }
 
 export async function createCollection(input: CollectionInput): Promise<ActionResult> {
+  await requireStaff();
   if (!input.name.trim() || !input.slug.trim()) return { ok: false, error: "Name and slug are required." };
   const { error } = await createAdminClient().from("category").insert({ ...toRow(input), kind: "collection" });
   if (error) return { ok: false, error: error.message };
@@ -30,6 +32,7 @@ export async function createCollection(input: CollectionInput): Promise<ActionRe
 }
 
 export async function updateCollection(id: string, input: CollectionInput): Promise<ActionResult> {
+  await requireStaff();
   if (!input.name.trim() || !input.slug.trim()) return { ok: false, error: "Name and slug are required." };
   const { error } = await createAdminClient().from("category").update(toRow(input)).eq("id", id);
   if (error) return { ok: false, error: error.message };
@@ -38,6 +41,7 @@ export async function updateCollection(id: string, input: CollectionInput): Prom
 }
 
 export async function setCollectionFeatured(id: string, featured: boolean): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient().from("category").update({ is_featured_home: featured }).eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/collections");
@@ -46,6 +50,7 @@ export async function setCollectionFeatured(id: string, featured: boolean): Prom
 
 /** Soft delete — frees the slug (uq index is WHERE deleted_at is null). */
 export async function deleteCollection(id: string): Promise<ActionResult> {
+  await requireStaff();
   const { error } = await createAdminClient()
     .from("category")
     .update({ deleted_at: new Date().toISOString(), is_active: false })

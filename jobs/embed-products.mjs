@@ -87,20 +87,43 @@ async function writeEmbedding(id, vec) {
   throw new Error(`write embedding failed for ${id}: ${lastErr}`);
 }
 
-async function main() {
-  const select =
-    "id,name,scent_family,description,main_accords,updated_at,embedded_at," +
-    "brand(name),product_variant(concentration,is_active,deleted_at),product_scent_note(position,scent_note(name))";
-  const res = await fetch(
-    `${BASE}/rest/v1/product?select=${encodeURIComponent(select)}&is_active=eq.true&deleted_at=is.null&order=name.asc`,
-    { headers: H },
-  );
-  if (!res.ok) throw new Error(`fetch products failed: ${res.status} ${await res.text()}`);
-  const products = await res.json();
+const BASE_COLS =
+  "id,name,scent_family,description,main_accords,updated_at,embedded_at," +
+  "brand(name),product_variant(concentration,is_active,deleted_at),product_scent_note(position,scent_note(name))";
 
-  const stale = products.filter(
-    (p) => ALL || !p.embedded_at || (p.updated_at && new Date(p.updated_at) > new Date(p.embedded_at)),
-  );
+// Prefer content_updated_at (migration 20260720221809): a marker touched only by genuine
+// editorial change, including note-pyramid rewrites. Fall back to updated_at when the column
+// isn't there yet, so this job works either side of that migration.
+async function fetchProducts() {
+  for (const cols of [`${BASE_COLS},content_updated_at`, BASE_COLS]) {
+    const res = await fetch(
+      `${BASE}/rest/v1/product?select=${encodeURIComponent(cols)}&is_active=eq.true&deleted_at=is.null&order=name.asc`,
+      { headers: H },
+    );
+    if (res.ok) return { products: await res.json(), hasContentMarker: cols !== BASE_COLS };
+    const body = await res.text();
+    // 42703 = undefined column → retry without the marker; anything else is a real failure.
+    if (!body.includes("content_updated_at")) throw new Error(`fetch products failed: ${res.status} ${body}`);
+  }
+  throw new Error("fetch products failed");
+}
+
+async function main() {
+  const { products, hasContentMarker } = await fetchProducts();
+
+  // Writing the embedding is itself an UPDATE on public.product, so set_updated_at bumps
+  // updated_at a few hundred ms AFTER the embedded_at just written. Comparing against
+  // updated_at therefore matches every product forever, and the nightly cron re-embeds the
+  // whole catalog every night instead of only what changed. content_updated_at has no such
+  // feedback loop; without it, ignore the self-inflicted sub-minute gap.
+  const SELF_WRITE_GAP_MS = 30_000;
+  const stale = products.filter((p) => {
+    if (ALL || !p.embedded_at) return true;
+    const changedAt = hasContentMarker ? p.content_updated_at : p.updated_at;
+    if (!changedAt) return false;
+    const gap = new Date(changedAt) - new Date(p.embedded_at);
+    return hasContentMarker ? gap > 0 : gap > SELF_WRITE_GAP_MS;
+  });
   if (stale.length === 0) {
     console.log(`Nothing to embed — all ${products.length} active products are up to date. (Use --all to force.)`);
     return;

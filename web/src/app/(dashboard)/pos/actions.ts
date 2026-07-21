@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/supabase/auth-server";
 
 export type SaleLine = {
   variantId: string;
@@ -24,6 +25,7 @@ const WALKIN_USER_ID = "6e07c287-bb72-45d2-b003-30b56da03a47";
  * deferred order-subtotal constraint passes.
  */
 export async function createPosSale(lines: SaleLine[], payment: "cash" | "monime", discountMinor = 0): Promise<SaleResult> {
+  await requireStaff();
   if (lines.length === 0) return { ok: false, error: "Cart is empty." };
 
   const p_items = lines.map((l) => ({

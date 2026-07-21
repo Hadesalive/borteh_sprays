@@ -13,6 +13,7 @@ import { LeaderboardBand } from "@/components/LeaderboardBand";
 import { HomeSkeleton } from "@/components/Skeleton";
 import { AppText } from "@/components/Text";
 import { TrackImpression, reportScroll, resetImpressionRegistry } from "@/components/TrackImpression";
+import { Guilloche } from "@/components/Guilloche";
 import { HeaderActions, SearchButton } from "@/components/ui";
 import { useFeaturedCollections, useHomeCarousel, useProducts, useScentFamilies } from "@/lib/api";
 import { useSession } from "@/lib/auth";
@@ -160,7 +161,7 @@ export default function Home() {
       >
         {/* search pill — the high-intent path to full search */}
         <View style={s.searchWrap}>
-          <SearchButton onPress={() => router.push("/search")} placeholder="Fragrances, notes, brands" />
+          <SearchButton onPress={() => router.push("/search")} onFilter={() => router.push("/shop")} placeholder="Fragrances, notes, brands" />
         </View>
 
         {/* hero — bounded image with a real paper button */}
@@ -206,7 +207,13 @@ export default function Home() {
                     accessibilityRole="button"
                     accessibilityLabel={`Shop ${n.label}`}
                   >
-                    <View style={s.noteCardImg}>{n.source ? <Image source={n.source} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" /> : null}</View>
+                    <View style={s.noteCardBed}>
+                      <View style={s.noteCardClip}>
+                        {n.source ? <Image source={n.source} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" /> : null}
+                        {/* engraved swirl over the top — the maison's guilloche, tying these to the loyalty card */}
+                        <Guilloche w={120} h={140} origin="topLeft" ringGap={13} start={8} base="rgba(250,248,245,0.16)" accent="rgba(138,83,39,0.42)" />
+                      </View>
+                    </View>
                     <AppText variant="bodyLg" numberOfLines={1} style={{ marginTop: space.sm }}>{n.label}</AppText>
                     {n.count > 0 ? <AppText variant="caption">{n.count} scents</AppText> : null}
                   </Pressable>
@@ -310,7 +317,8 @@ const s = StyleSheet.create({
   rail: { paddingHorizontal: space.gutter, gap: space.lg, paddingTop: space.lg },
   gutter: { paddingHorizontal: space.gutter },
   noteCard: { width: 120 },
-  noteCardImg: { width: 120, height: 140, backgroundColor: colors.surface, overflow: "hidden" },
+  noteCardBed: { width: 120, height: 140, borderTopLeftRadius: 16, borderTopRightRadius: 16, backgroundColor: colors.surface, shadowColor: "#1A140E", shadowOpacity: 0.14, shadowRadius: 9, shadowOffset: { width: 0, height: 4 }, elevation: 3 },
+  noteCardClip: { ...StyleSheet.absoluteFillObject, borderTopLeftRadius: 16, borderTopRightRadius: 16, overflow: "hidden" },
   colRail: { paddingHorizontal: space.gutter, gap: space.lg, paddingTop: space.lg },
   colCard: { aspectRatio: 16 / 10, borderRadius: 16, backgroundColor: colors.surface, overflow: "hidden" },
   collectionScrim: { position: "absolute", left: 0, right: 0, bottom: 0, height: "58%" },

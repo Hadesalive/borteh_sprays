@@ -1,6 +1,7 @@
+import { redirect } from "next/navigation";
 import { Bell } from "@phosphor-icons/react/dist/ssr";
 
-import { createAuthServerClient } from "@/lib/supabase/auth-server";
+import { createAuthServerClient, getStaffUser } from "@/lib/supabase/auth-server";
 import { AppSidebar } from "@/components/app-sidebar";
 import { IconProvider } from "@/components/icon-provider";
 import { CommandMenu } from "@/components/command-menu";
@@ -19,12 +20,17 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Defence-in-depth: the proxy gates navigations, but re-check here so a stale/partial render
+  // can never leak the dashboard to a non-staff session.
+  const staff = await getStaffUser();
+  if (!staff) redirect("/login");
+
   const auth = await createAuthServerClient();
   const { data: { user } } = await auth.auth.getUser();
   const sidebarUser = user
     ? {
         name: (user.user_metadata?.display_name as string) ?? (user.phone as string) ?? "Staff",
-        role: (user.app_metadata?.role as string) ?? "staff",
+        role: (user.app_metadata?.role as string) ?? staff.role,
       }
     : undefined;
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { createAuthServerClient } from "@/lib/supabase/auth-server";
+import { createAuthServerClient, requireStaff } from "@/lib/supabase/auth-server";
 
 export type SendNoticeResult = { ok: true; recipients: number } | { ok: false; error: string };
 
@@ -12,6 +12,7 @@ export async function sendNotice(input: {
   kind: "system" | "promo";
   audience: "all" | "marketing";
 }): Promise<SendNoticeResult> {
+  await requireStaff();
   const auth = await createAuthServerClient();
   const {
     data: { user },

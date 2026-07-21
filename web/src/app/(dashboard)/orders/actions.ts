@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/supabase/auth-server";
 
 export type OrderStatus =
   | "pending_payment"
@@ -22,6 +23,7 @@ const STAMP: Partial<Record<OrderStatus, string>> = {
 };
 
 export async function setOrderStatus(id: string, status: OrderStatus): Promise<ActionResult> {
+  await requireStaff();
   const patch: Record<string, unknown> = { status };
   const col = STAMP[status];
   if (col) patch[col] = new Date().toISOString();

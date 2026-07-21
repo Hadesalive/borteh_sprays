@@ -115,6 +115,34 @@ export function useMarkRead() {
   });
 }
 
+/** Delete notifications (swipe-to-delete + clear-all). Optimistic; removes from both caches. */
+export function useDeleteNotifications() {
+  const qc = useQueryClient();
+  const session = useSession();
+  const uid = session?.user.id;
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      if (!ids.length) return;
+      const { error } = await supabase.from("notification").delete().in("id", ids);
+      if (error) throw error;
+    },
+    onMutate: async (ids) => {
+      const drop = (list?: AppNotification[]) => (list ?? []).filter((n) => !ids.includes(n.id));
+      await qc.cancelQueries({ queryKey: ["notifications", uid] });
+      await qc.cancelQueries({ queryKey: ["notices", uid] });
+      const prev = qc.getQueryData<AppNotification[]>(["notifications", uid]);
+      const prevNotices = qc.getQueryData<AppNotification[]>(["notices", uid]);
+      qc.setQueryData<AppNotification[]>(["notifications", uid], drop);
+      qc.setQueryData<AppNotification[]>(["notices", uid], drop);
+      return { prev, prevNotices };
+    },
+    onError: (_e, _ids, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["notifications", uid], ctx.prev);
+      if (ctx?.prevNotices) qc.setQueryData(["notices", uid], ctx.prevNotices);
+    },
+  });
+}
+
 // ── Restock subscriptions (the product page "Notify me") ────────────────────
 // One 'active' row per (user, variant) — enforced by a partial unique index;
 // the restock trigger flips rows to 'notified', so history is preserved.

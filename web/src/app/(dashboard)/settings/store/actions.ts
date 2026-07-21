@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/supabase/auth-server";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -9,6 +10,7 @@ export async function updateStore(
   id: string,
   input: { name: string; address: string; phone: string }
 ): Promise<ActionResult> {
+  await requireStaff();
   const name = input.name.trim();
   if (!name) return { ok: false, error: "Enter a store name." };
   const phone = input.phone.replace(/[^\d+]/g, ""); // digits only — feeds the app's WhatsApp link
