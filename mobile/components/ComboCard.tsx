@@ -4,12 +4,15 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { type Combo } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 // A "pair" card — the two products side by side on one bed, split by a thin paper seam with a
 // bronze "+" between them, then the combo name + live price. Squared, flat (Maison).
 export function ComboCard({ combo, width = 260, onPress }: { combo: Combo; width?: number; onPress: () => void }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const imgH = Math.round(width * 0.6);
   const pair = combo.items.slice(0, 2);
   const deal = combo.priceMinor < combo.sumMinor;
@@ -35,7 +38,7 @@ export function ComboCard({ combo, width = 260, onPress }: { combo: Combo; width
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   bed: { flexDirection: "row", backgroundColor: colors.surface, overflow: "hidden" },
   half: { flex: 1 },
   seam: { borderRightWidth: 1, borderRightColor: colors.paper },

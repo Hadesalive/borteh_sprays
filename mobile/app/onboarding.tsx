@@ -1,7 +1,6 @@
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useMemo, useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,7 +13,8 @@ import {
   BUDGETS, DIRECTIONS, EMPTY_ANSWERS, GENDERS, INTENSITIES, NOTES, OCCASIONS, SWEETNESS,
   quizHasSignal, saveQuizPrefs, summarize, type QuizAnswers,
 } from "@/lib/quiz";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // Bundled fallbacks — the intro must render full even offline or before the DB loads.
 // The DB (public.onboarding_slide) is the source of truth; these images stay bundled and
@@ -52,6 +52,8 @@ export default function Onboarding() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const [phase, setPhase] = useState<"slides" | "quiz" | "result">("slides");
   const [slideStep, setSlideStep] = useState(0);
   const [quizStep, setQuizStep] = useState(0);
@@ -146,7 +148,7 @@ export default function Onboarding() {
     const slide = slides[Math.min(slideStep, slides.length - 1)];
     return (
       <View style={[s.screen, { paddingTop: insets.top }]}>
-        <StatusBar style="dark" />
+        <ThemedStatusBar />
         <Animated.View style={{ opacity: fade, flex: 1 }}>
           <View style={[s.image, { height: imgH }]}>
             <Image source={slide.imageUrl ? { uri: slide.imageUrl } : slide.img} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" transition={200} />
@@ -171,7 +173,7 @@ export default function Onboarding() {
   if (phase === "result") {
     return (
       <View style={[s.screen, { paddingTop: insets.top }]}>
-        <StatusBar style="dark" />
+        <ThemedStatusBar />
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
           <AppText variant="display">{quizIntro}</AppText>
           <View style={{ marginTop: space["2xl"] }}>
@@ -214,7 +216,7 @@ export default function Onboarding() {
 
   return (
     <View style={[s.screen, { paddingTop: insets.top }]}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <View style={s.topBar}>
         <Pressable onPress={backQuiz} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <AppText variant="label" style={{ color: colors.ink40 }}>← Back</AppText>
@@ -292,7 +294,7 @@ export default function Onboarding() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   image: { backgroundColor: colors.surface },
   skip: { position: "absolute", right: space.gutter, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, paddingHorizontal: space.md, paddingVertical: space.sm },

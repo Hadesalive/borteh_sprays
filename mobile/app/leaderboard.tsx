@@ -1,6 +1,5 @@
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Fragment } from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -13,13 +12,15 @@ import { type LeaderRow, useLeaderboard } from "@/lib/account";
 import { useSession } from "@/lib/auth";
 import { formatLe } from "@/lib/format";
 import { imageUrl } from "@/lib/supabase";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // The board as an occasion, not a spreadsheet: a winner's podium crowns the top three —
 // laurel over the champion, guilloche-engraved pedestals in the house style — and the rest
 // carry serif rank medallions. The caller's own standing is always pinned in bronze.
 
 function Avatar({ row, size }: { row: LeaderRow; size: number }) {
+  const s = useThemedStyles(makeStyles);
   const src = row.avatarPath ? imageUrl(row.avatarPath) : null;
   return (
     <View style={[s.avatar, { width: size, height: size, borderRadius: size / 2 }, row.rank === 1 && s.avatarGold]}>
@@ -35,6 +36,8 @@ function Avatar({ row, size }: { row: LeaderRow; size: number }) {
 }
 
 function Plinth({ row, colW, place }: { row: LeaderRow; colW: number; place: 1 | 2 | 3 }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const first = place === 1;
   const avatarSize = first ? 78 : 60;
   const pedH = first ? 92 : place === 2 ? 66 : 50;
@@ -67,6 +70,7 @@ function Plinth({ row, colW, place }: { row: LeaderRow; colW: number; place: 1 |
 }
 
 function Podium({ rows }: { rows: LeaderRow[] }) {
+  const s = useThemedStyles(makeStyles);
   const { width } = useWindowDimensions();
   const colW = Math.min(120, Math.floor((width - space.gutter * 2 - space.md * 2) / 3));
   const first = rows[0];
@@ -82,6 +86,8 @@ function Podium({ rows }: { rows: LeaderRow[] }) {
 }
 
 function RankRow({ row }: { row: LeaderRow }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={[s.row, row.isMe && s.rowMe]}>
       <View style={[s.medallion, row.isMe && s.medallionMe]}>
@@ -106,6 +112,7 @@ export default function Leaderboard() {
   const insets = useSafeAreaInsets();
   const session = useSession();
   const { data: rows, isLoading } = useLeaderboard(20);
+  const s = useThemedStyles(makeStyles);
 
   const list = rows ?? [];
   const podium = list.slice(0, 3);
@@ -113,7 +120,7 @@ export default function Leaderboard() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space["3xl"] }}>
         <View style={s.gutter}>
           <BackButton onPress={() => router.back()} />
@@ -191,7 +198,7 @@ export default function Leaderboard() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   gutter: { paddingHorizontal: space.gutter },
   center: { alignItems: "center" },

@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,7 +10,8 @@ import { ScentPicker } from "@/components/ScentPicker";
 import { AppText } from "@/components/Text";
 import { useSession } from "@/lib/auth";
 import { fetchScentPrefs, saveScentPrefs, type ScentPrefs } from "@/lib/scentPrefs";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useThemedStyles } from "@/lib/theme-context";
 
 export default function ScentPreferences() {
   const router = useRouter();
@@ -23,6 +23,7 @@ export default function ScentPreferences() {
   const sel = useRef<ScentPrefs>({ values: [], gender: null });
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const s = useThemedStyles(makeStyles);
 
   useEffect(() => {
     fetchScentPrefs().then((p) => {
@@ -50,7 +51,7 @@ export default function ScentPreferences() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + 120, paddingHorizontal: space.gutter }}>
         <BackButton onPress={() => router.back()} />
         <AppText variant="display" style={{ marginTop: space.lg }}>Scent preferences</AppText>
@@ -81,7 +82,7 @@ export default function ScentPreferences() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.gutter, paddingTop: space.lg, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
 });

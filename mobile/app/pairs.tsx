@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
@@ -11,7 +10,8 @@ import { AppText } from "@/components/Text";
 import { HeaderActions } from "@/components/ui";
 import { useProducts } from "@/lib/api";
 import { useCombos } from "@/lib/combos";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useThemedStyles } from "@/lib/theme-context";
 
 // The "see all combos" screen — every active, fully-available pair as a full-width card.
 // Reached from the home "Perfect pairs" rail. Tapping a card opens the pair's detail.
@@ -21,13 +21,14 @@ export default function Pairs() {
   const { width } = useWindowDimensions();
   const combos = useCombos();
   const { isLoading } = useProducts();
+  const s = useThemedStyles(makeStyles);
 
   const leave = () => (router.canGoBack() ? router.back() : router.navigate("/"));
   const cardW = width - space.gutter * 2;
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + space["5xl"] }}>
         <View style={s.topRow}>
           <BackButton onPress={leave} />
@@ -70,7 +71,7 @@ export default function Pairs() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
 });

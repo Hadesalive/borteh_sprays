@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Check, Money, Tag } from "phosphor-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
@@ -19,7 +18,8 @@ import { cartTotalMinor, clearBag, useCart, useCartCombos } from "@/lib/cart";
 import { resolveComboClaims, useCombos } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { placeOrder } from "@/lib/orders";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 
 export default function Checkout() {
@@ -46,6 +46,8 @@ export default function Checkout() {
   const { data: loyalty } = useLoyalty();
   const { data: loyaltyCfg } = useLoyaltyConfig();
   const { data: tiers } = useLoyaltyTiers();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const subtotal = cartTotalMinor(items);
   // Combo deal savings — the pairs the shopper added, priced by the same rule the
@@ -145,7 +147,7 @@ export default function Checkout() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + 120, paddingHorizontal: space.gutter }}>
           <View style={s.topRow}>
@@ -267,7 +269,7 @@ export default function Checkout() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   eyebrow: { color: colors.ink60, marginTop: space["2xl"] },

@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Animated, Easing, StyleSheet, useWindowDimensions, View } from "react-native";
-import { colors } from "@/lib/theme";
+import { useTheme } from "@/lib/theme-context";
 
 // A restrained confetti burst for the order-placed moment. Built on the built-in
 // Animated API (reanimated isn't installed) with the Maison palette — ink, bronze,
 // a lighter bronze, and the success green of the check — never rainbow. Pieces pop
 // up from the check, arc over, and settle out. Purely visual; self-unmounts.
-
-const PALETTE = [colors.ink, colors.accent, "#B9793B", colors.success];
 
 type Piece = {
   key: number;
@@ -26,6 +24,8 @@ type Piece = {
 };
 
 export function Confetti({ originY = 0, count = 46 }: { originY?: number; count?: number }) {
+  const { colors } = useTheme();
+  const PALETTE = [colors.ink, colors.accent, "#B9793B", colors.success];
   const { width, height } = useWindowDimensions();
   const [done, setDone] = useState(false);
 

@@ -1,5 +1,6 @@
 import { StyleSheet, View } from "react-native";
-import { colors, font } from "@/lib/theme";
+import { Colors, font } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 import { Guilloche } from "./Guilloche";
 import { AppText } from "./Text";
 
@@ -7,6 +8,7 @@ import { AppText } from "./Text";
 // same texture as the loyalty card at a size where the line-work actually reads. A letterhead
 // mark for auth and other "front door" screens, so they feel pressed rather than templated.
 export function EngravedCrest({ size = 76, letter = "B" }: { size?: number; letter?: string }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={[s.crest, { width: size, height: size, borderRadius: size / 2 }]}>
       <Guilloche
@@ -25,7 +27,7 @@ export function EngravedCrest({ size = 76, letter = "B" }: { size?: number; lett
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   crest: {
     backgroundColor: colors.ink,
     alignItems: "center",

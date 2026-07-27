@@ -1,6 +1,5 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,7 +11,8 @@ import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
 import { applyReferral, checkReferral } from "@/lib/account";
 import { signUp } from "@/lib/auth";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useThemedStyles } from "@/lib/theme-context";
 
 export default function SignUp() {
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function SignUp() {
   const [refErr, setRefErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const s = useThemedStyles(makeStyles);
 
   const passOk = password.length >= 6;
 
@@ -72,7 +73,7 @@ export default function SignUp() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
@@ -135,7 +136,7 @@ export default function SignUp() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   crestWrap: { alignItems: "center", marginTop: space["2xl"] },
   form: { gap: space.lg, marginTop: space["3xl"] },

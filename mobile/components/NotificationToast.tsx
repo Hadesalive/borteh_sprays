@@ -1,27 +1,26 @@
-import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { usePathname, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Easing, PanResponder, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, PanResponder, Platform, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { type AppNotification, useMarkRead } from "@/lib/notifications";
 import { imageUrl } from "@/lib/supabase";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
+import { AppText } from "./Text";
 import { notifGlyph } from "./NotifIcon";
 
-// Heads-up banner (fed by the realtime stream in NotificationsLive). DARK GLASS —
-// heavy blur under a translucent ink tint, so the screen glows through while the
-// banner still reads unmistakably dark over the paper UI.
+// Heads-up banner (fed by the realtime stream in NotificationsLive). A grounded
+// Maison card — surface fill, 1px line border, 14px radius, a whisper of shadow so
+// it floats over the page without turning into a heavy stock toast. It follows the
+// theme, so it reads paper-on-ink in dark mode too.
 //
-// Tuned to read like a real OS banner: it drops on a spring with a soft shadow so it
-// floats, scales down under your finger, pauses its dismiss timer while touched, and
-// flicks up to dismiss. Two more deliberate "native" choices:
-//   • Text is the PHONE's system font (SF / Roboto), not the app serif — a real
-//     notification is drawn by the OS, so it uses the OS face.
-//   • The leading mark is the Borteh monogram (the "app icon"), with a small semantic
-//     status dot in the corner — the one-glance confirmed / on-the-way / cancelled cue.
-// Tap → open target + mark read · drag up to flick away · auto-dismisses.
+// The behavior is tuned to feel native: it drops on a spring, scales down under your
+// finger, pauses its dismiss timer while touched, and flicks up to dismiss. The leading
+// mark is the Borteh flower (the real app icon) with a small semantic status dot in the
+// corner — the one-glance confirmed / on-the-way / cancelled cue — and the product photo
+// rides on the right. Tap → open target + mark read · drag up to flick away · auto-dismisses.
 
 let listener: ((n: AppNotification) => void) | null = null;
 /** Show the banner (call from anywhere; no-op before the root component mounts). */
@@ -30,18 +29,14 @@ export function showNotificationToast(n: AppNotification) {
 }
 
 const SHOW_MS = 5000;
-const PAPER = "rgba(250,248,245,0.95)";
-const PAPER70 = "rgba(250,248,245,0.72)";
-const PAPER45 = "rgba(250,248,245,0.45)";
-// The phone's own UI font — SF on iOS, Roboto on Android — so the banner reads as system chrome.
-const SYS = Platform.select({ ios: "System", android: "sans-serif", default: "System" });
-const SYS_MED = Platform.select({ ios: "System", android: "sans-serif-medium", default: "System" });
 
 export function NotificationToast() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const pathname = usePathname();
   const markRead = useMarkRead();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const [item, setItem] = useState<AppNotification | null>(null);
   const slide = useRef(new Animated.Value(0)).current; // 0 = hidden above, 1 = resting
   const dragY = useRef(new Animated.Value(0)).current; // finger-follow while swiping up
@@ -129,7 +124,7 @@ export function NotificationToast() {
   };
 
   if (!item) return null;
-  const { Icon, chip } = notifGlyph(item);
+  const { Icon, chip } = notifGlyph(item, colors);
   const thumb = item.imagePath ? imageUrl(item.imagePath) : null;
   const translateY = Animated.add(slide.interpolate({ inputRange: [0, 1], outputRange: [-180, 0] }), dragY);
   const scale = Animated.multiply(slide.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }), press);
@@ -143,40 +138,38 @@ export function NotificationToast() {
       <Animated.View style={[s.shadow, { opacity: slide, transform: [{ scale }] }]}>
         <Pressable onPress={open} onPressIn={() => setPressed(true)} onPressOut={() => setPressed(false)} accessibilityRole="button" accessibilityLabel={`Borteh: ${item.title ?? item.body}`}>
           <View style={s.card}>
-            {/* dark glass: blur what's beneath, then tint it ink — Android's blur
-                fallback still reads correctly thanks to the translucent tint */}
-            <BlurView intensity={72} tint="dark" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
-            <View style={[StyleSheet.absoluteFill, s.tintFill]} />
             <View style={s.row}>
-              {/* the app-icon slot: Borteh monogram + a small semantic status dot */}
+              {/* the app-icon slot: the Borteh flower mark + a small semantic status dot */}
               <View style={s.mark}>
-                <Text style={s.markLetter} maxFontSizeMultiplier={1} allowFontScaling={false}>B</Text>
+                <View style={s.markTile}>
+                  <Image source={require("../assets/icon.png")} style={s.markImg} contentFit="cover" />
+                </View>
                 <View style={[s.badge, { backgroundColor: chip }]}>
                   <Icon size={10} color={colors.paper} weight="fill" />
                 </View>
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
                 <View style={s.nameRow}>
-                  <Text style={s.name} numberOfLines={1}>Borteh</Text>
-                  <Text style={s.time} maxFontSizeMultiplier={1.2}>now</Text>
+                  <AppText variant="label" style={s.name} numberOfLines={1}>Borteh</AppText>
+                  <AppText variant="caption" style={s.time} maxFontSizeMultiplier={1.2}>now</AppText>
                 </View>
-                <Text style={s.title} numberOfLines={1} maxFontSizeMultiplier={1.3}>
+                <AppText variant="body" style={s.title} numberOfLines={1} maxFontSizeMultiplier={1.3}>
                   {item.title ?? item.body}
-                </Text>
+                </AppText>
                 {item.title ? (
-                  <Text style={s.body} numberOfLines={2} maxFontSizeMultiplier={1.3}>
+                  <AppText variant="bodySoft" style={s.body} numberOfLines={2} maxFontSizeMultiplier={1.3}>
                     {item.body}
-                  </Text>
+                  </AppText>
                 ) : null}
               </View>
-              {/* iOS-attachment style: the perfume's photo rides on the right */}
+              {/* the perfume's photo rides on the right, in the tidy bordered-thumb language */}
               {thumb ? (
                 <View style={s.thumb}>
                   <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" recyclingKey={item.id} />
                 </View>
               ) : null}
             </View>
-            {/* grab handle, like the system banner */}
+            {/* grab handle — the flick-to-dismiss cue */}
             <View style={s.handle} />
           </View>
         </Pressable>
@@ -185,29 +178,28 @@ export function NotificationToast() {
   );
 }
 
-const s = StyleSheet.create({
-  wrap: { position: "absolute", left: space.sm, right: space.sm, zIndex: 100 },
-  // depth: iOS shadow lives on this un-clipped layer, Android elevation on the card.
+const makeStyles = (colors: Colors) => StyleSheet.create({
+  wrap: { position: "absolute", left: space.md, right: space.md, zIndex: 100 },
+  // depth: a whisper only — the 1px line border does the real separating.
   shadow: {
-    borderRadius: 22,
+    borderRadius: 14,
     ...Platform.select({
-      ios: { shadowColor: "#0B0906", shadowOpacity: 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 10 } },
+      ios: { shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 16, shadowOffset: { width: 0, height: 8 } },
       default: {},
     }),
   },
-  card: { borderRadius: 22, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderColor: "rgba(250,248,245,0.22)", paddingTop: space.md, paddingBottom: space.sm, paddingHorizontal: space.md, elevation: 10 },
-  tintFill: { backgroundColor: "rgba(34,30,25,0.6)" },
+  card: { borderRadius: 14, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, paddingTop: space.md, paddingBottom: space.sm, paddingHorizontal: space.lg, elevation: 4 },
   row: { flexDirection: "row", alignItems: "center", gap: space.md },
-  // monogram "app icon": a paper tile with the serif mark (the logo stays the house serif)
-  mark: { width: 44, height: 44, borderRadius: 12, backgroundColor: colors.paper, alignItems: "center", justifyContent: "center" },
-  markLetter: { fontFamily: font.serif, fontSize: 26, lineHeight: 30, color: colors.ink, marginTop: 1 },
-  badge: { position: "absolute", bottom: -3, right: -3, width: 18, height: 18, borderRadius: 9, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "#1A1712" },
+  // "app icon": the Borteh flower on its own tile, zoomed so the mark reads at 48px
+  mark: { width: 48, height: 48 },
+  markTile: { width: 48, height: 48, borderRadius: 10, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
+  markImg: { ...StyleSheet.absoluteFillObject, transform: [{ scale: 1.45 }] },
+  badge: { position: "absolute", bottom: -3, right: -3, width: 18, height: 18, borderRadius: 9, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: colors.surface },
+  thumb: { width: 44, height: 44, borderRadius: 10, overflow: "hidden", borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper },
   nameRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", gap: space.md },
-  // system font throughout the text — SF / Roboto, so it reads as OS chrome
-  name: { fontFamily: SYS_MED, fontWeight: "600", fontSize: 13, lineHeight: 17, color: PAPER70 },
-  time: { fontFamily: SYS, fontWeight: "400", fontSize: 13, lineHeight: 17, color: PAPER45 },
-  title: { fontFamily: SYS_MED, fontWeight: "600", fontSize: 15, lineHeight: 20, color: PAPER, marginTop: 2 },
-  body: { fontFamily: SYS, fontWeight: "400", fontSize: 14, lineHeight: 19, color: PAPER70, marginTop: 1 },
-  thumb: { width: 46, height: 46, borderRadius: 10, overflow: "hidden", backgroundColor: "rgba(250,248,245,0.12)", borderWidth: StyleSheet.hairlineWidth, borderColor: "rgba(250,248,245,0.18)" },
-  handle: { alignSelf: "center", width: 36, height: 4, borderRadius: 2, backgroundColor: "rgba(250,248,245,0.22)", marginTop: space.sm },
+  name: { color: colors.ink60 },
+  time: { color: colors.ink40 },
+  title: { fontFamily: font.medium, color: colors.ink, marginTop: 3 },
+  body: { marginTop: 1 },
+  handle: { alignSelf: "center", width: 36, height: 4, borderRadius: 2, backgroundColor: colors.line, marginTop: space.sm },
 });

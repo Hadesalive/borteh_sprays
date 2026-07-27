@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Star, X } from "phosphor-react-native";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
@@ -11,7 +10,8 @@ import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
 import { useSession } from "@/lib/auth";
 import { submitReview } from "@/lib/reviews";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 export default function WriteReview() {
   const router = useRouter();
@@ -19,6 +19,8 @@ export default function WriteReview() {
   const qc = useQueryClient();
   const session = useSession();
   const { productId, productName } = useLocalSearchParams<{ productId: string; productName: string }>();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const [rating, setRating] = useState(0);
   const [title, setTitle] = useState("");
@@ -50,7 +52,7 @@ export default function WriteReview() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space["3xl"], paddingHorizontal: space.gutter }}>
           <View style={s.topRow}>
@@ -95,7 +97,7 @@ export default function WriteReview() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   topRow: { flexDirection: "row", justifyContent: "flex-end" },
   stars: { flexDirection: "row", gap: space.md, marginTop: space["2xl"] },

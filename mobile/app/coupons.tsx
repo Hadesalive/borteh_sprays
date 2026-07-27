@@ -1,6 +1,5 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Ticket } from "phosphor-react-native";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,7 +13,8 @@ import { stageCoupon, useMyCoupons } from "@/lib/account";
 import { useSession } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { formatLe } from "@/lib/format";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // The coupon wallet — codes issued to YOU (RLS keeps everyone else's invisible).
 // "Use at checkout" stages the code; checkout picks it up and applies it,
@@ -27,6 +27,8 @@ export default function Coupons() {
   const items = useCart();
   const { data, isLoading } = useMyCoupons();
   const coupons = data ?? [];
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const use = (code: string) => {
     Haptics.selectionAsync();
@@ -36,7 +38,7 @@ export default function Coupons() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + space["3xl"] }}>
         <BackButton onPress={() => router.back()} />
         <AppText variant="heading" style={{ marginTop: space.lg }}>Coupons</AppText>
@@ -93,7 +95,7 @@ export default function Coupons() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   coupon: { borderWidth: 1, borderColor: colors.line, padding: space.lg, marginBottom: space.md },
   couponTop: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", gap: space.md },

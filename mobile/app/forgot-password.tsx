@@ -1,6 +1,5 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -10,7 +9,8 @@ import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
 import { resetPassword } from "@/lib/auth";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useThemedStyles } from "@/lib/theme-context";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -20,6 +20,7 @@ export default function ForgotPassword() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const s = useThemedStyles(makeStyles);
 
   const submit = async () => {
     if (busy) return;
@@ -47,7 +48,7 @@ export default function ForgotPassword() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space["3xl"], paddingHorizontal: space.gutter }}>
           <BackButton onPress={() => router.back()} />
@@ -74,7 +75,7 @@ export default function ForgotPassword() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   form: { gap: space.lg, marginTop: space["2xl"] },
   altRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm, marginTop: space["3xl"] },

@@ -5,7 +5,8 @@ import { type ComponentType, useEffect, useRef } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCartCount } from "@/lib/cart";
-import { colors, label as labelToken, space } from "@/lib/theme";
+import { Colors, label as labelToken, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 // Back-compat: the previous floating bar was absolute, so screens padded scroll
@@ -35,6 +36,8 @@ function TabItem({
   onPress: () => void;
   badgeCount?: number;
 }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const a = useRef(new Animated.Value(focused ? 1 : 0)).current;
   useEffect(() => {
     Animated.spring(a, { toValue: focused ? 1 : 0, useNativeDriver: true, friction: 6, tension: 140 }).start();
@@ -75,6 +78,7 @@ function TabItem({
 
 export function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const s = useThemedStyles(makeStyles);
   const cartCount = useCartCount();
   // Bag has its own full-height checkout footer — no tab bar there (matches the design).
   if (state.routes[state.index]?.name === "cart") return null;
@@ -102,7 +106,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   bar: { flexDirection: "row", backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: space.md, paddingHorizontal: space.lg },
   tab: { flex: 1, alignItems: "center", gap: space.xs },
   iconWrap: { width: WRAP_W, height: WRAP_H, alignItems: "center", justifyContent: "center" },

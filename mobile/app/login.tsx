@@ -1,6 +1,5 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,7 +10,8 @@ import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
 import { signIn } from "@/lib/auth";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 export default function Login() {
   const router = useRouter();
@@ -20,6 +20,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const submit = async () => {
     if (busy) return;
@@ -44,7 +46,7 @@ export default function Login() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
@@ -85,7 +87,7 @@ export default function Login() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   crestWrap: { alignItems: "center", marginTop: space["2xl"] },
   form: { gap: space.lg, marginTop: space["3xl"] },

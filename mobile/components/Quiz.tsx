@@ -1,7 +1,8 @@
 import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/Text";
-import { colors, radius, space } from "@/lib/theme";
+import { Colors, radius, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // Presentational building blocks for the onboarding scent quiz. Each is dumb: props in,
 // onChange out. The flow, state and answer→term mapping live in app/onboarding.tsx + lib/quiz.ts.
@@ -20,6 +21,7 @@ export function ChoiceGrid({
   multi?: boolean;
   onToggle: (code: string) => void;
 }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.grid}>
       {options.map((o) => {
@@ -57,6 +59,7 @@ export function Segment({
   value: string | null;
   onChange: (code: string) => void;
 }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.segment}>
       {options.map((o) => {
@@ -97,6 +100,7 @@ export function NoteGrid({
   avoids: string[];
   onCycle: (note: string) => void;
 }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.notes}>
       {notes.map((n) => {
@@ -126,6 +130,8 @@ export function NoteGrid({
 
 // ---- result card ----------------------------------------------------------------------------
 export function ResultCard({ words, matchCount }: { words: string[]; matchCount: number | null }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.result}>
       <AppText variant="caption" style={{ color: colors.ink40, letterSpacing: 1 }}>YOUR SCENT PROFILE</AppText>
@@ -153,7 +159,7 @@ export function ResultCard({ words, matchCount }: { words: string[]; matchCount:
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   grid: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
   card: {
     minWidth: "47%",

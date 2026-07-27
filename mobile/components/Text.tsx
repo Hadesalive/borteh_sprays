@@ -1,5 +1,6 @@
 import { StyleSheet, Text, type TextProps } from "react-native";
-import { colors, font } from "@/lib/theme";
+import { Colors, font } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 
 // Maison type scale. Serif (Instrument) carries the display; Archivo carries the rest.
 // Nothing outside this set — screens pick a variant, not a size.
@@ -26,10 +27,11 @@ type Variant =
   | "small";
 
 export function AppText({ variant = "body", style, ...rest }: TextProps & { variant?: Variant }) {
+  const styles = useThemedStyles(makeStyles);
   return <Text {...rest} style={[styles[variant], style]} />;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   // serif
   display: { fontFamily: font.serif, fontSize: 32, lineHeight: 38, color: colors.ink },
   heading: { fontFamily: font.serif, fontSize: 24, lineHeight: 30, color: colors.ink },

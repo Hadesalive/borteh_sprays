@@ -1,7 +1,6 @@
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Handbag, Minus, Plus, Trash, X } from "phosphor-react-native";
 import { useMemo } from "react";
 import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from "react-native";
@@ -17,7 +16,8 @@ import { cartTotalMinor, removeFromBag, setQty, useCart, useCartCombos } from "@
 import { resolveComboClaims, useCombos } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -32,6 +32,8 @@ export default function Cart() {
   const cartCombos = useCartCombos();
   const combos = useCombos();
   const { data } = useProducts();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const leave = () => (router.canGoBack() ? router.back() : router.navigate("/"));
 
@@ -52,7 +54,7 @@ export default function Cart() {
   if (!items.length) {
     return (
       <View style={s.screen}>
-        <StatusBar style="dark" />
+        <ThemedStatusBar />
         <BackButton onPress={leave} style={[s.back, { top: insets.top + space.md }]} />
         <View style={[s.actionsAbs, { top: insets.top + space.md }]}>
           <HeaderActions />
@@ -83,7 +85,7 @@ export default function Cart() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + 120 }}>
         <View style={s.topRow}>
           <BackButton onPress={leave} />
@@ -158,7 +160,7 @@ export default function Cart() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   back: { position: "absolute", left: space.gutter, zIndex: 10 },
   actionsAbs: { position: "absolute", right: space.gutter, zIndex: 10 },

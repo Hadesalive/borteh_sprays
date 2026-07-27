@@ -1,6 +1,5 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { UsersThree } from "phosphor-react-native";
 import { ScrollView, Share, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -13,7 +12,8 @@ import { useLoyaltyConfig, useMyReferrals, useReferralCode } from "@/lib/account
 import { useSession } from "@/lib/auth";
 import { formatLe } from "@/lib/format";
 import { timeAgo } from "@/lib/notifications";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // Invite friends — your code, minted server-side, shared through the system
 // sheet (WhatsApp is where it'll go in Freetown). Friends enter it when they
@@ -27,6 +27,8 @@ export default function Invite() {
   const { data: code, isLoading } = useReferralCode();
   const { data: cfg } = useLoyaltyConfig();
   const { data: referrals } = useMyReferrals();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const rewardPts = cfg?.referralPoints ?? 0;
   const rewardLe = rewardPts * (cfg?.pointValueMinor ?? 0);
@@ -47,7 +49,7 @@ export default function Invite() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + space["3xl"] }}>
         <BackButton onPress={() => router.back()} />
         <AppText variant="heading" style={{ marginTop: space.lg }}>Invite friends</AppText>
@@ -127,7 +129,7 @@ export default function Invite() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   codeCard: { borderWidth: 1, borderColor: colors.line, padding: space.gutter, marginTop: space["2xl"], alignItems: "center" },
   code: { fontFamily: font.serif, fontSize: 34, lineHeight: 40, color: colors.ink, marginTop: space.sm, letterSpacing: 1 },

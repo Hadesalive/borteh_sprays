@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { ArrowRight } from "phosphor-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
-import { colors, font, radius, space } from "@/lib/theme";
+import { font, radius, space } from "@/lib/theme";
 import { AppText } from "./Text";
 
 const SALE_BG = require("../assets/home/sale-bg.jpg");

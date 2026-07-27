@@ -4,11 +4,14 @@ import { ArrowRight } from "phosphor-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 import { noteLine, type Product } from "@/lib/api";
 import { formatLe } from "@/lib/format";
-import { colors, font, radius, shadow, space } from "@/lib/theme";
+import { Colors, font, radius, shadow, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 /** Wide featured banner — one cohesive surface, the bottle resting on it, a clear CTA. */
 export function FeaturedCard({ product, width }: { product: Product; width: number }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const router = useRouter();
   const notes = noteLine(product);
 
@@ -49,7 +52,7 @@ export function FeaturedCard({ product, width }: { product: Product; width: numb
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   card: { height: 208, borderRadius: radius.xl, backgroundColor: "#EAECEF", flexDirection: "row", padding: space.xl, overflow: "hidden", ...shadow.soft },
   text: { flex: 1, justifyContent: "center", zIndex: 1 },
   label: { fontFamily: font.semibold, fontSize: 12, color: colors.inkSoft, marginBottom: 4 },

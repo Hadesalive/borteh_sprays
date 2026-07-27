@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Coins, Handbag, Package, Trophy, UsersThree } from "phosphor-react-native";
 import { useMemo } from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
@@ -15,7 +14,8 @@ import { type LedgerEntry, useLoyalty, useLoyaltyConfig, useLoyaltyLedger, useLo
 import { useSession } from "@/lib/auth";
 import { formatLe } from "@/lib/format";
 import { timeAgo } from "@/lib/notifications";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // Points, in full: the balance and its worth, the road to the Loyalty Card
 // (real lifetime-spend progress), how points move — all numbers from the live
@@ -83,6 +83,7 @@ function MemberCard({
   loading: boolean;
 }) {
   const { width } = useWindowDimensions();
+  const s = useThemedStyles(makeStyles);
   const w = width - space.gutter * 2;
   const h = Math.round(w / 1.586);
   return (
@@ -142,6 +143,8 @@ export default function Points() {
   const { data: cfg } = useLoyaltyConfig();
   const { data: tiers } = useLoyaltyTiers();
   const { data: ledger } = useLoyaltyLedger();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const points = loyalty?.points ?? 0;
   const value = points * (cfg?.pointValueMinor ?? 0);
@@ -161,7 +164,7 @@ export default function Points() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + space["3xl"] }}>
         <BackButton onPress={() => router.back()} />
         <AppText variant="heading" style={{ marginTop: space.lg }}>Points</AppText>
@@ -286,7 +289,7 @@ export default function Points() {
 const PAPER60 = "rgba(250,248,245,0.65)";
 const PAPER40 = "rgba(250,248,245,0.45)";
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   // the member card — rounded like the physical object it mimics
   card: { backgroundColor: colors.ink, borderRadius: 20, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderColor: "rgba(250,248,245,0.2)", padding: space.xl, justifyContent: "space-between" },

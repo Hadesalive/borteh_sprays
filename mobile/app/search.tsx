@@ -1,6 +1,5 @@
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { CaretDown, ClockCounterClockwise, MagnifyingGlass, SlidersHorizontal, X } from "phosphor-react-native";
 import { useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
@@ -27,11 +26,13 @@ import {
   useRecentSearches,
 } from "@/lib/search";
 import { track } from "@/lib/track";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 const POPULAR = ["Oud", "Vanilla", "Rose", "Amber", "Fresh", "Lattafa", "Khamrah"];
 
 function ResultRow({ product, onPress }: { product: Product; onPress: () => void }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <Pressable onPress={onPress} style={s.result} accessibilityRole="button" accessibilityLabel={product.name}>
       <View style={s.resultThumb}>
@@ -54,6 +55,8 @@ export default function Search() {
   const recents = useRecentSearches();
   const [q, setQ] = useState("");
   const [sortOpen, setSortOpen] = useState(false);
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const term = q.trim();
   // Hybrid NL search runs server-side (fn_search_products → ordered ids); we map onto the loaded
@@ -85,7 +88,7 @@ export default function Search() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
 
       {/* search bar */}
       <View style={[s.bar, { paddingTop: insets.top + space.md }]}>
@@ -214,7 +217,7 @@ export default function Search() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   bar: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingHorizontal: space.gutter, paddingBottom: space.md },
   field: { flex: 1, flexDirection: "row", alignItems: "center", gap: space.md, height: 52, paddingHorizontal: space.lg, borderWidth: 1, borderColor: colors.ink },

@@ -6,7 +6,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AccessibilityInfo, Animated, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useHomeCarousel } from "@/lib/api";
 import { imageUrl } from "@/lib/supabase";
-import { colors, font, radius, space } from "@/lib/theme";
+import { Colors, font, radius, space } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 type Slide = { key: string; img: number | { uri: string }; label: string; title: string; cta: string; to: Href };
@@ -22,6 +23,7 @@ const ADVANCE_MS = 4800;
 
 /** Atmospheric hero — auto-advancing, Ken Burns zoom on the active slide, pauses on touch. */
 export function HomeHero({ width }: { width: number }) {
+  const s = useThemedStyles(makeStyles);
   const router = useRouter();
   const [idx, setIdx] = useState(0);
   const snap = width + space.md;
@@ -137,7 +139,7 @@ export function HomeHero({ width }: { width: number }) {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   rail: { paddingHorizontal: space.xl, gap: space.md },
   card: { height: 240, borderRadius: radius.xl, overflow: "hidden", backgroundColor: "#1A1411", justifyContent: "flex-end" },
   content: { padding: space.xl, gap: space.lg },

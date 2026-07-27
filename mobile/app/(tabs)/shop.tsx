@@ -1,5 +1,4 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { CaretDown, X } from "phosphor-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
@@ -23,7 +22,8 @@ import {
   sortProducts,
   useFilters,
 } from "@/lib/search";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 const CATS: { label: string; value: "all" | Gender }[] = [
   { label: "All", value: "all" },
@@ -47,6 +47,8 @@ export default function Shop() {
   const [collection, setCollection] = useState<string | null>(params.collection ?? null);
   const [sortOpen, setSortOpen] = useState(false);
   const sale = params.sale === "1";
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   // Deep links (Home → shop by note / brand / collection) land in the shared filter store.
   useEffect(() => {
@@ -120,7 +122,7 @@ export default function Shop() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} keyboardDismissMode="on-drag" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: space["3xl"] }}>
         <View style={s.gutter}>
           <View style={s.headerRow}>
@@ -197,7 +199,7 @@ export default function Shop() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   gutter: { paddingHorizontal: space.gutter },
   headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },

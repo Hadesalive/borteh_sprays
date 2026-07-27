@@ -1,7 +1,8 @@
 import { ArrowRight } from "phosphor-react-native";
 import { type ReactNode } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 // h56 row, 1px line separators. Optional left icon (20), trailing value + arrow.
@@ -23,6 +24,8 @@ export function ListRow({
   borderTop?: boolean;
   danger?: boolean;
 }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const Wrap: any = onPress ? Pressable : View;
   return (
     <Wrap
@@ -45,7 +48,7 @@ export function ListRow({
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: space.md, height: 56, borderBottomWidth: 1, borderBottomColor: colors.line },
   top: { borderTopWidth: 1, borderTopColor: colors.line },
   icon: { width: 20, alignItems: "center" },

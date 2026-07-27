@@ -1,6 +1,5 @@
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Bell, CheckCircle } from "phosphor-react-native";
 import { useEffect, useRef } from "react";
 import { Animated, ScrollView, StyleSheet, View } from "react-native";
@@ -14,7 +13,8 @@ import { LinkLabel } from "@/components/ui";
 import { formatLe } from "@/lib/format";
 import { STATUS_LABEL, STATUS_TONE, useOrder } from "@/lib/orders";
 import { enablePush, usePushStatus } from "@/lib/push";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 export default function OrderDetail() {
   const { id, placed } = useLocalSearchParams<{ id: string; placed?: string }>();
@@ -24,6 +24,8 @@ export default function OrderDetail() {
   const justPlaced = placed === "1";
   const pushStatus = usePushStatus();
   const checkScale = useRef(new Animated.Value(0.6)).current;
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   // Celebrate the placed order — a haptic roll (following checkout's success),
   // the check springing in, and a Maison-palette confetti burst.
@@ -41,7 +43,7 @@ export default function OrderDetail() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + (justPlaced ? 96 : space["3xl"]), paddingHorizontal: space.gutter }}>
         <BackButton onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)"))} />
 
@@ -135,7 +137,7 @@ export default function OrderDetail() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   placedHero: { alignItems: "center", marginTop: space["3xl"], marginBottom: space.md },
   placedTitle: { marginTop: space.lg, textAlign: "center" },

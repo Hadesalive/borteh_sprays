@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { X } from "phosphor-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -12,7 +11,8 @@ import { useProducts } from "@/lib/api";
 import { formatLe } from "@/lib/format";
 import { buildFacets, DEFAULT_FILTERS, type Filters, filterProducts, getFilters, PRICE_STEP, setFilters } from "@/lib/search";
 import { track } from "@/lib/track";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1);
 const toggleIn = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
@@ -29,6 +29,8 @@ export default function FilterScreen() {
   const { data } = useProducts();
   const products = data ?? [];
   const facets = useMemo(() => buildFacets(products), [products]);
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   // Draft edits locally; the shared store only changes on Apply.
   const [draft, setDraft] = useState<Filters>(() => ({ ...getFilters() }));
@@ -69,7 +71,7 @@ export default function FilterScreen() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="light" />
+      <ThemedStatusBar />
       <Pressable style={StyleSheet.absoluteFill} onPress={() => router.back()} accessibilityLabel="Close" />
       <Animated.View style={[s.sheet, { transform: [{ translateY }] }]}>
         <View style={s.header}>
@@ -157,7 +159,7 @@ export default function FilterScreen() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(34,30,25,0.4)" },
   sheet: { maxHeight: "88%", backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: space.gutter, paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },

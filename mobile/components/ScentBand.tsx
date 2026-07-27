@@ -3,7 +3,8 @@ import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useScentFamilies } from "@/lib/api";
 import { imageUrl } from "@/lib/supabase";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 // Ingredient photography keyed by scent family — the fallback art and used when
@@ -23,6 +24,7 @@ type Item = { family: string; label: string; source: number | { uri: string } | 
 
 export function ScentBand() {
   const router = useRouter();
+  const s = useThemedStyles(makeStyles);
   // Owner-curated families; falls back to the bundled set (pre-migration or none).
   const { data: families, error } = useScentFamilies();
 
@@ -56,7 +58,7 @@ export function ScentBand() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   rail: { paddingHorizontal: space.xl, gap: space.lg, paddingVertical: space.xs },
   item: { alignItems: "center", gap: space.sm, width: 78 },
   ring: { width: 78, height: 78, borderRadius: 39, overflow: "hidden", backgroundColor: colors.plinth, borderWidth: 1, borderColor: colors.line },
