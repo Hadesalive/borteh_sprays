@@ -1,8 +1,10 @@
+import { useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { Bell, CheckCircle } from "phosphor-react-native";
-import { useEffect, useRef } from "react";
-import { Animated, ScrollView, StyleSheet, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Animated, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Badge } from "@/components/Badge";
@@ -12,6 +14,7 @@ import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
 import { formatLe } from "@/lib/format";
 import { STATUS_LABEL, STATUS_TONE, useOrder } from "@/lib/orders";
+import { initMonimeCheckout } from "@/lib/payments";
 import { enablePush, usePushStatus } from "@/lib/push";
 import { Colors, font, space } from "@/lib/theme";
 import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
@@ -20,12 +23,36 @@ export default function OrderDetail() {
   const { id, placed } = useLocalSearchParams<{ id: string; placed?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const qc = useQueryClient();
   const { data: order, isLoading } = useOrder(id);
   const justPlaced = placed === "1";
   const pushStatus = usePushStatus();
   const checkScale = useRef(new Animated.Value(0.6)).current;
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
+  const [payingNow, setPayingNow] = useState(false);
+
+  // Retry an interrupted/never-started Monime payment — payment-init is
+  // idempotent (re-opens the same session if one already exists), so this is
+  // safe to tap more than once.
+  const retryMonime = async () => {
+    if (payingNow || !order?.paymentIntentId) return;
+    setPayingNow(true);
+    try {
+      const { redirectUrl } = await initMonimeCheckout(order.paymentIntentId);
+      await WebBrowser.openAuthSessionAsync(redirectUrl, `borteh://order/${order.id}`);
+      // Whatever happened (paid, cancelled, dismissed), the order's real
+      // status is the only source of truth — refetch and let it speak for
+      // itself rather than assuming anything from the browser result here.
+      qc.invalidateQueries({ queryKey: ["order", order.id] });
+    } catch (e) {
+      console.warn("monime retry failed to open", e);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Couldn't open Monime", "Check your connection and try again.");
+    } finally {
+      setPayingNow(false);
+    }
+  };
 
   // Celebrate the placed order — a haptic roll (following checkout's success),
   // the check springing in, and a Maison-palette confetti burst.
@@ -44,7 +71,7 @@ export default function OrderDetail() {
   return (
     <View style={s.screen}>
       <ThemedStatusBar />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + (justPlaced ? 96 : space["3xl"]), paddingHorizontal: space.gutter }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + (justPlaced || (order && order.status === "pending_payment" && order.paymentMethod === "monime" && order.paymentIntentId) ? 96 : space["3xl"]), paddingHorizontal: space.gutter }}>
         <BackButton onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)"))} />
 
         {!order ? (
@@ -129,6 +156,11 @@ export default function OrderDetail() {
       {order && justPlaced ? (
         <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
           <Button title="Continue shopping" variant="secondary" onPress={() => router.replace("/(tabs)")} />
+        </View>
+      ) : order && !justPlaced && order.status === "pending_payment" && order.paymentMethod === "monime" && order.paymentIntentId ? (
+        <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
+          <AppText variant="caption" style={{ marginBottom: space.sm }}>Payment hasn't gone through yet.</AppText>
+          <Button title={payingNow ? "Opening Monime…" : "Pay with Monime"} trailing={payingNow ? undefined : formatLe(order.totalMinor)} onPress={retryMonime} disabled={payingNow} />
         </View>
       ) : null}
 

@@ -5,22 +5,13 @@ import { cn } from "@/lib/utils";
 import { formatInt, formatLe, formatPct } from "@/lib/format";
 import { createServerClient } from "@/lib/supabase/server";
 import { getOverviewStats, getOverviewPanels } from "@/lib/queries/overview";
-import { listOrders } from "@/lib/queries/orders";
+import { listOrders, getMonimeChannels } from "@/lib/queries/orders";
+import { paymentLabel } from "@/lib/payment-channel";
 import { Chip, humanize, statusTone } from "@/components/admin/chip";
 import { RevenueChart } from "@/components/admin/revenue-chart";
 import { Card } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
-
-function paymentLabel(method: string | null): string {
-  switch (method) {
-    case "cash_on_delivery": return "COD";
-    case "cash": return "Cash";
-    case "monime": return "Monime";
-    case "card": return "Card";
-    default: return method ? humanize(method) : "—";
-  }
-}
 
 function Delta({ ratio }: { ratio: number }) {
   if (!isFinite(ratio) || ratio === 0) {
@@ -57,6 +48,7 @@ export default async function OverviewPage() {
       recentNames.set(u.id, u.display_name ?? "");
     }
   }
+  const recentChannels = await getMonimeChannels(db, recent.filter((o) => o.payment_method === "monime").map((o) => o.id));
 
   const ratio = (now: number, prev: number) => (prev === 0 ? 0 : (now - prev) / prev);
 
@@ -196,7 +188,7 @@ export default async function OverviewPage() {
               <tr key={o.id} className="h-9 border-t border-accent">
                 <td className="nums w-14 py-1.5 pr-3 font-medium">#{o.order_number ?? "—"}</td>
                 <td className="px-3 py-1.5">{recentNames.get(o.user_id ?? "") || "Walk-in"}</td>
-                <td className="px-3 py-1.5 text-muted-foreground">{paymentLabel(o.payment_method)}</td>
+                <td className="px-3 py-1.5 text-muted-foreground">{paymentLabel(o.payment_method, recentChannels.get(o.id))}</td>
                 <td className="px-3 py-1.5"><Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip></td>
                 <td className="nums py-1.5 text-right font-medium">{formatLe(o.total_minor ?? 0, 2)}</td>
               </tr>

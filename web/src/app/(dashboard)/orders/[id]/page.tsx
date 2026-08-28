@@ -13,6 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import { formatLe } from "@/lib/format";
 import { createServerClient } from "@/lib/supabase/server";
+import { getMonimeChannels } from "@/lib/queries/orders";
+import { paymentLabel } from "@/lib/payment-channel";
 import { Chip, humanize, statusTone } from "@/components/admin/chip";
 import { Card } from "@/components/ui/card";
 import { OrderStatusActions } from "@/components/admin/order-status-actions";
@@ -76,6 +78,16 @@ export default async function OrderDetailPage({
   const customer = customerRes.data as { display_name: string | null; phone: string | null } | null;
   const zone = (zoneRes.data as { name: string } | null) ?? null;
   const customerOrders = countRes.count ?? 1;
+
+  const channel = order.payment_method === "monime"
+    ? (await getMonimeChannels(db, [order.id as string])).get(order.id as string)
+    : null;
+  // Cash is only actually collected on delivery; a confirmed Monime order is
+  // paid the moment it's confirmed — that transition only ever happens via
+  // the verified webhook, so "confirmed or later, not cancelled" means paid.
+  const paid = order.payment_method === "monime"
+    ? order.status !== "pending_payment" && order.status !== "cancelled"
+    : order.status === "delivered";
 
   const name = customer?.display_name ?? order.recipient_name_snapshot ?? "Customer";
   const phone = order.contact_phone_snapshot ?? customer?.phone ?? null;
@@ -221,11 +233,12 @@ export default async function OrderDetailPage({
           <Card className="p-4">
             <SectionLabel>Payment</SectionLabel>
             <div className="mt-4 flex items-center justify-between text-sm">
-              <span>{humanize(order.payment_method)}</span>
-              <Chip tone={order.status === "delivered" ? "success" : "warning"}>
-                {order.status === "delivered" ? "Paid" : "Pending"}
-              </Chip>
+              <span>{paymentLabel(order.payment_method, channel)}</span>
+              <Chip tone={paid ? "success" : "warning"}>{paid ? "Paid" : "Pending"}</Chip>
             </div>
+            {channel?.phoneNumber ? (
+              <p className="nums mt-1 text-xs text-muted-foreground">{channel.phoneNumber}</p>
+            ) : null}
           </Card>
 
           <Card className="p-4">
