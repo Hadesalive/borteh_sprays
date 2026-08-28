@@ -3,7 +3,8 @@ import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { AppText } from "@/components/Text";
 import { CategoryChip } from "@/components/ui";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 
 // A curated superset — deliberately broader than the current catalog, so a user can pick a
 // note we don't stock yet and be personalized the day it lands. Stored as text (recs.user_scent_prefs).
@@ -29,6 +30,7 @@ export function ScentPicker({
   initialGender?: string | null;
   onChange: (values: string[], gender: string | null) => void;
 }) {
+  const s = useThemedStyles(makeStyles);
   const [values, setValues] = useState<string[]>(initialValues);
   const [gender, setGender] = useState<string | null>(initialGender);
 
@@ -65,7 +67,7 @@ export function ScentPicker({
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   q: { color: colors.ink60 },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: space.sm, marginTop: space.md },
 });

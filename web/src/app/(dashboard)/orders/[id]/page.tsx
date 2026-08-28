@@ -13,23 +13,14 @@ import {
 import { cn } from "@/lib/utils";
 import { formatLe } from "@/lib/format";
 import { createServerClient } from "@/lib/supabase/server";
-import { StatusPill } from "@/components/admin/status-pill";
+import { getMonimeChannels } from "@/lib/queries/orders";
+import { paymentLabel } from "@/lib/payment-channel";
+import { Chip, humanize, statusTone } from "@/components/admin/chip";
+import { Card } from "@/components/ui/card";
 import { OrderStatusActions } from "@/components/admin/order-status-actions";
 import type { OrderStatus } from "@/app/(dashboard)/orders/actions";
 
 export const dynamic = "force-dynamic";
-
-type Tone = "success" | "warning" | "danger" | "info" | "neutral";
-
-function statusTone(status: string): Tone {
-  if (status === "delivered") return "success";
-  if (status === "cancelled" || status === "returned") return "danger";
-  if (status === "pending") return "warning";
-  return "info"; // confirmed / preparing / ready / out_for_delivery
-}
-
-const humanize = (s: string | null) =>
-  (s ?? "").replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
 
 function fmt(ts: string | null): string | null {
   if (!ts) return null;
@@ -88,6 +79,16 @@ export default async function OrderDetailPage({
   const zone = (zoneRes.data as { name: string } | null) ?? null;
   const customerOrders = countRes.count ?? 1;
 
+  const channel = order.payment_method === "monime"
+    ? (await getMonimeChannels(db, [order.id as string])).get(order.id as string)
+    : null;
+  // Cash is only actually collected on delivery; a confirmed Monime order is
+  // paid the moment it's confirmed — that transition only ever happens via
+  // the verified webhook, so "confirmed or later, not cancelled" means paid.
+  const paid = order.payment_method === "monime"
+    ? order.status !== "pending_payment" && order.status !== "cancelled"
+    : order.status === "delivered";
+
   const name = customer?.display_name ?? order.recipient_name_snapshot ?? "Customer";
   const phone = order.contact_phone_snapshot ?? customer?.phone ?? null;
   const waDigits = phone?.replace(/\D/g, "") ?? "";
@@ -102,43 +103,31 @@ export default async function OrderDetailPage({
   const firstPending = steps.findIndex((s) => !s.at);
 
   return (
-    <>
-      {/* Header */}
-      <div className="border-b border-border px-6 py-5 lg:px-10">
-        <Link href="/orders" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="size-4" />
-          Orders
-        </Link>
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="nums text-xl font-semibold tracking-tight">#{order.order_number}</h1>
-            <StatusPill tone={statusTone(order.status)} dot>
-              {humanize(order.status)}
-            </StatusPill>
-            <span className="text-sm text-muted-foreground">{fmt(order.placed_at ?? order.created_at)}</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {phone ? (
-              <>
-                <a href={`tel:${phone}`} className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-muted">
-                  <Phone weight="duotone" className="size-4" />
-                  Call
-                </a>
-                <a href={`https://wa.me/${waDigits}`} className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-muted">
-                  <WhatsappLogo weight="duotone" className="size-4" />
-                  WhatsApp
-                </a>
-              </>
-            ) : null}
-            <OrderStatusActions id={order.id as string} status={order.status as OrderStatus} />
-          </div>
-        </div>
-      </div>
+    <div className="px-5 pb-6 pt-2">
+      <Link href="/orders" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
+        <ArrowLeft className="size-3.5" />
+        Orders
+      </Link>
 
-      <div className="grid gap-10 px-6 py-8 lg:grid-cols-[1.6fr_1fr] lg:px-10">
+      {/* Header: key facts + the one primary action */}
+      <header className="flex items-start justify-between py-2 pb-6">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="nums text-xl font-[650] tracking-[-0.2px]">#{order.order_number}</h1>
+            <Chip tone={statusTone(order.status)}>{humanize(order.status)}</Chip>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {name} · {fmt(order.placed_at ?? order.created_at)} ·{" "}
+            <span className="nums">{formatLe(order.total_minor, 2)}</span>
+          </p>
+        </div>
+        <OrderStatusActions id={order.id as string} status={order.status as OrderStatus} />
+      </header>
+
+      <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
         {/* Main */}
-        <div className="space-y-8">
-          <section>
+        <div className="space-y-4">
+          <Card className="p-4">
             <SectionLabel>Items</SectionLabel>
             <ul className="mt-4 divide-y divide-border border-y border-border">
               {items.map((it, idx) => (
@@ -184,9 +173,9 @@ export default async function OrderDetailPage({
                 <dd className="nums">{formatLe(order.total_minor, 2)}</dd>
               </div>
             </dl>
-          </section>
+          </Card>
 
-          <section>
+          <Card className="p-4">
             <SectionLabel>{isDelivery ? "Delivery" : "Pickup"}</SectionLabel>
             <div className="mt-4 space-y-2 text-sm">
               {isDelivery ? (
@@ -207,12 +196,12 @@ export default async function OrderDetailPage({
               )}
               {order.notes ? <p className="text-muted-foreground">Note: {order.notes}</p> : null}
             </div>
-          </section>
+          </Card>
         </div>
 
         {/* Side */}
-        <div className="space-y-8 lg:border-l lg:border-border lg:pl-10">
-          <section>
+        <div className="space-y-4">
+          <Card className="p-4">
             <SectionLabel>Status</SectionLabel>
             <ol className="mt-4 space-y-0.5">
               {steps.map((step, i) => {
@@ -239,34 +228,53 @@ export default async function OrderDetailPage({
                 );
               })}
             </ol>
-          </section>
+          </Card>
 
-          <section>
+          <Card className="p-4">
             <SectionLabel>Payment</SectionLabel>
             <div className="mt-4 flex items-center justify-between text-sm">
-              <span>{humanize(order.payment_method)}</span>
-              <StatusPill tone={order.status === "delivered" ? "success" : "warning"}>
-                {order.status === "delivered" ? "Paid" : "Pending"}
-              </StatusPill>
+              <span>{paymentLabel(order.payment_method, channel)}</span>
+              <Chip tone={paid ? "success" : "warning"}>{paid ? "Paid" : "Pending"}</Chip>
             </div>
-          </section>
+            {channel?.phoneNumber ? (
+              <p className="nums mt-1 text-xs text-muted-foreground">{channel.phoneNumber}</p>
+            ) : null}
+          </Card>
 
-          <section>
+          <Card className="p-4">
             <SectionLabel>Customer</SectionLabel>
             <div className="mt-4 flex items-center gap-3">
               <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
                 {name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
               </span>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{name}</p>
                 <p className="nums truncate text-xs text-muted-foreground">
                   {[phone, `${customerOrders} order${customerOrders === 1 ? "" : "s"}`].filter(Boolean).join(" · ")}
                 </p>
               </div>
+              {phone ? (
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <a
+                    href={`tel:${phone}`}
+                    aria-label="Call customer"
+                    className="inline-flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    <Phone weight="duotone" className="size-4" />
+                  </a>
+                  <a
+                    href={`https://wa.me/${waDigits}`}
+                    aria-label="Message customer on WhatsApp"
+                    className="inline-flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    <WhatsappLogo weight="duotone" className="size-4" />
+                  </a>
+                </div>
+              ) : null}
             </div>
-          </section>
+          </Card>
         </div>
       </div>
-    </>
+    </div>
   );
 }

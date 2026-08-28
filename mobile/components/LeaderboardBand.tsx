@@ -3,7 +3,8 @@ import { ArrowRight } from "phosphor-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useLeaderboard } from "@/lib/account";
 import { formatLe } from "@/lib/format";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 import { Trophy } from "./LeaderboardArt";
 import { AppText } from "./Text";
@@ -15,6 +16,8 @@ import { AppText } from "./Text";
 export function LeaderboardBand({ position = 0 }: { position?: number }) {
   const router = useRouter();
   const { data: rows } = useLeaderboard(3);
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   if (!rows || rows.length === 0) return null;
   const top = rows.filter((r) => r.rank <= 3).slice(0, 3);
@@ -62,7 +65,7 @@ export function LeaderboardBand({ position = 0 }: { position?: number }) {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   card: { marginHorizontal: space.gutter, borderWidth: 1, borderColor: colors.line, padding: space.lg },
   head: { flexDirection: "row", alignItems: "center", gap: space.md },
   rows: { marginTop: space.lg, gap: space.md },

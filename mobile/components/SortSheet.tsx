@@ -3,12 +3,15 @@ import { Check } from "phosphor-react-native";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SORT_OPTIONS, type SortKey } from "@/lib/search";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 /** Sort picker — Maison bottom sheet: paper, 1px top border, h56 rows, check on the active row. */
 export function SortSheet({ visible, current, onSelect, onClose }: { visible: boolean; current: SortKey; onSelect: (k: SortKey) => void; onClose: () => void }) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       <View style={s.scrim}>
@@ -44,7 +47,7 @@ export function SortSheet({ visible, current, onSelect, onClose }: { visible: bo
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   scrim: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(34,30,25,0.4)" },
   sheet: { backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line, paddingHorizontal: space.gutter },
   header: { paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },

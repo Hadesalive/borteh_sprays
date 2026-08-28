@@ -9,7 +9,8 @@ import { addToBag } from "@/lib/cart";
 import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
 import { closePeek, useQuickPeek } from "@/lib/quickPeek";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 import { Button } from "./Button";
 import { AppText } from "./Text";
@@ -22,6 +23,8 @@ export function QuickPeek() {
   const { data } = useProducts();
   const product = useMemo(() => (data ?? []).find((p) => p.slug === slug), [data, slug]);
   const [variantId, setVariantId] = useState<string | null>(null);
+  const { colors } = useTheme();
+  const st = useThemedStyles(makeStyles);
 
   const scale = useRef(new Animated.Value(0.9)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -111,7 +114,7 @@ export function QuickPeek() {
   );
 }
 
-const st = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(34,30,25,0.45)" },
   center: { flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: space.gutter },
   card: { width: "100%", maxWidth: 380, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, overflow: "hidden" },

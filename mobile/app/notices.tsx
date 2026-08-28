@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { MegaphoneSimple } from "phosphor-react-native";
 import { useEffect, useRef } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -11,7 +10,8 @@ import { Skel } from "@/components/Skeleton";
 import { AppText } from "@/components/Text";
 import { useSession } from "@/lib/auth";
 import { timeAgo, useMarkRead, useNotices } from "@/lib/notifications";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // The maison's bulletin — public notices only (hours, delivery changes, offers).
 // Tailored for READING, not triage: each notice is an editorial post (eyebrow +
@@ -19,6 +19,7 @@ import { colors, space } from "@/lib/theme";
 // notices carry no action, so they shouldn't keep the bell lit.
 
 function PostSkeleton() {
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.post}>
       <Skel w={90} h={12} />
@@ -35,6 +36,8 @@ export default function Notices() {
   const session = useSession();
   const { data, isLoading } = useNotices();
   const markRead = useMarkRead();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const items = data ?? [];
 
@@ -52,7 +55,7 @@ export default function Notices() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + space["3xl"] }}>
         <BackButton onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)"))} />
         <AppText variant="heading" style={{ marginTop: space.lg }}>Notices</AppText>
@@ -113,7 +116,7 @@ export default function Notices() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   post: { paddingVertical: space["2xl"], borderBottomWidth: 1, borderBottomColor: colors.line },
   eyebrowRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", gap: space.md },

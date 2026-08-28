@@ -4,7 +4,8 @@ import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet } from "react-native";
 import { useFeaturedCollections } from "@/lib/api";
 import { imageUrl } from "@/lib/supabase";
-import { colors, font, radius, space } from "@/lib/theme";
+import { Colors, font, radius, space } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 // Local cover art keyed by the seeded category slugs — the fallback, and used
@@ -34,6 +35,7 @@ export function CollectionBand() {
   // Owner-curated featured collections; falls back to the seeded set if curation
   // isn't available yet (pre-migration or nothing featured).
   const { data: curated, error } = useFeaturedCollections();
+  const s = useThemedStyles(makeStyles);
 
   const items: Tile[] =
     !error && curated && curated.length
@@ -64,7 +66,7 @@ export function CollectionBand() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   rail: { paddingHorizontal: space.xl, gap: space.md },
   card: {
     width: 156,

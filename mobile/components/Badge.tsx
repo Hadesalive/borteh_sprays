@@ -1,19 +1,19 @@
 import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
-import { colors } from "@/lib/theme";
+import { useTheme } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 // Squared, 1px border, 12px uppercase label. Tinted only for semantic state.
 type Tone = "neutral" | "muted" | "success" | "warning" | "error";
 
-const TEXT: Record<Tone, string> = {
-  neutral: colors.ink,
-  muted: colors.ink60,
-  success: colors.success,
-  warning: colors.warning,
-  error: colors.error,
-};
-
 export function Badge({ label, tone = "neutral", style }: { label: string; tone?: Tone; style?: StyleProp<ViewStyle> }) {
+  const { colors } = useTheme();
+  const TEXT: Record<Tone, string> = {
+    neutral: colors.ink,
+    muted: colors.ink60,
+    success: colors.success,
+    warning: colors.warning,
+    error: colors.error,
+  };
   const color = TEXT[tone];
   const borderColor = tone === "neutral" || tone === "muted" ? colors.line : color;
   return (

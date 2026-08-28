@@ -37,3 +37,23 @@ export async function setOrderStatus(id: string, status: OrderStatus): Promise<A
   revalidatePath("/");
   return { ok: true };
 }
+
+/** Cancel a still-unpaid Monime order: releases its stock hold and expires
+ *  the payment_intent — a blind `setOrderStatus(id, "cancelled")` would
+ *  leave the reservation stuck forever. There is no manual "confirm" path:
+ *  pending_payment -> confirmed only ever happens via the verified webhook. */
+export async function cancelPendingMonimeOrder(id: string): Promise<ActionResult> {
+  const staff = await requireStaff();
+  const { data, error } = await createAdminClient().rpc("fn_cancel_pending_monime_order", {
+    p_order_id: id,
+    p_actor: staff.id,
+  });
+  if (error) return { ok: false, error: error.message };
+  if (data !== "cancelled") return { ok: false, error: `Couldn't cancel (${data}) — refresh and try again.` };
+
+  revalidatePath("/orders");
+  revalidatePath(`/orders/${id}`);
+  revalidatePath("/dispatch");
+  revalidatePath("/");
+  return { ok: true };
+}

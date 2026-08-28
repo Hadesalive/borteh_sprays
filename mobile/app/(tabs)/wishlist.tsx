@@ -1,7 +1,6 @@
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Heart } from "phosphor-react-native";
 import { useMemo } from "react";
 import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, UIManager, View } from "react-native";
@@ -14,7 +13,8 @@ import { HeaderActions } from "@/components/ui";
 import { productSubline, useProducts } from "@/lib/api";
 import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 import { toggleWish, useWishlist } from "@/lib/wishlist";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -23,6 +23,7 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
 
 /** Skeleton mirroring a saved row — thumb + name/notes/price lines. */
 function RowSkeleton() {
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.row}>
       <Skel w={96} h={112} />
@@ -40,6 +41,8 @@ export default function Wishlist() {
   const router = useRouter();
   const slugs = useWishlist();
   const { data, isLoading } = useProducts();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const items = useMemo(
     () => slugs.map((slug) => (data ?? []).find((p) => p.slug === slug)).filter((p): p is NonNullable<typeof p> => p != null),
@@ -50,7 +53,7 @@ export default function Wishlist() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: space["3xl"] }}>
         {/* header — present in every state, like the other tabs */}
         <View style={s.headerRow}>
@@ -121,7 +124,7 @@ export default function Wishlist() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   row: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },

@@ -1,7 +1,6 @@
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Plus } from "phosphor-react-native";
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,7 +14,8 @@ import { useProducts } from "@/lib/api";
 import { addComboToBag, useCombo } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 export default function ComboDetail() {
   const insets = useSafeAreaInsets();
@@ -24,6 +24,8 @@ export default function ComboDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const combo = useCombo(slug);
   const { isLoading } = useProducts();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const leave = () => (router.canGoBack() ? router.back() : router.navigate("/"));
   const heroH = Math.round(width * 0.64);
@@ -39,7 +41,7 @@ export default function ComboDetail() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + 120 }}>
         <View style={[s.body, s.topRow]}>
           <BackButton onPress={leave} />
@@ -123,7 +125,7 @@ export default function ComboDetail() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   body: { paddingHorizontal: space.gutter },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },

@@ -5,7 +5,8 @@ import { Pressable, ScrollView, StyleSheet } from "react-native";
 import { useBrands, useProducts } from "@/lib/api";
 import { brandLogo } from "@/lib/brandLogo";
 import { imageUrl } from "@/lib/supabase";
-import { colors, font, radius, space } from "@/lib/theme";
+import { Colors, font, radius, space } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 /** Brand row — each logo in a soft, uniform chip so the mismatched set reads organized. */
@@ -15,6 +16,7 @@ export function BrandBand() {
   // brands derived from the catalog if curation isn't available yet.
   const { data: curated, error } = useBrands();
   const { data: products } = useProducts();
+  const s = useThemedStyles(makeStyles);
 
   const derived = useMemo(() => {
     const m = new Map<string, string>();
@@ -57,7 +59,7 @@ export function BrandBand() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   rail: { paddingHorizontal: space.xl, gap: space.md, alignItems: "center", paddingVertical: space.sm },
   chip: {
     width: 116,

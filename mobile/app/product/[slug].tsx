@@ -23,7 +23,8 @@ import { useRestockSub, useToggleRestockSub } from "@/lib/notifications";
 import { productImage } from "@/lib/productImage";
 import { recordView } from "@/lib/recentlyViewed";
 import { useReviews } from "@/lib/reviews";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 import { toggleWish, useWishlist } from "@/lib/wishlist";
 
@@ -51,6 +52,8 @@ export default function ProductDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const { height } = useWindowDimensions();
   const heroH = Math.max(320, Math.min(Math.round(height * 0.46), 460));
   const { data, isLoading } = useProducts();
@@ -120,7 +123,7 @@ export default function ProductDetail() {
   if (!product) {
     return (
       <View style={s.screen}>
-        <StatusBar style="dark" />
+        <ThemedStatusBar />
         <View style={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter }}>
           <BackButton onPress={() => router.back()} />
           {isLoading ? (
@@ -201,7 +204,7 @@ export default function ProductDetail() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView
         ref={scrollRef}
         showsVerticalScrollIndicator={false}
@@ -460,7 +463,7 @@ export default function ProductDetail() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   hero: { backgroundColor: colors.surface },
   body: { paddingHorizontal: space.gutter },

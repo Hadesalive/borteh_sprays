@@ -1,7 +1,8 @@
 import { Eye, EyeSlash } from "phosphor-react-native";
 import { useState } from "react";
 import { type KeyboardTypeOptions, Pressable, StyleSheet, TextInput, View } from "react-native";
-import { colors, font, space } from "@/lib/theme";
+import { Colors, font, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 // Maison input — h52, paper bg, 1px squared border, label above in 12px uppercase.
@@ -35,6 +36,8 @@ export function Field({
   helper?: string;
   minimal?: boolean;
 }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const [hidden, setHidden] = useState(true);
   const hasError = !!error;
   return (
@@ -72,7 +75,7 @@ export function Field({
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   wrap: { gap: space.xs },
   field: { flexDirection: "row", alignItems: "center", gap: space.md, height: 52, paddingHorizontal: space.lg, borderWidth: 1, backgroundColor: colors.paper },
   input: { flex: 1, fontFamily: font.regular, fontSize: 16, color: colors.ink, padding: 0 },

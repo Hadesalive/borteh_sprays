@@ -18,6 +18,7 @@ import { NotificationsLive } from "@/components/NotificationsLive";
 import { NotificationToast } from "@/components/NotificationToast";
 import { QuickPeek } from "@/components/QuickPeek";
 import { initPush } from "@/lib/push";
+import { ThemeProvider, useTheme } from "@/lib/theme-context";
 import { initTracking } from "@/lib/track";
 
 SplashScreen.preventAutoHideAsync();
@@ -51,15 +52,28 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FAF8F5" } }}>
-          <Stack.Screen name="filter" options={{ presentation: "transparentModal", animation: "fade" }} />
-          <Stack.Screen name="review" options={{ presentation: "modal" }} />
-        </Stack>
-        <QuickPeek />
-        <NotificationsLive />
-        <NotificationToast />
-      </QueryClientProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemedShell />
+        </QueryClientProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
+  );
+}
+
+// Rendered inside ThemeProvider so the Stack's content background follows the
+// active theme (prevents a light flash between screens in dark mode).
+function ThemedShell() {
+  const { colors } = useTheme();
+  return (
+    <>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.paper } }}>
+        <Stack.Screen name="filter" options={{ presentation: "transparentModal", animation: "fade" }} />
+        <Stack.Screen name="review" options={{ presentation: "modal" }} />
+      </Stack>
+      <QuickPeek />
+      <NotificationsLive />
+      <NotificationToast />
+    </>
   );
 }

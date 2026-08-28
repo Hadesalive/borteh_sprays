@@ -1,14 +1,16 @@
 import { memo } from "react";
 import { StyleSheet } from "react-native";
 import Svg, { Circle, Ellipse, Path } from "react-native-svg";
-import { colors } from "@/lib/theme";
+import { useTheme } from "@/lib/theme-context";
 
 // House-drawn ornaments for the leaderboard — a laurel, a trophy, and the guilloche
 // engraving that ties back to the member card. Pure line/leaf work, Maison palette,
 // no gradients. These carry the "special occasion" feeling a plain list can't.
 
 /** Laurel wreath, open at the top — leaves radiating around a circle. Frames the champion. */
-export const Laurel = memo(function Laurel({ size = 120, color = colors.accent }: { size?: number; color?: string }) {
+export const Laurel = memo(function Laurel({ size = 120, color }: { size?: number; color?: string }) {
+  const { colors } = useTheme();
+  const tint = color ?? colors.accent;
   const c = size / 2;
   const R = size * 0.38;
   const leafRx = size * 0.085;
@@ -32,7 +34,7 @@ export const Laurel = memo(function Laurel({ size = 120, color = colors.accent }
             cy={y}
             rx={leafRx}
             ry={leafRy}
-            fill={color}
+            fill={tint}
             opacity={0.92}
             rotation={a - 20}
             originX={x}
@@ -41,24 +43,26 @@ export const Laurel = memo(function Laurel({ size = 120, color = colors.accent }
         );
       })}
       {/* two closing berries at the base */}
-      <Circle cx={c - leafRx} cy={c + R + 1} r={size * 0.02} fill={color} />
-      <Circle cx={c + leafRx} cy={c + R + 1} r={size * 0.02} fill={color} />
+      <Circle cx={c - leafRx} cy={c + R + 1} r={size * 0.02} fill={tint} />
+      <Circle cx={c + leafRx} cy={c + R + 1} r={size * 0.02} fill={tint} />
     </Svg>
   );
 });
 
 /** A cup trophy, filled bronze with a thin rim. The screen's emblem. */
-export const Trophy = memo(function Trophy({ size = 46, color = colors.accent }: { size?: number; color?: string }) {
+export const Trophy = memo(function Trophy({ size = 46, color }: { size?: number; color?: string }) {
+  const { colors } = useTheme();
+  const tint = color ?? colors.accent;
   const w = size;
   const h = size * (56 / 48);
   return (
     <Svg width={w} height={h} viewBox="0 0 48 56" pointerEvents="none">
-      <Path d="M12 10 C4 10 4 23 14 23" stroke={color} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-      <Path d="M36 10 C44 10 44 23 34 23" stroke={color} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-      <Path d="M11 6 H37 V15 C37 27 31 34 24 34 C17 34 11 27 11 15 Z" fill={color} />
-      <Path d="M21.5 34 H26.5 V42 H21.5 Z" fill={color} />
-      <Path d="M16 42 H32 V45 H16 Z" fill={color} />
-      <Path d="M12.5 52 L16 45 H32 L35.5 52 Z" fill={color} />
+      <Path d="M12 10 C4 10 4 23 14 23" stroke={tint} strokeWidth={2.4} fill="none" strokeLinecap="round" />
+      <Path d="M36 10 C44 10 44 23 34 23" stroke={tint} strokeWidth={2.4} fill="none" strokeLinecap="round" />
+      <Path d="M11 6 H37 V15 C37 27 31 34 24 34 C17 34 11 27 11 15 Z" fill={tint} />
+      <Path d="M21.5 34 H26.5 V42 H21.5 Z" fill={tint} />
+      <Path d="M16 42 H32 V45 H16 Z" fill={tint} />
+      <Path d="M12.5 52 L16 45 H32 L35.5 52 Z" fill={tint} />
     </Svg>
   );
 });

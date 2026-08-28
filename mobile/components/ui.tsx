@@ -5,11 +5,14 @@ import { type ReactNode } from "react";
 import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
 import { useSession } from "@/lib/auth";
 import { useUnreadCount } from "@/lib/notifications";
-import { colors, font, label as labelToken, space } from "@/lib/theme";
+import { Colors, font, label as labelToken, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
 /** Underlined ink label — the Maison inline action ("Shop the edit", "View all", "Explore"). */
-export function LinkLabel({ label, onPress, color = colors.ink }: { label: string; onPress?: () => void; color?: string }) {
+export function LinkLabel({ label, onPress, color }: { label: string; onPress?: () => void; color?: string }) {
+  const { colors } = useTheme();
+  color = color ?? colors.ink;
   return (
     <Pressable onPress={onPress} hitSlop={8} disabled={!onPress} accessibilityRole="button" accessibilityLabel={label}>
       <View style={{ alignSelf: "flex-start", borderBottomWidth: 1, borderBottomColor: color, paddingBottom: 2 }}>
@@ -23,6 +26,7 @@ export function LinkLabel({ label, onPress, color = colors.ink }: { label: strin
 
 /** Serif section head + optional underlined trailing link. */
 export function SectionHeader({ title, trailing, onPressTrailing }: { title: string; trailing?: string; onPressTrailing?: () => void }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.section}>
       <AppText variant="heading">{title}</AppText>
@@ -32,16 +36,20 @@ export function SectionHeader({ title, trailing, onPressTrailing }: { title: str
 }
 
 /** Monogram avatar; falls back to a user glyph. */
-export function Avatar({ initials, size = 32 }: { initials?: string; size?: number }) {
+export function Avatar({ initials, size = 32, light = false }: { initials?: string; size?: number; light?: boolean }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   return (
-    <View style={[s.avatar, { width: size, height: size, borderRadius: size / 2 }]}>
-      {initials ? <AppText style={s.avatarTxt}>{initials}</AppText> : <User size={Math.round(size * 0.52)} color={colors.ink40} />}
+    <View style={[s.avatar, light && s.avatarLight, { width: size, height: size, borderRadius: size / 2 }]}>
+      {initials ? <AppText style={[s.avatarTxt, light && s.avatarTxtLight]}>{initials}</AppText> : <User size={Math.round(size * 0.52)} color={light ? "rgba(250,248,245,0.9)" : colors.ink40} />}
     </View>
   );
 }
 
 /** Bell with an unread-count badge (bronze — the header's one accent). */
 export function BellButton({ onPress, count = 0, light = false }: { onPress?: () => void; count?: number; light?: boolean }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   return (
     <Pressable
       onPress={onPress}
@@ -67,13 +75,14 @@ export function HeaderActions({ light = false }: { light?: boolean } = {}) {
   const router = useRouter();
   const session = useSession();
   const unread = useUnreadCount();
+  const s = useThemedStyles(makeStyles);
   const name = (session?.user?.user_metadata?.display_name as string | undefined)?.trim();
   const initials = name?.split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("") || undefined;
   return (
     <View style={s.headerActions}>
       <BellButton onPress={() => router.push("/notifications")} count={unread} light={light} />
       <Pressable onPress={() => router.push("/profile")} accessibilityRole="button" accessibilityLabel="Account">
-        <Avatar initials={initials} />
+        <Avatar initials={initials} light={light} />
       </Pressable>
     </View>
   );
@@ -83,6 +92,7 @@ export function HeaderActions({ light = false }: { light?: boolean } = {}) {
  *  functional contrast (an ink glyph is invisible on a dark bottle shot), never decoration.
  *  Blur on iOS; the paper tint keeps it readable where Android falls back to translucency. */
 export function FrostCircle({ size = 36, children }: { size?: number; children: ReactNode }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={[s.frost, { width: size, height: size, borderRadius: size / 2 }]}>
       <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
@@ -104,6 +114,8 @@ export function SearchBar({
   onFilter?: () => void;
   placeholder?: string;
 }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.field}>
       <MagnifyingGlass size={20} color={colors.ink40} />
@@ -130,6 +142,8 @@ export function SearchBar({
 
 /** Looks like the search field but acts as a button — used on Shop to jump to Search. */
 export function SearchButton({ onPress, onFilter, placeholder = "Search fragrances, notes, brands" }: { onPress: () => void; onFilter?: () => void; placeholder?: string }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   return (
     <View style={s.field}>
       <MagnifyingGlass size={20} color={colors.ink40} />
@@ -152,6 +166,8 @@ export function SearchButton({ onPress, onFilter, placeholder = "Search fragranc
 
 /** Squared toggle chip — ink fill when active, 1px line when idle. */
 export function CategoryChip({ label, icon, active, onPress }: { label: string; icon?: ReactNode; active?: boolean; onPress?: () => void }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   return (
     <Pressable onPress={onPress} style={[s.chip, active ? s.chipActive : s.chipIdle]}>
       {icon}
@@ -164,6 +180,7 @@ export function CategoryChip({ label, icon, active, onPress }: { label: string; 
 
 /** Squared Maison toggle — ink fill + paper knob when on, 1px line when off. */
 export function ToggleSwitch({ value, onToggle }: { value: boolean; onToggle: (v: boolean) => void }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <Pressable
       onPress={() => onToggle(!value)}
@@ -179,6 +196,7 @@ export function ToggleSwitch({ value, onToggle }: { value: boolean; onToggle: (v
 
 /** Squared surface tile for a labelled category. */
 export function ScentTile({ label, count, onPress, style }: { label: string; count?: number; onPress?: () => void; style?: StyleProp<ViewStyle> }) {
+  const s = useThemedStyles(makeStyles);
   return (
     <Pressable onPress={onPress} style={[s.scentTile, style]} accessibilityRole="button" accessibilityLabel={`Shop ${label}`}>
       <AppText variant="serif20">{label}</AppText>
@@ -191,10 +209,12 @@ export function ScentTile({ label, count, onPress, style }: { label: string; cou
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   section: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", paddingHorizontal: space.gutter },
   avatar: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, alignItems: "center", justifyContent: "center", overflow: "hidden" },
   avatarTxt: { fontFamily: font.semibold, fontSize: 12, color: colors.ink },
+  avatarLight: { backgroundColor: "rgba(250,248,245,0.16)", borderColor: "rgba(250,248,245,0.6)" },
+  avatarTxtLight: { color: "rgba(250,248,245,0.96)" },
   bellBadge: { position: "absolute", top: -5, right: -7, minWidth: 16, height: 16, borderRadius: 999, paddingHorizontal: 3, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center" },
   bellBadgeTxt: { fontFamily: font.semibold, fontSize: 10, lineHeight: 12, color: colors.paper },
   headerActions: { flexDirection: "row", alignItems: "center", gap: space.lg },

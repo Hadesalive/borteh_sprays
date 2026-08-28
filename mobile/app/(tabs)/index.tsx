@@ -1,4 +1,3 @@
-import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, useRouter } from "expo-router";
@@ -21,7 +20,8 @@ import { useCombos } from "@/lib/combos";
 import { useHomeFeed, useMyTopFamilies, useRankedCollections } from "@/lib/feed";
 import { useOnboarded } from "@/lib/onboarding";
 import { imageUrl } from "@/lib/supabase";
-import { colors, space } from "@/lib/theme";
+import { Colors, lightColors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 
 const HERO_FALLBACK = require("../../assets/home/hero-gold.jpg");
@@ -42,6 +42,7 @@ const COLLECTION_FALLBACK: Record<string, number> = {
 };
 const PAPER = "rgba(250,248,245,0.86)"; // legible label-on-photo
 const SCRIM_BOTTOM = ["transparent", "rgba(24,20,16,0.85)"] as const;
+const SCRIM_TOP = ["rgba(20,16,12,0.6)", "transparent"] as const; // legibility for the floating header
 
 function greeting(name?: string) {
   const h = new Date().getHours();
@@ -51,6 +52,8 @@ function greeting(name?: string) {
 
 export default function Home() {
   const insets = useSafeAreaInsets();
+  const { colors, mode } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const router = useRouter();
   const { width } = useWindowDimensions();
   const session = useSession();
@@ -68,7 +71,7 @@ export default function Home() {
   const combos = useCombos();
 
   const viewportH = useRef(0);
-  const [headerH, setHeaderH] = useState(insets.top + 52); // measured on layout; estimate avoids first-frame jump
+  const [overHero, setOverHero] = useState(true); // status bar light while the hero is in view
   useEffect(() => {
     resetImpressionRegistry();
   }, []);
@@ -138,7 +141,7 @@ export default function Home() {
   if (isLoading && products.length === 0) {
     return (
       <View style={s.screen}>
-        <StatusBar style="dark" />
+        <ThemedStatusBar />
         <HomeSkeleton topInset={insets.top} heroW={width} />
       </View>
     );
@@ -146,47 +149,60 @@ export default function Home() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <StatusBar style={overHero ? "light" : mode === "dark" ? "light" : "dark"} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: headerH, paddingBottom: space["3xl"] }}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.ink40} colors={[colors.accent]} progressViewOffset={headerH} />}
+        contentContainerStyle={{ paddingBottom: space["3xl"] }}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.ink40} colors={[colors.accent]} progressViewOffset={insets.top} />}
         scrollEventThrottle={16}
-        onScroll={(e) => reportScroll(e.nativeEvent.contentOffset.y, viewportH.current)}
+        onScroll={(e) => {
+          const y = e.nativeEvent.contentOffset.y;
+          reportScroll(y, viewportH.current);
+          const over = y < (heroH + insets.top) * 0.5;
+          if (over !== overHero) setOverHero(over);
+        }}
         onLayout={(e) => {
           viewportH.current = e.nativeEvent.layout.height;
           reportScroll(0, e.nativeEvent.layout.height);
         }}
       >
-        {/* search pill — the high-intent path to full search */}
-        <View style={s.searchWrap}>
-          <SearchButton onPress={() => router.push("/search")} onFilter={() => router.push("/shop")} placeholder="Fragrances, notes, brands" />
-        </View>
-
-        {/* hero — bounded image with a real paper button */}
+        {/* immersive hero — full-bleed, bleeds up under the status bar. The greeting +
+            actions float over the photo (top scrim); the caption sits on the bottom scrim. */}
         <TrackImpression module="hero" position={0}>
-          <Pressable
-            onPress={() => {
-              track("module_tap", { module: "hero", position: 0, metadata: { to: String(heroTo) } });
-              router.push(heroTo);
-            }}
-            accessibilityRole="button"
-            accessibilityLabel={heroCta}
-          >
-            <View style={[s.hero, { height: heroH }]}>
+          <View style={[s.hero, { height: heroH + insets.top }]}>
+            <Pressable
+              onPress={() => {
+                track("module_tap", { module: "hero", position: 0, metadata: { to: String(heroTo) } });
+                router.push(heroTo);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={heroCta}
+              style={StyleSheet.absoluteFill}
+            >
               <Image source={heroSource} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" transition={300} />
+              <LinearGradient colors={SCRIM_TOP} style={[s.scrimTop, { height: insets.top + 104 }]} pointerEvents="none" />
               <LinearGradient colors={SCRIM_BOTTOM} style={s.scrimBottom} pointerEvents="none" />
               <View style={s.heroCaption} pointerEvents="none">
                 <AppText variant="label" style={{ color: PAPER }}>{heroLabel}</AppText>
                 <AppText variant="display" numberOfLines={2} style={[s.onPhoto, { marginTop: space.xs }]}>{heroTitle}</AppText>
                 <View style={s.heroBtn}>
-                  <AppText variant="label" style={{ color: colors.ink }}>{heroCta}</AppText>
+                  <AppText variant="label" style={{ color: lightColors.ink }}>{heroCta}</AppText>
                 </View>
               </View>
+            </Pressable>
+            {/* header floats over the hero (above the Pressable so bell/avatar taps land) */}
+            <View style={[s.heroHeader, { top: insets.top + space.xs }]} pointerEvents="box-none">
+              <AppText variant="heading" numberOfLines={1} style={[s.onPhoto, { flex: 1 }]}>{greeting(firstName)}</AppText>
+              <HeaderActions light />
             </View>
-          </Pressable>
+          </View>
         </TrackImpression>
+
+        {/* search — on paper, just below the hero */}
+        <View style={s.searchWrap}>
+          <SearchButton onPress={() => router.push("/search")} onFilter={() => router.push("/shop")} placeholder="Fragrances, notes, brands" />
+        </View>
 
         {/* shop by note — horizontal rail, ordered by taste */}
         {orderedNotes.length > 0 ? (
@@ -286,34 +302,21 @@ export default function Home() {
           </Pressable>
         ) : null}
       </ScrollView>
-
-      {/* frosted glass header — content scrolls under it; a light paper tint keeps the dark
-          status-bar icons + greeting legible even when the hero photo passes beneath */}
-      <View style={s.headerAbs} onLayout={(e) => setHeaderH(e.nativeEvent.layout.height)} pointerEvents="box-none">
-        <BlurView intensity={40} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
-        <View style={[StyleSheet.absoluteFill, s.headerTint]} pointerEvents="none" />
-        <View style={s.headerLine} pointerEvents="none" />
-        <View style={[s.header, { paddingTop: insets.top + space.xs }]} pointerEvents="box-none">
-          <AppText variant="heading" numberOfLines={1} style={{ flex: 1 }}>{greeting(firstName)}</AppText>
-          <HeaderActions />
-        </View>
-      </View>
     </View>
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  headerAbs: { position: "absolute", top: 0, left: 0, right: 0, zIndex: 10, overflow: "hidden" },
-  headerTint: { backgroundColor: "rgba(250,248,245,0.6)" },
-  headerLine: { position: "absolute", bottom: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(228,223,214,0.7)" },
-  header: { flexDirection: "row", alignItems: "center", gap: space.md, paddingHorizontal: space.gutter, paddingBottom: space.md },
-  searchWrap: { paddingHorizontal: space.gutter, paddingTop: space.lg },
-  hero: { backgroundColor: colors.surface, overflow: "hidden", marginTop: space.xl },
+  heroHeader: { position: "absolute", left: space.gutter, right: space.gutter, flexDirection: "row", alignItems: "center", gap: space.md },
+  searchWrap: { paddingHorizontal: space.gutter, paddingTop: space.xl },
+  hero: { backgroundColor: colors.surface, overflow: "hidden" },
+  scrimTop: { position: "absolute", top: 0, left: 0, right: 0 },
   scrimBottom: { position: "absolute", bottom: 0, left: 0, right: 0, height: 220 },
   heroCaption: { position: "absolute", left: space.gutter, right: space.gutter, bottom: space.xl },
-  onPhoto: { color: colors.paper },
-  heroBtn: { alignSelf: "flex-start", marginTop: space.lg, height: 44, paddingHorizontal: space.xl, backgroundColor: colors.paper, alignItems: "center", justifyContent: "center" },
+  // On-photo text/button stay light in both themes (they sit over imagery).
+  onPhoto: { color: lightColors.paper },
+  heroBtn: { alignSelf: "flex-start", marginTop: space.lg, height: 44, paddingHorizontal: space.xl, backgroundColor: lightColors.paper, alignItems: "center", justifyContent: "center" },
   rail: { paddingHorizontal: space.gutter, gap: space.lg, paddingTop: space.lg },
   gutter: { paddingHorizontal: space.gutter },
   noteCard: { width: 120 },

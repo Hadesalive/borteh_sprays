@@ -3,7 +3,8 @@ import { Trash } from "phosphor-react-native";
 import { type ReactNode, useRef } from "react";
 import { Animated, PanResponder, Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/Text";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // Swipe-left-to-delete without react-native-gesture-handler (not installed) — plain PanResponder
 // + Animated, so no native module / rebuild. Swiping left reveals a Delete action; releasing past
@@ -15,6 +16,8 @@ const OPEN_AT = 48; // reveal the button past this
 const DELETE_AT = 200; // long-swipe = delete outright
 
 export function SwipeToDelete({ children, onDelete, label = "Delete" }: { children: ReactNode; onDelete: () => void; label?: string }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const tx = useRef(new Animated.Value(0)).current;
   const openRef = useRef(false);
 
@@ -63,7 +66,7 @@ export function SwipeToDelete({ children, onDelete, label = "Delete" }: { childr
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   wrap: { overflow: "hidden" },
   action: {
     position: "absolute",

@@ -1,21 +1,12 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { humanize, statusTone } from "@/components/admin/chip";
 import { formatInt, formatLe } from "@/lib/format";
+import { paymentLabel } from "@/lib/payment-channel";
 import { ExportButton } from "@/components/admin/export-button";
-import { listOrders, getOrderStats, PAGE_SIZE } from "@/lib/queries/orders";
+import { listOrders, getOrderStats, getMonimeChannels, PAGE_SIZE } from "@/lib/queries/orders";
 import { OrdersTable, type OrderRow, type SummaryStat } from "@/components/admin/orders-table";
 
 export const dynamic = "force-dynamic";
-
-function paymentLabel(method: string): string {
-  switch (method) {
-    case "cash_on_delivery": return "COD";
-    case "cash": return "Cash";
-    case "monime": return "Monime";
-    case "card": return "Card";
-    default: return method ? humanize(method) : "—";
-  }
-}
 
 function fmtPlaced(iso: string | null): string {
   if (!iso) return "";
@@ -45,6 +36,9 @@ export default async function OrdersPage({
     }
   }
 
+  const monimeOrderIds = rows.filter((r) => r.payment_method === "monime").map((r) => r.id);
+  const channels = await getMonimeChannels(db, monimeOrderIds);
+
   const orders: OrderRow[] = rows.map((r) => {
     const cust = customers.get(r.user_id ?? "");
     return {
@@ -54,7 +48,7 @@ export default async function OrdersPage({
       customer: cust?.name || "Walk-in",
       phone: cust?.phone || "—",
       channel: humanize(r.fulfillment_type ?? ""),
-      payment: paymentLabel(r.payment_method ?? ""),
+      payment: paymentLabel(r.payment_method, channels.get(r.id)),
       status: r.status,
       statusLabel: humanize(r.status),
       statusTone: statusTone(r.status),

@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Coins, Handbag, Heart, type IconProps, Lightbulb, Medal, Phone, Sparkle, UsersThree } from "phosphor-react-native";
 import { type ComponentType } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -8,7 +7,8 @@ import { BackButton } from "@/components/BackButton";
 import { Skel } from "@/components/Skeleton";
 import { AppText } from "@/components/Text";
 import { useTips } from "@/lib/tips";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // "How to use Borteh" — plain-language tips read live from public.tip (owner-editable).
 // The stored `icon` string maps to a known Phosphor glyph; anything unknown falls back.
@@ -28,10 +28,12 @@ export default function Tips() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { data: tips, isLoading } = useTips();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + space["3xl"] }}>
         <BackButton onPress={() => router.back()} />
         <AppText variant="heading" style={{ marginTop: space.lg }}>How to use Borteh</AppText>
@@ -76,7 +78,7 @@ export default function Tips() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   card: { flexDirection: "row", alignItems: "flex-start", gap: space.lg, paddingVertical: space.xl, borderBottomWidth: 1, borderBottomColor: colors.line },
 });

@@ -8,7 +8,8 @@ import { type Product, productSubline } from "@/lib/api";
 import { formatLe } from "@/lib/format";
 import { openPeek } from "@/lib/quickPeek";
 import { productImage } from "@/lib/productImage";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 import { toggleWish, useWishlist } from "@/lib/wishlist";
 import { AppText } from "./Text";
@@ -39,6 +40,7 @@ export function ProductCard({
   shape?: "top" | "tearLeft" | "tearRight";
 }) {
   const router = useRouter();
+  const s = useThemedStyles(makeStyles);
   const liked = useWishlist().includes(product.slug);
   const scale = useRef(new Animated.Value(1)).current;
   const heartScale = useRef(new Animated.Value(1)).current;
@@ -116,7 +118,7 @@ export function ProductCard({
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   // depth: a soft, warm shadow on the un-clipped bed; kept low so it lifts, not floats.
   // Corner radii come in per-instance (shape) so the shop grid can mirror the petal.
   imageBed: {

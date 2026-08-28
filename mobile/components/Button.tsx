@@ -1,7 +1,8 @@
 import * as Haptics from "expo-haptics";
 import { type ReactNode, useRef } from "react";
 import { Animated, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
-import { colors, font, label as labelToken, space } from "@/lib/theme";
+import { Colors, font, label as labelToken, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 
 // Maison variants. primary = ink fill / paper label, secondary = 1px ink border,
 // ghost = underlined label. Legacy "outline"/"tonal" map onto these.
@@ -39,6 +40,8 @@ export function Button({
   elevated?: boolean;
   glass?: boolean;
 }) {
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
   const scale = useRef(new Animated.Value(1)).current;
   const spring = (to: number) => Animated.spring(scale, { toValue: to, useNativeDriver: true, speed: 40, bounciness: 0 }).start();
 
@@ -85,7 +88,7 @@ export function Button({
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   base: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm, height: 52, paddingHorizontal: space.lg },
   primary: { backgroundColor: colors.ink },
   secondary: { borderWidth: 1, borderColor: colors.ink, backgroundColor: "transparent" },

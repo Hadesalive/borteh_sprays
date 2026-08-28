@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { AccessibilityInfo, Animated, type DimensionValue, StyleSheet, View } from "react-native";
-import { colors, space } from "@/lib/theme";
+import { space } from "@/lib/theme";
+import { useTheme } from "@/lib/theme-context";
 
 /** A single pulsing placeholder block — squared surface, no spinner. */
 export function Skel({ w, h, r = 0, style }: { w?: DimensionValue; h: number; r?: number; style?: object }) {
+  const { colors } = useTheme();
   const pulse = useRef(new Animated.Value(0.5)).current;
   useEffect(() => {
     let cancelled = false;

@@ -1,6 +1,5 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
@@ -11,7 +10,8 @@ import { ToggleSwitch } from "@/components/ui";
 import { useLeaderboardVisible, useNotifPrefs, useSetLeaderboardVisible, useUpdateNotifPref } from "@/lib/account";
 import { useSession } from "@/lib/auth";
 import { disablePush, enablePush, usePushStatus } from "@/lib/push";
-import { colors, space } from "@/lib/theme";
+import { Colors, space } from "@/lib/theme";
+import { ThemedStatusBar, useThemedStyles } from "@/lib/theme-context";
 
 // Notification preferences — two honest switches. Push state is the REAL state
 // (permission + saved token via lib/push), not a hopeful flag; offers map to
@@ -26,6 +26,7 @@ export default function Preferences() {
   const pushStatus = usePushStatus();
   const { data: onBoard } = useLeaderboardVisible();
   const setOnBoard = useSetLeaderboardVisible();
+  const s = useThemedStyles(makeStyles);
 
   const pushOn = pushStatus === "enabled" && (prefs?.pushEnabled ?? false);
 
@@ -49,7 +50,7 @@ export default function Preferences() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + space["3xl"] }}>
         <BackButton onPress={() => router.back()} />
         <AppText variant="heading" style={{ marginTop: space.lg }}>Notifications</AppText>
@@ -109,7 +110,7 @@ export default function Preferences() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   row: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
   rowText: { flex: 1, minWidth: 0 },

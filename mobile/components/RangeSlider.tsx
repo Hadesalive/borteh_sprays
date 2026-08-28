@@ -1,7 +1,8 @@
 import * as Haptics from "expo-haptics";
 import { useMemo, useRef, useState } from "react";
 import { PanResponder, StyleSheet, View } from "react-native";
-import { colors } from "@/lib/theme";
+import { Colors } from "@/lib/theme";
+import { useThemedStyles } from "@/lib/theme-context";
 
 // Maison dual-thumb range slider — 2px line track, ink active segment, round paper
 // thumbs with an ink border (the design's one round control besides avatars/knobs).
@@ -24,6 +25,7 @@ export function RangeSlider({
   high: number;
   onChange: (low: number, high: number) => void;
 }) {
+  const s = useThemedStyles(makeStyles);
   const [width, setWidth] = useState(0);
   // Refs so the responders always see current values/width (they're created once).
   const state = useRef({ low, high, width: 0, min, max, step, onChange });
@@ -79,7 +81,7 @@ export function RangeSlider({
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   wrap: { height: 32, justifyContent: "center" },
   track: { position: "absolute", left: 0, right: 0, height: 2, backgroundColor: colors.line },
   active: { position: "absolute", height: 2, backgroundColor: colors.ink },

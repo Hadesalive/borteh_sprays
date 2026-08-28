@@ -1,15 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { Check, Money, Tag } from "phosphor-react-native";
+import * as WebBrowser from "expo-web-browser";
+import { Check, CreditCard, Money, Tag } from "phosphor-react-native";
 import { useEffect, useMemo, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
-import { ListRow } from "@/components/ListRow";
 import { AppText } from "@/components/Text";
 import { HeaderActions, LinkLabel, ToggleSwitch } from "@/components/ui";
 import { takePendingCoupon, tierFor, useLoyalty, useLoyaltyConfig, useLoyaltyTiers, validatePromo } from "@/lib/account";
@@ -18,8 +17,10 @@ import { useSession } from "@/lib/auth";
 import { cartTotalMinor, clearBag, useCart, useCartCombos } from "@/lib/cart";
 import { resolveComboClaims, useCombos } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
-import { placeOrder } from "@/lib/orders";
-import { colors, font, space } from "@/lib/theme";
+import { placeOrder, type PaymentMethod } from "@/lib/orders";
+import { initMonimeCheckout } from "@/lib/payments";
+import { Colors, font, space } from "@/lib/theme";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 
 export default function Checkout() {
@@ -36,6 +37,7 @@ export default function Checkout() {
   const [phone, setPhone] = useState((session?.user.user_metadata?.phone as string) || "");
   const [landmark, setLandmark] = useState("");
   const [notes, setNotes] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash_on_delivery");
   const [coupon, setCoupon] = useState("");
   const [applied, setApplied] = useState<{ code: string; label: string; discountMinor: number } | null>(null);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
@@ -46,6 +48,8 @@ export default function Checkout() {
   const { data: loyalty } = useLoyalty();
   const { data: loyaltyCfg } = useLoyaltyConfig();
   const { data: tiers } = useLoyaltyTiers();
+  const { colors } = useTheme();
+  const s = useThemedStyles(makeStyles);
 
   const subtotal = cartTotalMinor(items);
   // Combo deal savings — the pairs the shopper added, priced by the same rule the
@@ -115,7 +119,7 @@ export default function Checkout() {
     setBusy(true);
     setError(null);
     try {
-      const { orderId } = await placeOrder({
+      const { orderId, paymentIntentId } = await placeOrder({
         items: items.map((it) => ({ variant_id: it.variantId, qty: it.qty })),
         landmark,
         phone,
@@ -124,7 +128,46 @@ export default function Checkout() {
         promoCode: applied?.code ?? null, // re-validated + priced by the server
         redeemPoints, // balance-checked + capped by the server
         combos: comboPayload, // pairs to deal-price; server re-validates + reprices
+        paymentMethod,
       });
+
+      // Monime: the order is reserved but stays pending_payment until the
+      // webhook confirms it — the redirect is NEVER proof of payment (only
+      // the webhook is), but distinct success/cancel URLs at least tell us
+      // whether the customer backed out, so we don't celebrate a cancel.
+      if (paymentMethod === "monime" && paymentIntentId) {
+        let result: WebBrowser.WebBrowserAuthSessionResult;
+        try {
+          const { redirectUrl } = await initMonimeCheckout(paymentIntentId);
+          result = await WebBrowser.openAuthSessionAsync(redirectUrl, `borteh://order/${orderId}`);
+        } catch (e) {
+          console.warn("monime checkout failed to open", e);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          clearBag(); // the order is real and reserved server-side — don't resubmit it on retry
+          qc.invalidateQueries({ queryKey: ["orders"] });
+          Alert.alert(
+            "Couldn't open Monime",
+            "The payment screen didn't open. Your order is saved — tap \"Pay with Monime\" on the next screen to try again.",
+            [{ text: "OK", onPress: () => router.replace({ pathname: "/order/[id]", params: { id: orderId } }) }],
+          );
+          return;
+        }
+
+        const cancelled = result.type !== "success" || result.url.includes("payment=cancelled");
+        if (cancelled) {
+          // Customer backed out or the browser was dismissed without paying —
+          // the order sits unpaid (reserved, pending_payment) and can be
+          // retried from the order screen. No success haptic, no confetti.
+          clearBag();
+          qc.invalidateQueries({ queryKey: ["orders"] });
+          router.replace({ pathname: "/order/[id]", params: { id: orderId } });
+          return;
+        }
+        // Otherwise the customer completed the Monime flow — proceed below,
+        // but the order screen still shows "Awaiting confirmation" honestly
+        // until the webhook actually confirms it.
+      }
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       // recs: strongest signal — one purchase event per product, before the bag is cleared.
       for (const it of items) {
@@ -145,7 +188,7 @@ export default function Checkout() {
 
   return (
     <View style={s.screen}>
-      <StatusBar style="dark" />
+      <ThemedStatusBar />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + 120, paddingHorizontal: space.gutter }}>
           <View style={s.topRow}>
@@ -166,7 +209,32 @@ export default function Checkout() {
           {/* Payment */}
           <AppText variant="label" style={s.eyebrow}>Payment</AppText>
           <View style={{ marginTop: space.xs }}>
-            <ListRow icon={<Money size={20} color={colors.ink} weight="regular" />} title="Cash on delivery" value="Pay the rider on arrival" arrow={false} borderTop />
+            <Pressable
+              onPress={() => { Haptics.selectionAsync(); setPaymentMethod("cash_on_delivery"); }}
+              style={[s.payRow, s.top]}
+              accessibilityRole="button"
+              accessibilityState={{ selected: paymentMethod === "cash_on_delivery" }}
+            >
+              <Money size={20} color={colors.ink} weight="regular" />
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <AppText variant="body">Cash on delivery</AppText>
+                <AppText variant="caption" style={{ marginTop: 2 }}>Pay the rider on arrival</AppText>
+              </View>
+              {paymentMethod === "cash_on_delivery" ? <Check size={20} color={colors.accent} weight="regular" /> : null}
+            </Pressable>
+            <Pressable
+              onPress={() => { Haptics.selectionAsync(); setPaymentMethod("monime"); }}
+              style={s.payRow}
+              accessibilityRole="button"
+              accessibilityState={{ selected: paymentMethod === "monime" }}
+            >
+              <CreditCard size={20} color={colors.ink} weight="regular" />
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <AppText variant="body">Pay with Monime</AppText>
+                <AppText variant="caption" style={{ marginTop: 2 }}>Mobile money or card</AppText>
+              </View>
+              {paymentMethod === "monime" ? <Check size={20} color={colors.accent} weight="regular" /> : null}
+            </Pressable>
             {applied ? (
               <View style={s.couponRow}>
                 <Check size={20} color={colors.accent} weight="regular" />
@@ -267,10 +335,12 @@ export default function Checkout() {
   );
 }
 
-const s = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   eyebrow: { color: colors.ink60, marginTop: space["2xl"] },
+  payRow: { flexDirection: "row", alignItems: "center", gap: space.md, paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.line },
+  top: { borderTopWidth: 1, borderTopColor: colors.line },
   couponRow: { flexDirection: "row", alignItems: "center", gap: space.md, height: 56, borderBottomWidth: 1, borderBottomColor: colors.line },
   pointsRow: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.line },
   couponInput: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },

@@ -1,0 +1,33 @@
+# .easignore — shrinks the EAS Build upload for this monorepo.
+# EAS archives from the git root; only the mobile/ app is needed for the iOS build.
+# NOTE: when this file exists, EAS uses it INSTEAD of .gitignore, so it must list
+# everything to exclude (deps, artifacts) — not just the extras.
+
+# --- Dependencies (EAS runs `npm install` in the cloud; never upload these) ---
+node_modules/
+
+# --- Sibling projects not part of the mobile iOS build ---
+/web/
+/jobs/
+/scripts/
+/supabase/
+/docs/
+/.impeccable/
+
+# --- Expo / JS build artifacts ---
+.expo/
+dist/
+web-build/
+*.log
+.DS_Store
+
+# --- Native projects (EAS regenerates these with prebuild) ---
+/mobile/ios/
+/mobile/android/
+
+# --- Secrets: Supabase keys are set as EAS env vars, not uploaded ---
+.env
+**/.env
+
+# --- VCS ---
+.git/
