@@ -1,6 +1,8 @@
 import { ArrowRight } from "phosphor-react-native";
 import { type ReactNode } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { usePressScale } from "@/lib/animations";
 import { Colors, space } from "@/lib/theme";
 import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
@@ -26,14 +28,10 @@ export function ListRow({
 }) {
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
-  const Wrap: any = onPress ? Pressable : View;
-  return (
-    <Wrap
-      onPress={onPress}
-      style={[s.row, borderTop && s.top]}
-      accessibilityRole={onPress ? "button" : undefined}
-      accessibilityLabel={onPress ? title : undefined}
-    >
+  const { pressStyle, onPressIn, onPressOut } = usePressScale();
+
+  const content = (
+    <>
       {icon ? <View style={s.icon}>{icon}</View> : null}
       <AppText variant="body" numberOfLines={1} style={[s.title, danger && { color: colors.error }]}>
         {title}
@@ -44,7 +42,17 @@ export function ListRow({
         </AppText>
       ) : null}
       {arrow ? <ArrowRight size={20} color={colors.ink} weight="regular" /> : null}
-    </Wrap>
+    </>
+  );
+
+  if (!onPress) {
+    return <View style={[s.row, borderTop && s.top]}>{content}</View>;
+  }
+
+  return (
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut} accessibilityRole="button" accessibilityLabel={title}>
+      <Animated.View style={[s.row, borderTop && s.top, pressStyle]}>{content}</Animated.View>
+    </Pressable>
   );
 }
 

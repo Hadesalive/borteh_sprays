@@ -43,11 +43,11 @@ export const GENDERS = [
 // Each "world" maps to the family/accord terms that define it. Terms are matched with a broad
 // ILIKE against scent_family, main_accords and note names, so "Amber" also catches "Amber Woody".
 export const DIRECTIONS = [
-  { code: "fresh", label: "Fresh & clean", blurb: "Citrus, air, cool skin", terms: ["Fresh", "Citrus", "Aquatic", "Green", "Aromatic"] },
-  { code: "warm", label: "Warm & spicy", blurb: "Amber, spice, resins", terms: ["Amber", "Warm Spicy", "Spicy", "Woody"] },
-  { code: "sweet", label: "Sweet & gourmand", blurb: "Vanilla, caramel, dessert", terms: ["Sweet", "Vanilla", "Gourmand", "Caramel"] },
-  { code: "woody", label: "Woody & oud", blurb: "Oud, sandalwood, smoke", terms: ["Oud", "Woody", "Sandalwood", "Smoky"] },
-  { code: "floral", label: "Floral", blurb: "Rose, jasmine, blossom", terms: ["Floral", "Rose", "Jasmine", "White Floral"] },
+  { code: "fresh", label: "Fresh & clean", blurb: "Citrus, air, cool skin", terms: ["Fresh", "Citrus", "Aquatic", "Green", "Aromatic"], image: require("../assets/home/scent/citrus.jpg") },
+  { code: "warm", label: "Warm & spicy", blurb: "Amber, spice, resins", terms: ["Amber", "Warm Spicy", "Spicy", "Woody"], image: require("../assets/home/scent/spicy.jpg") },
+  { code: "sweet", label: "Sweet & gourmand", blurb: "Vanilla, caramel, dessert", terms: ["Sweet", "Vanilla", "Gourmand", "Caramel"], image: require("../assets/home/scent/sweet.jpg") },
+  { code: "woody", label: "Woody & oud", blurb: "Oud, sandalwood, smoke", terms: ["Oud", "Woody", "Sandalwood", "Smoky"], image: require("../assets/home/scent/woody.jpg") },
+  { code: "floral", label: "Floral", blurb: "Rose, jasmine, blossom", terms: ["Floral", "Rose", "Jasmine", "White Floral"], image: require("../assets/home/scent/floral.jpg") },
 ] as const;
 
 export const INTENSITIES = [
@@ -63,12 +63,26 @@ export const SWEETNESS = [
 ] as const;
 
 // Specific notes for the love / avoid grid — a curated superset, deliberately broader than the
-// current shelf so a pick we don't stock yet still personalizes the day it lands.
-export const NOTES = [
+// current shelf so a pick we don't stock yet still personalizes the day it lands. Grouped into
+// perfumer-style families so NoteGrid can render them as headed sections (mirrors the "warm &
+// deep / sweet things / fresh & floral" grouping in the redesign).
+const NOTE_NAMES = [
   "Oud", "Vanilla", "Rose", "Amber", "Musk", "Sandalwood", "Saffron", "Leather",
   "Coffee", "Chocolate", "Coconut", "Caramel", "Tobacco", "Citrus", "Jasmine", "Patchouli",
   "Cardamom", "Cinnamon", "Honey", "Powdery", "Incense", "Aquatic", "Almond", "Cherry",
 ] as const;
+
+const NOTE_CATEGORY: Record<(typeof NOTE_NAMES)[number], string> = {
+  Oud: "warm & deep", Amber: "warm & deep", Musk: "warm & deep", Sandalwood: "warm & deep",
+  Saffron: "warm & deep", Leather: "warm & deep", Tobacco: "warm & deep", Patchouli: "warm & deep",
+  Cardamom: "warm & deep", Cinnamon: "warm & deep", Incense: "warm & deep",
+  Vanilla: "sweet things", Coffee: "sweet things", Chocolate: "sweet things", Coconut: "sweet things",
+  Caramel: "sweet things", Honey: "sweet things", Almond: "sweet things", Cherry: "sweet things",
+  Rose: "fresh & floral", Citrus: "fresh & floral", Jasmine: "fresh & floral", Powdery: "fresh & floral",
+  Aquatic: "fresh & floral",
+};
+
+export const NOTES = NOTE_NAMES.map((name) => ({ name, category: NOTE_CATEGORY[name] }));
 
 export const OCCASIONS = [
   { code: "everyday", label: "Everyday" },
