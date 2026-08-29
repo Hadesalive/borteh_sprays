@@ -3,7 +3,8 @@ import { humanize, statusTone } from "@/components/admin/chip";
 import { formatInt, formatLe } from "@/lib/format";
 import { paymentLabel } from "@/lib/payment-channel";
 import { ExportButton } from "@/components/admin/export-button";
-import { listOrders, getOrderStats, getMonimeChannels, PAGE_SIZE } from "@/lib/queries/orders";
+import { listOrders, getOrderStats, getMonimeChannels, getPaymentsNeedingAttention, PAGE_SIZE } from "@/lib/queries/orders";
+import { PaymentAttention } from "@/components/admin/payment-attention";
 import { OrdersTable, type OrderRow, type SummaryStat } from "@/components/admin/orders-table";
 
 export const dynamic = "force-dynamic";
@@ -21,10 +22,13 @@ export default async function OrdersPage({
   const db = createServerClient();
   const page = Math.max(0, Number((await searchParams).page ?? "0") || 0);
 
-  // Both throw on failure; error.tsx catches and shows plain-English copy.
-  const [{ rows, total }, stats] = await Promise.all([
+  // The first two throw on failure; error.tsx catches and shows plain-English
+  // copy. getPaymentsNeedingAttention swallows its own errors — a banner must
+  // never be what takes the Orders page down.
+  const [{ rows, total }, stats, attention] = await Promise.all([
     listOrders(db, { page, pageSize: PAGE_SIZE }),
     getOrderStats(db),
+    getPaymentsNeedingAttention(db),
   ]);
 
   const userIds = [...new Set(rows.map((r) => r.user_id).filter(Boolean) as string[])];
@@ -81,6 +85,8 @@ export default async function OrdersPage({
           rows={orders.map((o) => [`#${o.number}`, o.placed, o.customer, o.phone, o.channel, o.payment, o.statusLabel, formatLe(o.minor, 2)])}
         />
       </div>
+
+      <PaymentAttention rows={attention} />
 
       <OrdersTable orders={orders} summary={summary} page={page} total={total} />
     </div>

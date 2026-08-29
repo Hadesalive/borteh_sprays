@@ -11,110 +11,29 @@
 // checkout_session.expired is left informational (§6 of the skill): the
 // pg_cron sweep (fn_expire_monime_intents) reclaims abandoned holds — no
 // need to race it here.
+//
+// fn_confirm_monime_payment distinguishes 'already_processed' (a benign
+// duplicate delivery) from 'late_on_dead_intent' (the customer really paid,
+// but the sweep or staff had already killed the order) — see
+// 20260829115411_late_monime_confirmation.sql. The second one is a real
+// incident and gets filed into the refund queue, not swallowed.
+//
+// Rolled back to Payment Code (payment_code.completed) event handling —
+// see payment-init/index.ts's header: the CROSSSLOT 500 that blocked
+// /v1/payment-codes was traced to the access token, fixed by rotating it.
+// matchIntentLocators below recognizes both `checkout_session` and
+// `payment_code` object types so this file doesn't need touching again if
+// the payment mechanism changes.
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
-
-// ---- inlined Monime HMAC verification (docs/08-payments-monime.md §4.1) ----
-// The signed payload uses an UNDERSCORE — `t + "_" + rawBody` — not Stripe's
-// period. Header lookup is case-insensitive (Deno's Headers already
-// lowercases keys), and the raw body must be read before any JSON.parse.
-
-const MAX_AGE_SECONDS = 300; // +300s past
-const MAX_FUTURE_SECONDS = 60; // -60s future
-
-interface SignatureCheck {
-  verified: boolean;
-  signatureT?: number;
-}
-
-function parseSignatureHeader(header: string): { t?: string; v1?: string } {
-  const out: { t?: string; v1?: string } = {};
-  for (const part of header.split(",")) {
-    const eq = part.indexOf("=");
-    if (eq === -1) continue;
-    const key = part.slice(0, eq).trim();
-    const value = part.slice(eq + 1).trim();
-    if (key === "t") out.t = value;
-    if (key === "v1") out.v1 = value;
-  }
-  return out;
-}
-
-function base64ToBytes(b64: string): Uint8Array | null {
-  try {
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return bytes;
-  } catch {
-    return null;
-  }
-}
-
-function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
-  return diff === 0;
-}
-
-async function hmacSha256(secret: string, payload: string): Promise<Uint8Array> {
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(payload));
-  return new Uint8Array(sig);
-}
-
-async function verifyMonimeWebhook(rawBody: string, signatureHeader: string | null, secrets: (string | undefined)[]): Promise<SignatureCheck> {
-  if (!signatureHeader) return { verified: false };
-  const { t, v1 } = parseSignatureHeader(signatureHeader);
-  if (!t || !v1) return { verified: false };
-
-  const tNum = Number(t);
-  if (!Number.isFinite(tNum)) return { verified: false };
-  const now = Math.floor(Date.now() / 1000);
-  if (now - tNum > MAX_AGE_SECONDS) return { verified: false };
-  if (tNum - now > MAX_FUTURE_SECONDS) return { verified: false };
-
-  const expectedSig = base64ToBytes(v1);
-  if (!expectedSig) return { verified: false };
-
-  const signedPayload = `${t}_${rawBody}`; // UNDERSCORE — not Stripe's period
-  for (const secret of secrets) {
-    if (!secret) continue;
-    const computed = await hmacSha256(secret, signedPayload);
-    if (timingSafeEqual(computed, expectedSig)) {
-      return { verified: true, signatureT: tNum };
-    }
-  }
-  return { verified: false };
-}
-
-/** Walk data.metadata / data.channel.metadata / ownershipGraph to find our intent id or the scs- object id. */
-function matchIntentLocators(evt: any): { metadataIntentId?: string; objectId?: string; ownershipChain: string[] } {
-  const data = evt?.data ?? {};
-  const dataMeta = data.metadata ?? {};
-  const channelMeta = data.channel?.metadata ?? {};
-  const metadataIntentId = (typeof dataMeta.intent_id === "string" && dataMeta.intent_id) || (typeof channelMeta.intent_id === "string" && channelMeta.intent_id) || undefined;
-
-  const objectId = evt?.object?.type === "checkout_session" ? evt.object.id : undefined;
-
-  const ownershipChain: string[] = [];
-  let node = data.ownershipGraph?.owner;
-  for (let depth = 0; node && depth < 5; depth++) {
-    if (node.type === "checkout_session" && typeof node.id === "string") ownershipChain.push(node.id);
-    node = node.owner;
-  }
-
-  return { metadataIntentId, objectId, ownershipChain };
-}
+import { matchIntentLocators, verifyMonimeWebhook } from "../_shared/monime-verify.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const WEBHOOK_SECRET_CURRENT = Deno.env.get("MONIME_WEBHOOK_SECRET_CURRENT");
 const WEBHOOK_SECRET_PREVIOUS = Deno.env.get("MONIME_WEBHOOK_SECRET_PREVIOUS");
 
-const COMPLETION_EVENTS = new Set(["payment.completed", "payment.processing_completed"]);
+const COMPLETION_EVENTS = new Set(["payment.completed", "payment.processing_completed", "payment_code.completed"]);
 
 const db = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
@@ -217,6 +136,17 @@ Deno.serve(async (req) => {
     console.error("fn_confirm_monime_payment failed", rpcErr);
     await db.from("payment_webhook").update({ payment_intent_id: intentId, match_method: matchMethod, error: rpcErr.message }).eq("id", webhookId);
     return new Response("db error", { status: 500 });
+  }
+
+  // The customer's money moved, but the intent was already expired (cron sweep)
+  // or cancelled (staff) — fn_confirm_monime_payment has filed it into the
+  // refund queue (admin_payment_attention) for a human to resolve. Ack it:
+  // a 500 would only make Monime redeliver an event nothing here can settle,
+  // and the dedup would swallow every retry anyway.
+  if (outcome === "late_on_dead_intent") {
+    console.error("monime: LATE confirmation on an already-dead intent — flagged for refund review", { intentId, eventId, eventType });
+    await db.from("payment_webhook").update({ payment_intent_id: intentId, match_method: matchMethod, processed: true, processed_at: new Date().toISOString(), error: "LATE_ON_DEAD_INTENT" }).eq("id", webhookId);
+    return new Response("ok (late on dead intent — flagged for review)", { status: 200 });
   }
 
   if (outcome === "amount_mismatch") {

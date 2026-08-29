@@ -225,9 +225,13 @@ Cash success is **not** webhook-driven: it flips to `succeeded` when the rider r
 | `payment.processing_started` | `processing` | → `processing` (display only; never confirms) |
 | `payment.created` | `informational`/`processing` | optional `processing`; never confirms |
 | `financial_transaction.created` | `informational` | persist only; metadata lives at `ownershipGraph.owner.metadata` |
+| `payment_code.completed` | `success` | → `succeeded` (the USSD rail's completion event — what the live Payment Code flow actually fires) |
 | `checkout_session.expired` | `expired` | → `expired` (abandoned; or let sweep handle) |
+| `payment_code.expired` | `expired` | → `expired` (same, USSD rail; sweep handles it) |
 
-We **subscribe to all events** (no downside) and **act only on the two completion events**; treat `checkout_session.completed` as a redundant confirmation of the same transition, preferring the `payment.*` event when both arrive. **(Fact.)**
+We **subscribe to all events** (no downside) and **act only on the completion events** — all three of `payment.completed`, `payment.processing_completed` and `payment_code.completed`, since the live rail can change under us; treat later ones as redundant confirmations of the same transition.
+
+**Which event carries the paying channel (Fact, from the real captured payloads for BS-2026-000043, 2026-08-29):** only the `payment.*` events. `payment.processing_completed` carries a full `data.channel` — `{type:"momo", provider:"m17", phoneNumber:"+23274****43", reference:"MP260829.1109.A62492"}`. **`payment_code.completed` carries none at all**: no `data.channel`, and `data.processedPaymentData` is `null`. It does carry the `momo_provider` we set in `metadata` plus `authorizedProviders`, which pins the code to one rail — so the admin's channel resolver prefers `data.channel` and falls back to deriving `{type:"momo", provider}` from those. Do not expect a `channel` object on the payment-code event.
 
 ### 1.6 Intent-matching order (Fact)
 
@@ -361,7 +365,11 @@ RETURNING id;
 ```
 
 - **Amount/currency mismatch** (Step 1) ⇒ do **not** flip; mark `payment_webhook.error='AMOUNT_MISMATCH'`, alert (a tampering/misconfig signal, see 09), return `500` so it is retried/inspected. This branch is only reachable *because* the check is explicit — not buried in the `UPDATE` guard.
-- **Zero rows from Step 2** *after* a passing Step 1 ⇒ a benign race: the intent was already `succeeded`/`expired` (duplicate webhook, or the expiry sweep won first). Ack `200`, no-op — never an error.
+- **Zero rows from Step 2** *after* a passing Step 1 ⇒ **two different things, and they must not share a return value.** Read the status captured under the Step 1 row lock to tell them apart:
+  - `status = 'succeeded'` ⇒ a genuine duplicate delivery. Ack `200`, no-op — never an error. (`already_processed`)
+  - `status IN ('expired','cancelled','failed')` ⇒ **the customer's money moved and nothing on our side will ever fulfil it.** The sweep (§5.3) or a staff cancel got there first; the order is cancelled and the stock already released. Do **not** auto-re-confirm — those units may already be sold to someone else — and do **not** swallow it: file a `refund` row (§7, `reason='late_monime_confirmation'`) so it surfaces in the `admin_payment_attention` queue on the admin Orders page, and let staff choose between refunding and re-placing. Ack `200` (a `500` only makes Monime redeliver an event nothing here can settle). (`late_on_dead_intent`)
+
+  > **This is not hypothetical.** Orders BS-2026-000042/000043 (2026-08-29) hit exactly this: a customer dialled their USSD code past the 15-minute hold, the sweep had already cancelled the order, and the confirmation returned the same generic "already processed" a duplicate returns. Money taken, order lost, nobody notified until the customer complained — confirmed against Monime's own `GET /v1/payment-codes`, which showed the code `completed`. Implemented in `20260829115411_late_monime_confirmation.sql`; guarded by scenarios A, D and E of `supabase/tests/monime_payment_flow.sql`.
 - **A row returned** but the *follow-on* work fails ⇒ the webhook stays `processed=false`; redelivery + the reconciliation cron retry the side effects (all idempotent).
 
 ### 3.4 Auditability summary
@@ -459,11 +467,13 @@ When the checkout Edge Function runs, the stock is already **reserved** via the 
 - **Hold (at checkout):** `stock_ledger` `movement_type='reservation'`, `qty_delta = 0`, `qty_reserved_delta = +n`; `inventory_item.qty_reserved += n`; `availability_signal.band` recomputed. The customer cannot oversell because `qty_available = qty_on_hand - qty_reserved` (06 generated column + `ck_reserved_le_onhand`).
 - The hold is **time-boxed** by `payment_intent.reservation_expires_at`.
 
+**Anchor the two clocks to the same event.** `fn_place_order` sets `reservation_expires_at` at *order placement*, but the Monime payment code's own 15 minutes only start later, when `payment-init` actually calls `/v1/payment-codes` — a separate network call with arbitrary UI time in between. Left unanchored, our hold expires *before* the customer's code does, so the sweep can cancel an order the customer is still legitimately paying for. `payment-init` therefore re-anchors `reservation_expires_at` to the code it just minted (`ussd_code_expires_at + RESERVATION_GRACE_MS`, currently 5 min), so the DB-side window is always comfortably wider than the provider's. See `20260829115831_ussd_code_expiry.sql`.
+
 ### 5.2 Reservation TTL
 
 | Rail | Suggested hold | Why |
 |---|---|---|
-| **Monime mobile money** | **~15 min** | Mobile-money confirmation is near-real-time; a short hold frees stock fast if the customer abandons. **(Assumption — Med; OWNER INPUT** to tune.) |
+| **Monime mobile money** | **the payment code's own expiry + 5 min grace** | The hold must OUTLIVE the provider-side code, never the reverse — see the anchoring note below. |
 | **COD** | Longer (e.g. until staff accept / next sweep window) | No external confirmation step; released on a failed/returned delivery instead (§6). **(Assumption — Med.)** |
 
 ### 5.3 What resolves the hold
@@ -478,7 +488,8 @@ stateDiagram-v2
 ```
 
 - **Confirm on success:** the §3.3 guarded `UPDATE` returning a row triggers `movement_type='sale_online'` (`qty_delta = -n, qty_reserved_delta = -n`) — the reserved units become an actual on-hand decrement, all in **one transaction** with the status flip and the `order → confirmed` transition.
-- **Release on expiry/failure:** the **reservation-expiry sweep** (ADR-011) finds `payment_intent` rows with `status IN ('created','processing')` and `reservation_expires_at < now()`, flips them to `expired`, and emits `movement_type='release'` (`qty_delta = 0, qty_reserved_delta = -n`) so the hold returns to availability. The status-guarded design (§3.3) means a **late webhook racing the sweep cannot both win** — whichever flips `created/processing` first wins; the loser's guard matches zero rows and no-ops.
+- **Release on expiry/failure:** the **reservation-expiry sweep** (ADR-011) finds `payment_intent` rows with `status IN ('created','processing')` and `reservation_expires_at < now()`, flips them to `expired`, and emits `movement_type='release'` (`qty_delta = 0, qty_reserved_delta = -n`) so the hold returns to availability. The status-guarded design (§3.3) means a **late webhook racing the sweep cannot both win** — whichever flips `created/processing` first wins; the loser's guard matches zero rows.
+- **When the sweep is the winner, that is not the end of it.** The customer may still complete the payment afterwards. A no-op there is data loss, not idempotency: see §3.3's `late_on_dead_intent` branch. Anchoring the two clocks (§5.1) makes this rare; the refund-queue flag makes it *visible* when it happens anyway.
 
 ### 5.4 Failure cases
 
@@ -488,6 +499,8 @@ stateDiagram-v2
 | Payment fails on rail | failed webhook | intent → `failed`; `release`; `order → cancelled`, `cancel_reason='payment_failed'` |
 | Missed/late webhook | reconciliation cron `getStatus` | self-heals: confirms (→ `sale_online`) or expires (→ `release`) |
 | Amount mismatch | §3.3 re-check | no flip; `payment_webhook.error`; alert (09); manual review |
+| **Payment confirmed after the hold already expired / was staff-cancelled** | §3.3 Step 2 returns zero rows with intent status `expired`/`cancelled`/`failed` | no flip (stock may be resold); `payment_webhook.error='LATE_ON_DEAD_INTENT'`; a `pending` `refund` row is filed and shown in the admin Orders `admin_payment_attention` banner for a human to refund or re-place |
+| Fully-discounted order (total = 0) | `fn_place_order` computes `total_minor = 0` | never routed to Monime at all — `/v1/payment-codes` is not documented to accept `amount.value = 0`. Confirmed outright like COD, no `payment_intent` created (`20260829115947_zero_value_monime_orders.sql`) |
 | Deep-link returns "success" but no webhook yet | redirect is **not trusted** | order stays `pending_payment` until the webhook (or cron) confirms — never confirm on redirect |
 
 ### 5.5 Disputes / chargebacks
@@ -551,6 +564,7 @@ sequenceDiagram
 ```
 
 - `refund.status` transitions `pending → manual_processing → completed` (or `failed`) — exactly the 06 §9 CHECK set.
+- **Rows are not only staff-created.** `fn_confirm_monime_payment` files one automatically, with `reason='late_monime_confirmation'`, whenever a payment lands on an already-dead intent (§3.3). That is deliberately the *same* worklist rather than a second bespoke alerting mechanism — it is the same shape of problem (money moved on Monime's side, nothing automatic can settle it here). The read side is the `admin_payment_attention` view, surfaced as a banner above the admin Orders table; resolution may be an actual refund **or** re-placing the order if the stock is still there.
 - **No `refunded` order status** (06 §7.1): the order keeps its fulfillment status (`delivered`/`cancelled`/`returned`) while the `refund` row independently tracks the money. Net revenue reporting subtracts `completed` refunds (10-admin-analytics.md).
 - If a refund implies returned goods, the **stock** side is handled separately via `delivery_job` → `movement_type='return'` (06 §4/§10), keeping money and inventory decoupled.
 - **OWNER INPUT:** refund policy (full vs partial, window).
