@@ -11,6 +11,10 @@ export type Order = {
   paymentMethod: PaymentMethod;
   /** Set only while a Monime payment is outstanding — lets the order screen retry it. */
   paymentIntentId: string | null;
+  /** "m17" | "m18" — the mobile-money provider the customer originally picked, from
+   *  payment_intent.metadata (set by payment-init). Needed to regenerate the same
+   *  USSD code on retry without asking the customer to pick a provider again. */
+  momoProvider: string | null;
   subtotalMinor: number;
   deliveryFeeMinor: number | null;
   discountMinor: number;
@@ -80,7 +84,7 @@ const ORDER_SELECT =
   "id, order_number, status, payment_method, subtotal_minor, delivery_fee_minor, discount_minor, loyalty_redeem_minor, total_minor, " +
   "landmark_snapshot, contact_phone_snapshot, recipient_name_snapshot, placed_at, created_at, " +
   "order_item(product_name_snapshot, variant_label_snapshot, qty, unit_price_minor, line_total_minor), " +
-  "payment_intent(id, status)";
+  "payment_intent(id, status, metadata)";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalize(r: any): Order {
@@ -92,6 +96,7 @@ function normalize(r: any): Order {
     status: r.status,
     paymentMethod: r.payment_method,
     paymentIntentId: openIntent?.id ?? null,
+    momoProvider: openIntent?.metadata?.momo_provider ?? null,
     subtotalMinor: r.subtotal_minor,
     deliveryFeeMinor: r.delivery_fee_minor,
     discountMinor: r.discount_minor ?? 0,

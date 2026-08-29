@@ -1,8 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
-import { Bell, CheckCircle } from "phosphor-react-native";
+import { Bell, CheckCircle, WarningCircle } from "phosphor-react-native";
 import { useEffect, useRef, useState } from "react";
 import { Alert, Animated, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,43 +10,57 @@ import { Button } from "@/components/Button";
 import { Confetti } from "@/components/Confetti";
 import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
+import { UssdPaymentCard } from "@/components/UssdPayment";
 import { formatLe } from "@/lib/format";
-import { STATUS_LABEL, STATUS_TONE, useOrder } from "@/lib/orders";
-import { initMonimeCheckout } from "@/lib/payments";
+import { STATUS_LABEL, STATUS_TONE, useOrder, type OrderStatus } from "@/lib/orders";
+import { initMomoPayment, type MomoProvider } from "@/lib/payments";
 import { enablePush, usePushStatus } from "@/lib/push";
 import { Colors, font, space } from "@/lib/theme";
 import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
+
+const MOMO_LABEL: Record<string, string> = { m17: "Orange Money", m18: "Afrimoney" };
+
+// Statuses that have actually earned the "Your order is in." celebration.
+// pending_payment is deliberately absent: for a Monime order it means the
+// USSD payment hasn't landed yet, and cancelled/returned obviously haven't.
+const CELEBRATED: readonly OrderStatus[] = ["confirmed", "preparing", "out_for_delivery", "delivered"];
 
 export default function OrderDetail() {
   const { id, placed } = useLocalSearchParams<{ id: string; placed?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const qc = useQueryClient();
   const { data: order, isLoading } = useOrder(id);
-  const justPlaced = placed === "1";
+  // `placed=1` only says the customer came from checkout — it says nothing about
+  // whether the payment landed. The sweep can cancel an unpaid Monime hold at any
+  // moment, so the hero is gated on what the server actually reports. useOrder
+  // polls while pending_payment, so this flips on by itself the moment the
+  // webhook confirms.
+  const justPlaced = placed === "1" && !!order && CELEBRATED.includes(order.status);
+  // Came from checkout but the order is dead — the customer needs to be told why,
+  // and told what to do if the money did in fact leave their account.
+  const placementFailed = placed === "1" && !!order && (order.status === "cancelled" || order.status === "returned");
   const pushStatus = usePushStatus();
   const checkScale = useRef(new Animated.Value(0.6)).current;
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
   const [payingNow, setPayingNow] = useState(false);
+  const [retryCode, setRetryCode] = useState<string | null>(null);
 
-  // Retry an interrupted/never-started Monime payment — payment-init is
-  // idempotent (re-opens the same session if one already exists), so this is
-  // safe to tap more than once.
+  // Retry an interrupted/never-started Monime payment. payment-init hands back
+  // the existing code while it's still dialable and mints a fresh one (new
+  // Idempotency-Key) once it has expired, so this is safe to tap more than
+  // once and genuinely works after the first code goes stale. Reuses the
+  // provider the customer originally picked (payment_intent.metadata.momo_provider).
   const retryMonime = async () => {
-    if (payingNow || !order?.paymentIntentId) return;
+    if (payingNow || !order?.paymentIntentId || !order.momoProvider) return;
     setPayingNow(true);
     try {
-      const { redirectUrl } = await initMonimeCheckout(order.paymentIntentId);
-      await WebBrowser.openAuthSessionAsync(redirectUrl, `borteh://order/${order.id}`);
-      // Whatever happened (paid, cancelled, dismissed), the order's real
-      // status is the only source of truth — refetch and let it speak for
-      // itself rather than assuming anything from the browser result here.
-      qc.invalidateQueries({ queryKey: ["order", order.id] });
+      const { ussdCode } = await initMomoPayment(order.paymentIntentId, order.momoProvider as MomoProvider);
+      setRetryCode(ussdCode);
     } catch (e) {
-      console.warn("monime retry failed to open", e);
+      console.warn("monime retry failed", e);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert("Couldn't open Monime", "Check your connection and try again.");
+      Alert.alert("Couldn't get a payment code", "Check your connection and try again.");
     } finally {
       setPayingNow(false);
     }
@@ -71,7 +83,7 @@ export default function OrderDetail() {
   return (
     <View style={s.screen}>
       <ThemedStatusBar />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + (justPlaced || (order && order.status === "pending_payment" && order.paymentMethod === "monime" && order.paymentIntentId) ? 96 : space["3xl"]), paddingHorizontal: space.gutter }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + (justPlaced || placementFailed || (order && order.status === "pending_payment" && order.paymentMethod === "monime" && order.paymentIntentId && order.momoProvider) ? 96 : space["3xl"]), paddingHorizontal: space.gutter }}>
         <BackButton onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)"))} />
 
         {!order ? (
@@ -91,6 +103,18 @@ export default function OrderDetail() {
             ) : (
               <AppText variant="heading" style={{ marginTop: space.lg }}>Order details</AppText>
             )}
+
+            {placementFailed ? (
+              <View style={s.failedCard}>
+                <WarningCircle size={20} color={colors.error} weight="regular" />
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <AppText variant="body">This order was cancelled</AppText>
+                  <AppText variant="caption" style={{ marginTop: 2 }}>
+                    The payment wasn't confirmed in time, so we released the bottles. If money did leave your account, send us {order.number} and we'll sort it out.
+                  </AppText>
+                </View>
+              </View>
+            ) : null}
 
             {/* meta */}
             <View style={s.metaRow}>
@@ -138,6 +162,13 @@ export default function OrderDetail() {
               <AppText variant="bodySoft">{[order.landmark, order.phone].filter(Boolean).join(" · ")}</AppText>
             </View>
 
+            {/* USSD code — appears once retryMonime() has fetched one */}
+            {retryCode && order.momoProvider ? (
+              <View style={{ marginTop: space["2xl"] }}>
+                <UssdPaymentCard ussdCode={retryCode} providerLabel={MOMO_LABEL[order.momoProvider] ?? "Mobile money"} />
+              </View>
+            ) : null}
+
             {/* push opt-in — the moment it's actually useful, never on launch */}
             {justPlaced && pushStatus === "undetermined" ? (
               <View style={s.pushCard}>
@@ -153,14 +184,19 @@ export default function OrderDetail() {
         )}
       </ScrollView>
 
-      {order && justPlaced ? (
+      {order && (justPlaced || placementFailed) ? (
         <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
           <Button title="Continue shopping" variant="secondary" onPress={() => router.replace("/(tabs)")} />
         </View>
-      ) : order && !justPlaced && order.status === "pending_payment" && order.paymentMethod === "monime" && order.paymentIntentId ? (
+      ) : order && !justPlaced && order.status === "pending_payment" && order.paymentMethod === "monime" && order.paymentIntentId && order.momoProvider ? (
         <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
           <AppText variant="caption" style={{ marginBottom: space.sm }}>Payment hasn't gone through yet.</AppText>
-          <Button title={payingNow ? "Opening Monime…" : "Pay with Monime"} trailing={payingNow ? undefined : formatLe(order.totalMinor)} onPress={retryMonime} disabled={payingNow} />
+          <Button
+            title={payingNow ? "Getting code…" : retryCode ? "Get a new code" : `Pay with ${MOMO_LABEL[order.momoProvider] ?? "mobile money"}`}
+            trailing={payingNow ? undefined : formatLe(order.totalMinor)}
+            onPress={retryMonime}
+            disabled={payingNow}
+          />
         </View>
       ) : null}
 
@@ -179,5 +215,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   totalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: space.md, marginTop: space.sm, borderTopWidth: 1, borderTopColor: colors.line },
   deliver: { marginTop: space["2xl"], paddingTop: space.lg, borderTopWidth: 1, borderTopColor: colors.line },
   pushCard: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space["2xl"], borderWidth: 1, borderColor: colors.line, padding: space.lg },
+  failedCard: { flexDirection: "row", alignItems: "flex-start", gap: space.md, marginTop: space["2xl"], borderWidth: 1, borderColor: colors.error, padding: space.lg },
   footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.gutter, paddingTop: space.lg, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
 });

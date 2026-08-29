@@ -168,7 +168,7 @@ export default function Notifications() {
           <>
             {sections.map((sec) => (
               <View key={sec.title}>
-                <AppText variant="label" style={s.groupLabel}>{sec.title}</AppText>
+                <AppText variant="serif20" style={s.groupLabel}>{sec.title}</AppText>
                 <View>
                   {sec.data.map((n, i) => {
                     const last = i === sec.data.length - 1;
@@ -176,36 +176,41 @@ export default function Notifications() {
                     const lead = n.title ?? n.body;
                     const detail = n.title ? n.body : null;
                     const thumb = n.imagePath ? imageUrl(n.imagePath) : null;
+                    const spinePos = sec.data.length === 1 ? "only" : i === 0 ? "first" : last ? "last" : "middle";
                     return (
-                      <SwipeToDelete key={n.id} onDelete={() => removeOne(n.id)}>
-                        <Pressable onPress={() => openItem(n)} style={[s.row, !last && s.rowBorder]} accessibilityRole="button" accessibilityLabel={lead}>
-                          {/* photo-led: the product shot leads when there is one; otherwise the
-                              status glyph gets the same bordered paper seat so every row is an object */}
-                          <View style={s.lead}>
-                            {thumb ? (
-                              <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" recyclingKey={n.id} />
-                            ) : (
-                              <NotifIcon n={n} unread={isUnread} />
-                            )}
-                          </View>
-                          <View style={{ flex: 1, minWidth: 0 }}>
-                            <View style={s.leadLine}>
-                              {isUnread ? <View style={s.unreadDot} /> : null}
-                              <AppText variant="bodyLg" numberOfLines={2} style={isUnread ? s.titleUnread : s.titleRead}>
-                                {lead}
-                              </AppText>
-                              <AppText variant="caption" style={s.time} maxFontSizeMultiplier={1.2}>
-                                {timeAgo(n.createdAt)}
-                              </AppText>
-                            </View>
-                            {detail ? (
-                              <AppText variant="bodySoft" numberOfLines={2} style={{ marginTop: 2 }}>
-                                {detail}
-                              </AppText>
-                            ) : null}
-                          </View>
-                        </Pressable>
-                      </SwipeToDelete>
+                      <View key={n.id} style={{ flexDirection: "row" }}>
+                        <DaySpine position={spinePos} unread={isUnread} s={s} colors={colors} />
+                        <View style={{ flex: 1, minWidth: 0 }}>
+                          <SwipeToDelete onDelete={() => removeOne(n.id)}>
+                            <Pressable onPress={() => openItem(n)} style={[s.row, !last && s.rowBorder]} accessibilityRole="button" accessibilityLabel={lead}>
+                              {/* photo-led: the product shot leads when there is one; otherwise the
+                                  status glyph gets the same bordered paper seat so every row is an object */}
+                              <View style={s.lead}>
+                                {thumb ? (
+                                  <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" recyclingKey={n.id} />
+                                ) : (
+                                  <NotifIcon n={n} unread={isUnread} />
+                                )}
+                              </View>
+                              <View style={{ flex: 1, minWidth: 0 }}>
+                                <View style={s.leadLine}>
+                                  <AppText variant="bodyLg" numberOfLines={2} style={isUnread ? s.titleUnread : s.titleRead}>
+                                    {lead}
+                                  </AppText>
+                                  <AppText variant="caption" style={s.time} maxFontSizeMultiplier={1.2}>
+                                    {timeAgo(n.createdAt)}
+                                  </AppText>
+                                </View>
+                                {detail ? (
+                                  <AppText variant="bodySoft" numberOfLines={2} style={{ marginTop: 2 }}>
+                                    {detail}
+                                  </AppText>
+                                ) : null}
+                              </View>
+                            </Pressable>
+                          </SwipeToDelete>
+                        </View>
+                      </View>
                     );
                   })}
                 </View>
@@ -222,6 +227,21 @@ export default function Notifications() {
   );
 }
 
+// The day-spine: a thin vertical line threading each day's rows, with one dot per row —
+// bronze while unread, muted once read. Purely additive over the existing row markup; the
+// mutations, grouping, and row content above are untouched.
+function DaySpine({ position, unread, s, colors }: {
+  position: "first" | "middle" | "last" | "only"; unread: boolean; s: ReturnType<typeof makeStyles>; colors: Colors;
+}) {
+  return (
+    <View style={s.spineCol}>
+      {position === "middle" || position === "last" ? <View style={[s.spineLine, { top: 0, height: "50%" }]} /> : null}
+      {position === "middle" || position === "first" ? <View style={[s.spineLine, { top: "50%", height: "50%" }]} /> : null}
+      <View style={[s.spineDot, { backgroundColor: unread ? colors.accent : colors.line }]} />
+    </View>
+  );
+}
+
 const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   titleRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", marginTop: space.lg },
@@ -231,15 +251,18 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   pushCard: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space.lg, borderWidth: 1, borderColor: colors.line, borderRadius: 14, backgroundColor: colors.surface, padding: space.lg },
 
   // open editorial list — rows sit directly on paper, separated by hairlines (no card chrome)
-  groupLabel: { color: colors.ink40, marginTop: space["2xl"], marginBottom: space.xs },
+  groupLabel: { fontStyle: "italic", color: colors.ink60, marginTop: space["2xl"], marginBottom: space.xs },
   row: { flexDirection: "row", alignItems: "center", gap: space.md, paddingVertical: space.lg, backgroundColor: colors.paper },
   rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.line },
+
+  spineCol: { width: 16, alignSelf: "stretch", alignItems: "center" },
+  spineLine: { position: "absolute", width: 1, left: "50%", marginLeft: -0.5, backgroundColor: colors.line },
+  spineDot: { position: "absolute", top: "50%", marginTop: -3, width: 6, height: 6, borderRadius: 3 },
 
   // the leading object — product shot or status glyph on the same bordered surface seat
   lead: { width: 52, height: 52, borderRadius: 10, overflow: "hidden", borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" },
 
   leadLine: { flexDirection: "row", alignItems: "flex-start", gap: space.sm },
-  unreadDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.accent, alignSelf: "flex-start", marginTop: 9 },
   titleUnread: { flex: 1, fontFamily: font.medium, color: colors.ink },
   titleRead: { flex: 1, color: colors.ink },
   time: { color: colors.ink40, marginTop: 4 },

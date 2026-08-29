@@ -50,6 +50,40 @@ export async function getOrderStats(db: SupabaseClient): Promise<OrderStats> {
   return data as OrderStats;
 }
 
+/** Every webhook event that means "this payment went through". Must stay in
+ *  lockstep with COMPLETION_EVENTS in supabase/functions/monime-webhook/index.ts.
+ *  `payment_code.completed` is the one the live USSD flow actually fires — it was
+ *  missing here, so every Monime order since the switch to Payment Codes fell
+ *  back to the generic "Monime" label with no error anywhere. */
+const COMPLETION_EVENT_TYPES = new Set([
+  "payment.completed",
+  "payment.processing_completed",
+  "payment_code.completed",
+]);
+
+/** Where the paying rail actually lives, confirmed against the real captured
+ *  payloads for order BS-2026-000043 (payment_webhook, 2026-08-29):
+ *
+ *  - `payment.completed` / `payment.processing_completed` carry the full
+ *    `data.channel` ({type:"momo", provider:"m17", phoneNumber, reference}).
+ *    This is the only event that has it.
+ *  - `payment_code.completed` carries NO channel whatsoever — `data.channel` is
+ *    absent and `data.processedPaymentData` is null. What it does carry is the
+ *    `momo_provider` we ourselves put in `metadata` at code creation, and
+ *    `authorizedProviders`, which locks the code to exactly one rail — so the
+ *    provider is still recoverable, just not from a `channel` object.
+ *
+ *  Hence the fallback: prefer Monime's own channel, else synthesise one from the
+ *  payment-code's single authorized provider. Anything else yields a plain
+ *  "Monime" label rather than a wrong one. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function channelFromPayload(payload: any): PaymentChannel {
+  const data = payload?.data;
+  if (data?.channel?.type) return data.channel;
+  const provider = data?.metadata?.momo_provider ?? (Array.isArray(data?.authorizedProviders) && data.authorizedProviders.length === 1 ? data.authorizedProviders[0] : null);
+  return typeof provider === "string" && provider ? { type: "momo", provider } : null;
+}
+
 /** order_id -> the specific channel (Orange Money, Card, ...) Monime confirmed
  *  the payment on, read from the completion webhook's captured payload —
  *  there's no dedicated column for this, so it's resolved on demand.
@@ -67,12 +101,45 @@ export async function getMonimeChannels(db: SupabaseClient, orderIds: string[]):
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   for (const intent of data as any[]) {
-    const hit = (intent.payment_webhook ?? []).find(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (w: any) => w.processed && (w.event_type === "payment.completed" || w.event_type === "payment.processing_completed"),
-    );
-    const channel = hit?.payload?.data?.channel;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hits = (intent.payment_webhook ?? []).filter((w: any) => w.processed && COMPLETION_EVENT_TYPES.has(w.event_type));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const channel = hits.map((w: any) => channelFromPayload(w.payload)).find((c: PaymentChannel) => c?.type);
     if (channel) map.set(intent.order_id, channel);
   }
   return map;
+}
+
+/** A payment that moved money but has no matching fulfilled order — today that
+ *  means a Monime confirmation that landed after the reservation sweep (or a
+ *  staff cancel) had already killed the order. fn_confirm_monime_payment files
+ *  these into public.refund; admin_payment_attention is the read side.
+ *  See 20260829115411_late_monime_confirmation.sql. */
+export type PaymentAttentionRow = {
+  refund_id: string;
+  order_id: string;
+  order_number: string | null;
+  order_status: string;
+  intent_status: string | null;
+  amount_minor: number;
+  currency: string;
+  reason: string | null;
+  notes: string | null;
+  requested_at: string;
+};
+
+/** Unresolved payment exceptions, oldest first — a customer waiting on their
+ *  money should be the one at the top. Bounded; never selects the whole table. */
+export async function getPaymentsNeedingAttention(
+  db: SupabaseClient,
+  { limit = 20 }: { limit?: number } = {},
+): Promise<PaymentAttentionRow[]> {
+  const { data, error } = await db
+    .from("admin_payment_attention")
+    .select("refund_id, order_id, order_number, order_status, intent_status, amount_minor, currency, reason, notes, requested_at")
+    .order("requested_at", { ascending: true })
+    .limit(limit);
+  // Never let this take the Orders page down — it's a banner, not the content.
+  if (error || !data) return [];
+  return data as PaymentAttentionRow[];
 }
