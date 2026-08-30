@@ -93,6 +93,25 @@ async function verifyMonimeWebhook(rawBody: string, signatureHeader: string | nu
 }
 
 /** Find our intent id via data.metadata, falling back to the payment_code object id. */
+/** The PAYMENT CODE id behind an event, stable across the shapes Monime emits
+ *  for one payment: payment_code.completed carries it as object.id (pmc-...),
+ *  while payment.* events put it at data.ownershipGraph.owner.id and use
+ *  object.id for the payment itself (spm-...). fn_confirm_monime_payment
+ *  compares this against the code that actually confirmed the intent, so
+ *  returning the raw object.id would make every ordinary payment look like a
+ *  duplicate of itself. Returns null when it cannot be determined — the function
+ *  then falls back to treating the event as a redelivery, which is the safe
+ *  direction to be wrong in. */
+function paymentCodeRef(evt: any): string | null {
+  if (evt?.object?.type === "payment_code" && typeof evt.object.id === "string") return evt.object.id;
+  let node = evt?.data?.ownershipGraph?.owner;
+  for (let depth = 0; node && depth < 5; depth++) {
+    if (node.type === "payment_code" && typeof node.id === "string") return node.id;
+    node = node.owner;
+  }
+  return null;
+}
+
 function matchIntentLocators(evt: any): { metadataIntentId?: string; objectId?: string } {
   const data = evt?.data ?? {};
   const dataMeta = data.metadata ?? {};
@@ -201,6 +220,7 @@ Deno.serve(async (req) => {
     p_intent_id: intentId,
     p_event_amount: eventAmount,
     p_event_currency: eventCurrency,
+    p_provider_ref: paymentCodeRef(evt),
   });
 
   if (rpcErr) {
@@ -218,6 +238,17 @@ Deno.serve(async (req) => {
     console.error("monime: LATE confirmation on an already-dead intent — flagged for refund review", { intentId, eventId, eventType });
     await db.from("payment_webhook").update({ payment_intent_id: intentId, match_method: matchMethod, processed: true, processed_at: new Date().toISOString(), error: "LATE_ON_DEAD_INTENT" }).eq("id", webhookId);
     return new Response("ok (late on dead intent — flagged for review)", { status: 200 });
+  }
+
+  // The customer was charged TWICE — a second payment code was paid against an
+  // order already confirmed by a different one. Distinct from a redelivered
+  // webhook, which returns 'already_processed' and is a genuine no-op. The
+  // duplicate is queued for refund and staff are alerted; ack it, because
+  // redelivering it cannot help.
+  if (outcome === "duplicate_payment") {
+    console.error("monime: DUPLICATE payment on an already-confirmed order — flagged for refund", { intentId, eventId, eventType });
+    await db.from("payment_webhook").update({ payment_intent_id: intentId, match_method: matchMethod, processed: true, processed_at: new Date().toISOString(), error: "DUPLICATE_PAYMENT" }).eq("id", webhookId);
+    return new Response("ok (duplicate payment — flagged for refund)", { status: 200 });
   }
 
   if (outcome === "amount_mismatch") {
