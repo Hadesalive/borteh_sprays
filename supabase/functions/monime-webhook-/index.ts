@@ -251,10 +251,16 @@ Deno.serve(async (req) => {
     return new Response("ok (duplicate payment — flagged for refund)", { status: 200 });
   }
 
+  // Monime reported a completed payment for an amount we did not agree to. The
+  // order is deliberately NOT confirmed, but fn_confirm_monime_payment has queued
+  // it for review and alerted staff, so this is handled rather than dropped.
+  // It used to 500 "so it surfaces" — which surfaced nothing: the retry hits the
+  // event-id dedup and 200s, leaving one processed=false row nobody queries.
+  // Ack it and mark it handled; the push alert is what actually reaches a person.
   if (outcome === "amount_mismatch") {
-    await db.from("payment_webhook").update({ payment_intent_id: intentId, match_method: matchMethod, error: "AMOUNT_MISMATCH" }).eq("id", webhookId);
-    // 500 so this surfaces for retry/manual review rather than being silently ack'd.
-    return new Response("amount mismatch", { status: 500 });
+    console.error("monime: AMOUNT MISMATCH — payment completed for an unexpected amount, flagged for review", { intentId, eventId, eventType });
+    await db.from("payment_webhook").update({ payment_intent_id: intentId, match_method: matchMethod, processed: true, processed_at: new Date().toISOString(), error: "AMOUNT_MISMATCH" }).eq("id", webhookId);
+    return new Response("ok (amount mismatch — flagged for review)", { status: 200 });
   }
 
   await db.from("payment_webhook").update({ payment_intent_id: intentId, match_method: matchMethod, processed: true, processed_at: new Date().toISOString() }).eq("id", webhookId);
