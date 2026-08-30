@@ -322,9 +322,6 @@ verify_jwt = true
 # Public webhook endpoint — Monime calls this directly with no Supabase
 # session. Authenticity is enforced by the Monime-Signature HMAC check
 # inside the function itself, not by Supabase's JWT gate.
-[functions.monime-webhook]
-verify_jwt = false
-
 # The slug Monime's dashboard actually calls (note the trailing hyphen). It MUST
 # be declared here: `supabase functions deploy` defaults verify_jwt to true when
 # a function has no config entry, and that would make every Monime delivery 401.
