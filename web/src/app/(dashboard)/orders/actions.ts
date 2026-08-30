@@ -57,3 +57,35 @@ export async function cancelPendingMonimeOrder(id: string): Promise<ActionResult
   revalidatePath("/");
   return { ok: true };
 }
+
+/** Mark a flagged payment as dealt with.
+ *
+ *  Monime has no refund API, so the actual money movement happens by hand in
+ *  their dashboard (docs/08 §7). This records that it was done, which is the
+ *  only thing that takes the row out of the Orders banner. Without it the
+ *  banner accumulates items nobody can clear, and an alert that never clears
+ *  is one people stop reading.
+ *
+ *  `monimeRef` is whatever reference the Monime dashboard gives for the refund —
+ *  optional, because staff may resolve a row by re-placing the order instead. */
+export async function resolvePaymentAttention(
+  refundId: string,
+  outcome: "completed" | "manual_processing",
+  monimeRef?: string,
+): Promise<ActionResult> {
+  const staff = await requireStaff();
+
+  const patch: Record<string, unknown> = { status: outcome, updated_at: new Date().toISOString() };
+  if (outcome === "completed") {
+    patch.completed_at = new Date().toISOString();
+    patch.processed_by = staff.id;
+  }
+  const ref = monimeRef?.trim();
+  if (ref) patch.monime_dashboard_ref = ref;
+
+  const { error } = await createAdminClient().from("refund").update(patch).eq("id", refundId);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/orders");
+  return { ok: true };
+}

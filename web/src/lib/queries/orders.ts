@@ -126,6 +126,8 @@ export type PaymentAttentionRow = {
   reason: string | null;
   notes: string | null;
   requested_at: string;
+  /** 'pending' until a staff member picks it up; 'manual_processing' while they do. */
+  refund_status: string;
 };
 
 /** Unresolved payment exceptions, oldest first — a customer waiting on their
@@ -136,7 +138,7 @@ export async function getPaymentsNeedingAttention(
 ): Promise<PaymentAttentionRow[]> {
   const { data, error } = await db
     .from("admin_payment_attention")
-    .select("refund_id, order_id, order_number, order_status, intent_status, amount_minor, currency, reason, notes, requested_at")
+    .select("refund_id, order_id, order_number, order_status, intent_status, amount_minor, currency, reason, notes, requested_at, refund_status")
     .order("requested_at", { ascending: true })
     .limit(limit);
   // Never let this take the Orders page down — it's a banner, not the content.

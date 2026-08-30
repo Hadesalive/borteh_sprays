@@ -3,6 +3,7 @@ import { WarningOctagon } from "@phosphor-icons/react/dist/ssr";
 
 import { formatLe } from "@/lib/format";
 import type { PaymentAttentionRow } from "@/lib/queries/orders";
+import { PaymentAttentionActions } from "@/components/admin/payment-attention-actions";
 
 function fmtWhen(iso: string): string {
   return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
@@ -24,7 +25,7 @@ export function PaymentAttention({ rows }: { rows: PaymentAttentionRow[] }) {
         <h2 className="text-sm font-[650] tracking-[-0.1px] text-destructive">
           {rows.length === 1 ? "1 payment needs attention" : `${rows.length} payments need attention`}
         </h2>
-        <p className="text-xs text-muted-foreground">Money moved with no matching fulfilled order — each needs a refund or a re-placed order.</p>
+        <p className="text-xs text-muted-foreground">Money moved with no matching fulfilled order. Refund in the Monime dashboard, then mark it here.</p>
       </div>
       <ul className="divide-y divide-destructive/15">
         {rows.map((r) => (
@@ -37,7 +38,15 @@ export function PaymentAttention({ rows }: { rows: PaymentAttentionRow[] }) {
               paid {fmtWhen(r.requested_at)} · order {r.order_status}
               {r.intent_status ? ` · payment ${r.intent_status}` : ""}
             </span>
+            {r.refund_status === "manual_processing" ? (
+              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                someone&rsquo;s on it
+              </span>
+            ) : null}
             {r.notes ? <span className="w-full text-muted-foreground">{r.notes}</span> : null}
+            <div className="w-full pt-1">
+              <PaymentAttentionActions refundId={r.refund_id} />
+            </div>
           </li>
         ))}
       </ul>

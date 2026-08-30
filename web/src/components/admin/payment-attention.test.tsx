@@ -1,7 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PaymentAttention } from "@/components/admin/payment-attention";
 import type { PaymentAttentionRow } from "@/lib/queries/orders";
+
+// The row actions are a client component that calls a server action; these tests
+// are about what the banner shows, so stub it out.
+vi.mock("@/components/admin/payment-attention-actions", () => ({
+  PaymentAttentionActions: ({ refundId }: { refundId: string }) => (
+    <button type="button">resolve {refundId}</button>
+  ),
+}));
 
 /** Shaped like a real admin_payment_attention row: a Monime payment that landed
  *  after the reservation sweep had already cancelled the order. */
@@ -17,6 +25,7 @@ function row(over: Partial<PaymentAttentionRow> = {}): PaymentAttentionRow {
     reason: "late_monime_confirmation",
     notes: "Monime confirmed this payment AFTER the payment intent was already expired.",
     requested_at: "2026-08-29T11:15:00Z",
+    refund_status: "pending",
     ...over,
   };
 }
@@ -62,6 +71,21 @@ describe("PaymentAttention", () => {
   it("still renders when the order number is missing, falling back to the id", () => {
     render(<PaymentAttention rows={[row({ order_number: null })]} />);
     expect(screen.getByRole("link", { name: /0a1b2c3d/ })).toBeInTheDocument();
+  });
+
+  it("shows when a teammate has already picked a row up", () => {
+    const { container } = render(<PaymentAttention rows={[row({ refund_status: "manual_processing" })]} />);
+    expect(container.textContent).toMatch(/someone['\u2019]s on it/i);
+  });
+
+  it("offers a way to resolve every row — a queue nobody can clear stops being read", () => {
+    render(<PaymentAttention rows={[row(), row({ refund_id: "r-2" })]} />);
+    expect(screen.getAllByRole("button", { name: /resolve/i })).toHaveLength(2);
+  });
+
+  it("tells staff where the refund actually happens", () => {
+    const { container } = render(<PaymentAttention rows={[row()]} />);
+    expect(container.textContent).toMatch(/monime dashboard/i);
   });
 
   it("does not leak internal jargon into staff-facing copy", () => {
