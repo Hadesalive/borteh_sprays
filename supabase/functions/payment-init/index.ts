@@ -102,7 +102,7 @@ Deno.serve(async (req) => {
 
   const { data: intent, error: intentErr } = await userClient
     .from("payment_intent")
-    .select("id, order_id, provider, status, amount_minor, currency, provider_intent_id, ussd_code, ussd_code_expires_at, idempotency_key")
+    .select("id, order_id, provider, status, amount_minor, currency, provider_intent_id, ussd_code, ussd_code_expires_at, idempotency_key, metadata")
     .eq("id", intentId)
     .maybeSingle();
 
@@ -185,6 +185,12 @@ Deno.serve(async (req) => {
       provider_intent_id: monimeJson.result.id, // pmc-...
       ussd_code: monimeJson.result.ussdCode,
       ussd_code_expires_at: new Date(expiresAtMs).toISOString(),
+      // Persist the rail on OUR side too. It was only ever sent to Monime, so
+      // payment_intent.metadata stayed {} — and mobile reads momo_provider from
+      // exactly here (lib/orders.ts normalize()) to decide whether to show the
+      // "Get a new code" button at all. Without it that button never renders and
+      // the whole retry path is unreachable. Merged, not overwritten.
+      metadata: { ...(intent.metadata ?? {}), momo_provider: momoProvider },
       // Re-anchor the stock hold to the code we just minted, so the sweep can
       // never cancel an order whose code is still dialable. fn_place_order's
       // 15 minutes started ticking at order placement, before this call
