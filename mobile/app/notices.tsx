@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
-import { MegaphoneSimple } from "phosphor-react-native";
+import { DotsThree, MegaphoneSimple } from "phosphor-react-native";
 import { useEffect, useRef } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
@@ -9,7 +9,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { Skel } from "@/components/Skeleton";
 import { AppText } from "@/components/Text";
 import { useSession } from "@/lib/auth";
-import { timeAgo, useMarkRead, useNotices } from "@/lib/notifications";
+import { timeAgo, useDeleteNotifications, useMarkRead, useNotices } from "@/lib/notifications";
 import { Colors, space } from "@/lib/theme";
 import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
@@ -36,6 +36,7 @@ export default function Notices() {
   const session = useSession();
   const { data, isLoading } = useNotices();
   const markRead = useMarkRead();
+  const deleteNotifications = useDeleteNotifications();
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
 
@@ -53,14 +54,32 @@ export default function Notices() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
+  const openActions = () => {
+    Alert.alert("Notices", undefined, [
+      {
+        text: "Clear all",
+        style: "destructive",
+        onPress: () => deleteNotifications.mutate(items.map((n) => n.id)),
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  };
+
   return (
     <View style={s.screen}>
       <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingHorizontal: space.gutter, paddingBottom: insets.bottom + space["3xl"] }}>
         <BackButton onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)"))} />
-        <AppText variant="heading" style={{ marginTop: space.lg }}>Notices</AppText>
+        <View style={s.titleRow}>
+          <AppText variant="heading">Notices</AppText>
+          {items.length > 0 ? (
+            <Pressable onPress={openActions} hitSlop={12} accessibilityRole="button" accessibilityLabel="Notice list actions">
+              <DotsThree size={26} color={colors.ink} weight="bold" />
+            </Pressable>
+          ) : null}
+        </View>
         <AppText variant="caption" style={{ marginTop: space.xs }}>
-          News from the maison — hours, deliveries, offers.
+          News from the maison: hours, deliveries, offers.
         </AppText>
 
         {!session ? (
@@ -81,7 +100,7 @@ export default function Notices() {
             inline
             icon={<MegaphoneSimple size={32} color={colors.ink40} weight="regular" />}
             title="Nothing posted yet."
-            body="When the maison has news — hours, deliveries, or an offer worth knowing — it's published here."
+            body="When the maison has news (hours, deliveries, or an offer worth knowing), it's published here."
             action={<Button title="Browse fragrances" variant="secondary" onPress={() => router.push("/shop")} />}
           />
         ) : (
@@ -106,9 +125,6 @@ export default function Notices() {
                 ) : null}
               </View>
             ))}
-            <AppText variant="caption" style={s.endMark}>
-              — Borteh, Freetown
-            </AppText>
           </View>
         )}
       </ScrollView>
@@ -118,7 +134,7 @@ export default function Notices() {
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
+  titleRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", marginTop: space.lg },
   post: { paddingVertical: space["2xl"], borderBottomWidth: 1, borderBottomColor: colors.line },
   eyebrowRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", gap: space.md },
-  endMark: { textAlign: "center", color: colors.ink40, marginTop: space["2xl"] },
 });

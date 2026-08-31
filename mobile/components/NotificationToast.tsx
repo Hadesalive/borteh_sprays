@@ -2,8 +2,12 @@ import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { usePathname, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Easing, PanResponder, Platform, Pressable, StyleSheet, View } from "react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { scheduleOnRN } from "react-native-worklets";
+import { EASE_OUT } from "@/lib/animations";
 import { type AppNotification, useMarkRead } from "@/lib/notifications";
 import { imageUrl } from "@/lib/supabase";
 import { Colors, font, space } from "@/lib/theme";
@@ -21,6 +25,9 @@ import { notifGlyph } from "./NotifIcon";
 // mark is the Borteh flower (the real app icon) with a small semantic status dot in the
 // corner — the one-glance confirmed / on-the-way / cancelled cue — and the product photo
 // rides on the right. Tap → open target + mark read · drag up to flick away · auto-dismisses.
+//
+// Built on Reanimated + Gesture Handler (not core Animated/PanResponder) so the drag
+// tracks the finger on the UI thread and never drops a frame under JS-thread load.
 
 let listener: ((n: AppNotification) => void) | null = null;
 /** Show the banner (call from anywhere; no-op before the root component mounts). */
@@ -38,9 +45,9 @@ export function NotificationToast() {
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
   const [item, setItem] = useState<AppNotification | null>(null);
-  const slide = useRef(new Animated.Value(0)).current; // 0 = hidden above, 1 = resting
-  const dragY = useRef(new Animated.Value(0)).current; // finger-follow while swiping up
-  const press = useRef(new Animated.Value(1)).current; // tactile scale under the finger
+  const slide = useSharedValue(0); // 0 = hidden above, 1 = resting
+  const dragY = useSharedValue(0); // finger-follow while swiping up
+  const press = useSharedValue(1); // tactile scale under the finger
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathRef = useRef(pathname);
   pathRef.current = pathname;
@@ -55,16 +62,23 @@ export function NotificationToast() {
   };
   const armRef = useRef(arm);
   armRef.current = arm;
+  const clearTimerRef = useRef(clearTimer);
+  clearTimerRef.current = clearTimer;
 
   const hide = () => {
     clearTimer();
-    Animated.timing(slide, { toValue: 0, duration: 220, easing: Easing.in(Easing.cubic), useNativeDriver: true }).start(({ finished }) => {
-      if (finished) {
-        dragY.setValue(0);
-        press.setValue(1);
-        setItem(null);
-      }
-    });
+    // Exiting content always eases out, never in (ease-in delays the frame the
+    // user is actually watching) — this used to run Easing.in(cubic).
+    slide.set(
+      withTiming(0, { duration: 200, easing: EASE_OUT }, (finished) => {
+        "worklet";
+        if (finished) {
+          dragY.set(0);
+          press.set(1);
+          scheduleOnRN(setItem, null);
+        }
+      }),
+    );
   };
   const hideRef = useRef(hide);
   hideRef.current = hide;
@@ -74,10 +88,10 @@ export function NotificationToast() {
       if (pathRef.current === "/notifications") return; // inbox is live on-screen
       setItem(n);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      dragY.setValue(0);
-      press.setValue(1);
-      slide.setValue(0);
-      Animated.spring(slide, { toValue: 1, useNativeDriver: true, speed: 13, bounciness: 6 }).start();
+      dragY.set(0);
+      press.set(1);
+      slide.set(0);
+      slide.set(withSpring(1, { duration: 400, dampingRatio: 0.75 }));
       armRef.current();
     };
     return () => {
@@ -89,27 +103,34 @@ export function NotificationToast() {
 
   // Swipe up to dismiss — the card follows the finger, then commits or springs back.
   // Touching it pauses the auto-dismiss so a banner never vanishes mid-read.
-  const pan = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_e, g) => g.dy < -4 && Math.abs(g.dy) > Math.abs(g.dx),
-      onPanResponderGrant: () => clearTimer(),
-      onPanResponderMove: (_e, g) => {
-        if (g.dy < 0) dragY.setValue(Math.max(g.dy, -160));
-      },
-      onPanResponderRelease: (_e, g) => {
-        if (g.dy < -24 || g.vy < -0.5) hideRef.current();
-        else {
-          Animated.spring(dragY, { toValue: 0, useNativeDriver: true, speed: 20, bounciness: 6 }).start();
-          armRef.current();
-        }
-      },
-    }),
-  ).current;
+  // activeOffsetY/failOffsetX reproduce the old onMoveShouldSetPanResponder gate:
+  // only a clearly-vertical upward drag claims the gesture, so a plain tap still
+  // reaches the Pressable underneath untouched.
+  const panGesture = Gesture.Pan()
+    .activeOffsetY(-6)
+    .failOffsetX([-12, 12])
+    .onStart(() => {
+      "worklet";
+      scheduleOnRN(clearTimerRef.current);
+    })
+    .onUpdate((e) => {
+      "worklet";
+      if (e.translationY < 0) dragY.set(Math.max(e.translationY, -160));
+    })
+    .onEnd((e) => {
+      "worklet";
+      if (e.translationY < -24 || e.velocityY < -500) {
+        scheduleOnRN(hideRef.current);
+      } else {
+        dragY.set(withSpring(0, { duration: 400, dampingRatio: 0.8, velocity: e.velocityY }));
+        scheduleOnRN(armRef.current);
+      }
+    });
 
   const setPressed = (down: boolean) => {
     if (down) clearTimer();
     else armRef.current();
-    Animated.spring(press, { toValue: down ? 0.97 : 1, useNativeDriver: true, speed: 40, bounciness: 0 }).start();
+    press.set(withTiming(down ? 0.97 : 1, { duration: down ? 120 : 150, easing: EASE_OUT }));
   };
 
   const open = () => {
@@ -123,79 +144,87 @@ export function NotificationToast() {
     else router.push("/notifications");
   };
 
+  const wrapStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: interpolate(slide.get(), [0, 1], [-180, 0]) + dragY.get() }],
+  }));
+  const cardStyle = useAnimatedStyle(() => ({
+    opacity: slide.get(),
+    transform: [{ scale: interpolate(slide.get(), [0, 1], [0.94, 1]) * press.get() }],
+  }));
+
   if (!item) return null;
   const { Icon, chip } = notifGlyph(item, colors);
   const thumb = item.imagePath ? imageUrl(item.imagePath) : null;
-  const translateY = Animated.add(slide.interpolate({ inputRange: [0, 1], outputRange: [-180, 0] }), dragY);
-  const scale = Animated.multiply(slide.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }), press);
 
   return (
-    <Animated.View
-      style={[s.wrap, { top: insets.top + space.xs, transform: [{ translateY }] }]}
-      pointerEvents="box-none"
-      {...pan.panHandlers}
-    >
-      <Animated.View style={[s.shadow, { opacity: slide, transform: [{ scale }] }]}>
-        <Pressable onPress={open} onPressIn={() => setPressed(true)} onPressOut={() => setPressed(false)} accessibilityRole="button" accessibilityLabel={`Borteh: ${item.title ?? item.body}`}>
-          <View style={s.card}>
-            <View style={s.row}>
-              {/* the app-icon slot: the Borteh flower mark + a small semantic status dot */}
-              <View style={s.mark}>
-                <View style={s.markTile}>
-                  <Image source={require("../assets/icon.png")} style={s.markImg} contentFit="cover" />
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={[s.wrap, { top: insets.top + space.xs }, wrapStyle]} pointerEvents="box-none">
+        <Animated.View style={[s.shadow, cardStyle]}>
+          <Pressable onPress={open} onPressIn={() => setPressed(true)} onPressOut={() => setPressed(false)} accessibilityRole="button" accessibilityLabel={`Borteh: ${item.title ?? item.body}`}>
+            <View style={s.card}>
+              <View style={s.row}>
+                {/* the app-icon slot: the Borteh flower mark + a small semantic status dot */}
+                <View style={s.mark}>
+                  <View style={s.markTile}>
+                    <Image source={require("../assets/icon.png")} style={s.markImg} contentFit="cover" />
+                  </View>
+                  <View style={[s.badge, { backgroundColor: chip }]}>
+                    <Icon size={10} color={colors.paper} weight="fill" />
+                  </View>
                 </View>
-                <View style={[s.badge, { backgroundColor: chip }]}>
-                  <Icon size={10} color={colors.paper} weight="fill" />
-                </View>
-              </View>
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <View style={s.nameRow}>
-                  <AppText variant="label" style={s.name} numberOfLines={1}>Borteh</AppText>
-                  <AppText variant="caption" style={s.time} maxFontSizeMultiplier={1.2}>now</AppText>
-                </View>
-                <AppText variant="body" style={s.title} numberOfLines={1} maxFontSizeMultiplier={1.3}>
-                  {item.title ?? item.body}
-                </AppText>
-                {item.title ? (
-                  <AppText variant="bodySoft" style={s.body} numberOfLines={2} maxFontSizeMultiplier={1.3}>
-                    {item.body}
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <View style={s.nameRow}>
+                    <AppText variant="label" style={s.name} numberOfLines={1}>Borteh</AppText>
+                    <AppText variant="caption" style={s.time} maxFontSizeMultiplier={1.2}>now</AppText>
+                  </View>
+                  {/* Title-less notifications (most of them) show the body HERE
+                      instead — give it 2 lines like the body slot below gets,
+                      not the 1-line headline limit meant for an actual title. */}
+                  <AppText variant="body" style={s.title} numberOfLines={item.title ? 1 : 2} maxFontSizeMultiplier={1.3}>
+                    {item.title ?? item.body}
                   </AppText>
+                  {item.title ? (
+                    <AppText variant="bodySoft" style={s.body} numberOfLines={2} maxFontSizeMultiplier={1.3}>
+                      {item.body}
+                    </AppText>
+                  ) : null}
+                </View>
+                {/* the perfume's photo rides on the right, in the tidy bordered-thumb language */}
+                {thumb ? (
+                  <View style={s.thumb}>
+                    <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" recyclingKey={item.id} />
+                  </View>
                 ) : null}
               </View>
-              {/* the perfume's photo rides on the right, in the tidy bordered-thumb language */}
-              {thumb ? (
-                <View style={s.thumb}>
-                  <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" recyclingKey={item.id} />
-                </View>
-              ) : null}
+              {/* grab handle — the flick-to-dismiss cue */}
+              <View style={s.handle} />
             </View>
-            {/* grab handle — the flick-to-dismiss cue */}
-            <View style={s.handle} />
-          </View>
-        </Pressable>
+          </Pressable>
+        </Animated.View>
       </Animated.View>
-    </Animated.View>
+    </GestureDetector>
   );
 }
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   wrap: { position: "absolute", left: space.md, right: space.md, zIndex: 100 },
   // depth: a whisper only — the 1px line border does the real separating.
+  // Square (radius 0), matching the Maison language used everywhere else now —
+  // this toast was still carrying the old generic-template rounded-card treatment.
   shadow: {
-    borderRadius: 14,
     ...Platform.select({
       ios: { shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 16, shadowOffset: { width: 0, height: 8 } },
       default: {},
     }),
   },
-  card: { borderRadius: 14, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, paddingTop: space.md, paddingBottom: space.sm, paddingHorizontal: space.lg, elevation: 4 },
+  card: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, paddingTop: space.md, paddingBottom: space.sm, paddingHorizontal: space.lg, elevation: 4 },
   row: { flexDirection: "row", alignItems: "center", gap: space.md },
   // "app icon": the Borteh flower on its own tile, zoomed so the mark reads at 48px
   mark: { width: 48, height: 48 },
-  markTile: { width: 48, height: 48, borderRadius: 10, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
+  markTile: { width: 48, height: 48, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
   markImg: { ...StyleSheet.absoluteFillObject, transform: [{ scale: 1.45 }] },
   badge: { position: "absolute", bottom: -3, right: -3, width: 18, height: 18, borderRadius: 9, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: colors.surface },
-  thumb: { width: 44, height: 44, borderRadius: 10, overflow: "hidden", borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper },
+  thumb: { width: 44, height: 44, overflow: "hidden", borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper },
   nameRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", gap: space.md },
   name: { color: colors.ink60 },
   time: { color: colors.ink40 },

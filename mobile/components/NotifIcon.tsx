@@ -23,10 +23,14 @@ export function notifGlyph(n: AppNotification, colors: Colors): { Icon: Glyph; c
   return { Icon: Info, chip: colors.ink60 };
 }
 
-/** Inbox-list glyph — quiet ink/ink40, error tint only while an unread cancellation. */
-export function NotifIcon({ n, unread }: { n: AppNotification; unread: boolean }) {
+/** Inbox-list glyph — always its real semantic color (success/error/accent),
+ *  not just while unread. Read/unread already has its own signal (the leading
+ *  dot + bold title) — collapsing every icon to flat grey once read meant a
+ *  list of read notifications lost all visual meaning: a cancelled order and
+ *  a delivered one looked identical, and a screen full of the same event type
+ *  (e.g. several cancellations) read as an undifferentiated wall of grey. */
+export function NotifIcon({ n }: { n: AppNotification }) {
   const { colors } = useTheme();
   const { Icon, chip } = notifGlyph(n, colors);
-  const tint = unread ? (chip === colors.error ? colors.error : colors.ink) : colors.ink40;
-  return <Icon size={22} color={tint} weight="regular" />;
+  return <Icon size={22} color={chip} weight="regular" />;
 }
