@@ -1,7 +1,9 @@
 import { Image } from "expo-image";
 import { Plus } from "phosphor-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
+import Animated from "react-native-reanimated";
 import { type Combo } from "@/lib/combos";
+import { usePressScale } from "@/lib/animations";
 import { formatLe } from "@/lib/format";
 import { productImage } from "@/lib/productImage";
 import { Colors, space } from "@/lib/theme";
@@ -13,27 +15,30 @@ import { AppText } from "./Text";
 export function ComboCard({ combo, width = 260, onPress }: { combo: Combo; width?: number; onPress: () => void }) {
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
+  const { pressStyle, onPressIn, onPressOut } = usePressScale();
   const imgH = Math.round(width * 0.6);
   const pair = combo.items.slice(0, 2);
   const deal = combo.priceMinor < combo.sumMinor;
   return (
-    <Pressable onPress={onPress} style={{ width }} accessibilityRole="button" accessibilityLabel={combo.name}>
-      <View style={[s.bed, { height: imgH }]}>
-        {pair.map((it, i) => (
-          <View key={it.variant.id} style={[s.half, i === 0 && s.seam]}>
-            <Image source={productImage(it.product)} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" recyclingKey={it.variant.id} />
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut} style={{ width }} accessibilityRole="button" accessibilityLabel={combo.name}>
+      <Animated.View style={pressStyle}>
+        <View style={[s.bed, { height: imgH }]}>
+          {pair.map((it, i) => (
+            <View key={it.variant.id} style={[s.half, i === 0 && s.seam]}>
+              <Image source={productImage(it.product)} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" recyclingKey={it.variant.id} />
+            </View>
+          ))}
+          <View style={s.plus} pointerEvents="none">
+            <Plus size={16} color={colors.ink} weight="bold" />
           </View>
-        ))}
-        <View style={s.plus} pointerEvents="none">
-          <Plus size={16} color={colors.ink} weight="bold" />
         </View>
-      </View>
-      <AppText variant="serif20" numberOfLines={1} style={{ marginTop: space.sm }}>{combo.name}</AppText>
-      <AppText variant="caption" numberOfLines={1}>{pair.map((i) => i.product.name).join(" + ")}</AppText>
-      <View style={s.priceRow}>
-        <AppText variant="price">{formatLe(combo.priceMinor)}</AppText>
-        {deal ? <AppText variant="caption" style={s.strike}>{formatLe(combo.sumMinor)}</AppText> : null}
-      </View>
+        <AppText variant="serif20" numberOfLines={1} style={{ marginTop: space.sm }}>{combo.name}</AppText>
+        <AppText variant="caption" numberOfLines={1}>{pair.map((i) => i.product.name).join(" + ")}</AppText>
+        <View style={s.priceRow}>
+          <AppText variant="price">{formatLe(combo.priceMinor)}</AppText>
+          {deal ? <AppText variant="caption" style={s.strike}>{formatLe(combo.sumMinor)}</AppText> : null}
+        </View>
+      </Animated.View>
     </Pressable>
   );
 }
