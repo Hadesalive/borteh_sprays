@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { BellRinging, CaretRight, CircleHalf, Coins, type IconProps, Lightbulb, MegaphoneSimple, Moon, PencilSimple, Receipt, SignOut, Sparkle, Sun, Ticket, Trophy, User, UsersThree, WhatsappLogo } from "phosphor-react-native";
+import { BellRinging, CaretRight, CircleHalf, Coins, CreditCard, type IconProps, Lightbulb, MegaphoneSimple, Moon, PencilSimple, Receipt, ShieldCheck, SignOut, Sparkle, Sun, Ticket, Trophy, User, UsersThree, WhatsappLogo } from "phosphor-react-native";
 import { type ComponentType } from "react";
 import { Linking, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,23 +8,36 @@ import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
 import { AppText } from "@/components/Text";
 import { LinkLabel } from "@/components/ui";
-import { useLoyalty, useMyCoupons, useStorePhone } from "@/lib/account";
+import { useLoyalty, useMyCoupons, useWhatsAppSupport } from "@/lib/account";
 import { signOut, useAuthReady, useSession } from "@/lib/auth";
 import { useOrders } from "@/lib/orders";
+import { MOMO_LABEL } from "@/lib/payments";
+import { useDefaultPayment } from "@/lib/paymentPrefs";
+import { PRIVACY_POLICY_URL } from "@/lib/urls";
 import { useWishlist } from "@/lib/wishlist";
 import { Colors, font, space } from "@/lib/theme";
 import { ThemedStatusBar, ThemeScheme, useTheme, useThemedStyles } from "@/lib/theme-context";
 
-// Grounded menu row: refined ink icon · medium title · optional value · chevron.
+// Grounded menu row: an icon on its own tile · medium title · optional value · chevron.
+// The tile is the one genuinely useful thing to borrow from Apple's own Settings rows —
+// it's what actually reads as "a settings screen" at a glance. One tone only (ink-filled,
+// same treatment the avatar above already uses), not Apple's per-row rainbow coding —
+// that would mean seven different accent colors on one screen, which breaks the
+// "one accent" rule harder than anything else here would.
 function Row({ Icon, title, value, onPress, last }: { Icon: ComponentType<IconProps>; title: string; value?: string; onPress: () => void; last?: boolean }) {
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
   return (
-    <Pressable style={[s.row, !last && s.rowBorder]} onPress={onPress} accessibilityRole="button" accessibilityLabel={title}>
-      <Icon size={22} color={colors.ink} weight="regular" />
+    <Pressable style={s.row} onPress={onPress} accessibilityRole="button" accessibilityLabel={title}>
+      <View style={s.iconTile}>
+        <Icon size={16} color={colors.onInk} weight="regular" />
+      </View>
       <AppText variant="bodyLg" numberOfLines={1} style={s.rowTitle}>{title}</AppText>
       {value ? <AppText variant="body" numberOfLines={1} style={s.rowValue}>{value}</AppText> : null}
       <CaretRight size={18} color={colors.ink40} weight="regular" />
+      {/* Inset separator: starts where the title starts (after the tile), not
+          full-bleed edge to edge — the real iOS list convention. */}
+      {!last ? <View style={s.rowSeparator} /> : null}
     </Pressable>
   );
 }
@@ -38,15 +51,16 @@ export default function Profile() {
   const saved = useWishlist();
   const { data: loyalty } = useLoyalty();
   const { data: coupons } = useMyCoupons();
-  const { data: storePhone } = useStorePhone();
+  const whatsapp = useWhatsAppSupport();
+  const defaultPayment = useDefaultPayment();
   const { colors, scheme, setScheme } = useTheme();
   const s = useThemedStyles(makeStyles);
 
-  const whatsapp = () => {
-    if (!storePhone) return;
-    Haptics.selectionAsync();
-    Linking.openURL(`https://wa.me/${storePhone.replace(/[^\d]/g, "")}`).catch(() => {});
-  };
+  const defaultPaymentLabel = !defaultPayment
+    ? undefined
+    : defaultPayment.method === "monime" && defaultPayment.momoProvider
+      ? MOMO_LABEL[defaultPayment.momoProvider]
+      : "Cash on delivery";
 
   const name = (session?.user.user_metadata?.display_name as string) || "Your account";
   const phone = (session?.user.user_metadata?.phone as string) || "";
@@ -96,7 +110,8 @@ export default function Profile() {
 
             <AppText variant="label" style={s.groupLabel}>Settings</AppText>
             <View style={s.card}>
-              <Row Icon={Sparkle} title="Scent preferences" onPress={() => router.push("/scent-preferences")} />
+              <Row Icon={Sparkle} title="Scent profile" onPress={() => router.push("/scent-preferences")} />
+              <Row Icon={CreditCard} title="Default payment" value={defaultPaymentLabel} onPress={() => router.push("/default-payment")} />
               <Row Icon={MegaphoneSimple} title="Notices" onPress={() => router.push("/notices")} />
               <Row Icon={BellRinging} title="Notification settings" onPress={() => router.push("/preferences")} last />
             </View>
@@ -124,8 +139,9 @@ export default function Profile() {
 
             <AppText variant="label" style={s.groupLabel}>Help</AppText>
             <View style={s.card}>
-              <Row Icon={Lightbulb} title="How to use Borteh" onPress={() => router.push("/tips")} last={!storePhone} />
-              {storePhone ? <Row Icon={WhatsappLogo} title="Message us on WhatsApp" onPress={whatsapp} last /> : null}
+              <Row Icon={Lightbulb} title="Help" onPress={() => router.push("/tips")} />
+              {whatsapp.available ? <Row Icon={WhatsappLogo} title="Message us on WhatsApp" onPress={() => whatsapp.open()} /> : null}
+              <Row Icon={ShieldCheck} title="Privacy policy" onPress={() => Linking.openURL(PRIVACY_POLICY_URL)} last />
             </View>
 
             <View style={s.account}>
@@ -170,21 +186,24 @@ const THEME_OPTIONS: { value: ThemeScheme; label: string; Icon: ComponentType<Ic
 const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
 
-  // member card — surface fill separates from the clean paper screen
-  memberCard: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space.lg, borderWidth: 1, borderColor: colors.line, borderRadius: 14, padding: space.lg, backgroundColor: colors.surface },
+  // member card — surface fill separates from the clean paper screen. Square
+  // (radius 0, was 14) — matches the Maison language used everywhere else now.
+  memberCard: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space.lg, borderWidth: 1, borderColor: colors.line, padding: space.lg, backgroundColor: colors.surface },
   avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.ink, alignItems: "center", justifyContent: "center" },
   avatarTxt: { fontFamily: font.serif, fontSize: 24, lineHeight: 30, color: colors.paper },
 
-  // grouped cards
+  // grouped cards — square, hairline border, no elevation
   groupLabel: { color: colors.ink40, marginTop: space["2xl"], marginBottom: space.sm, marginLeft: space.xs },
-  card: { borderWidth: 1, borderColor: colors.line, borderRadius: 14, overflow: "hidden", backgroundColor: colors.surface },
-  row: { flexDirection: "row", alignItems: "center", gap: space.md, paddingHorizontal: space.lg, height: 58 },
-  rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.line },
+  card: { borderWidth: 1, borderColor: colors.line, overflow: "hidden", backgroundColor: colors.surface },
+  row: { flexDirection: "row", alignItems: "center", gap: space.md, paddingHorizontal: space.lg, height: 58, position: "relative" },
+  iconTile: { width: 28, height: 28, backgroundColor: colors.ink, alignItems: "center", justifyContent: "center" },
+  // Inset to start after the tile (28) + its gap (space.md) — not edge to edge.
+  rowSeparator: { position: "absolute", left: space.lg + 28 + space.md, right: space.lg, bottom: 0, height: StyleSheet.hairlineWidth, backgroundColor: colors.line },
   rowTitle: { flex: 1, fontFamily: font.medium },
   rowValue: { color: colors.ink60, marginRight: space.sm },
 
-  // appearance segmented control
-  segment: { flexDirection: "row", borderWidth: 1, borderColor: colors.line, borderRadius: 14, overflow: "hidden" },
+  // appearance segmented control — square, matching the cards above
+  segment: { flexDirection: "row", borderWidth: 1, borderColor: colors.line, overflow: "hidden" },
   segmentCell: { flex: 1, height: 50, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.xs },
   segmentDivider: { borderLeftWidth: 1, borderColor: colors.line },
   segmentCellActive: { backgroundColor: colors.ink },
@@ -193,7 +212,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   // account
   account: { marginTop: space["2xl"], gap: space.md },
-  acctBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm, height: 52, borderWidth: 1, borderColor: colors.line, borderRadius: 14, backgroundColor: colors.surface },
+  acctBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm, height: 52, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface },
   brandmark: { fontFamily: font.serifItalic, fontSize: 18, lineHeight: 24, textAlign: "center", color: colors.ink40, marginTop: space["4xl"] },
 
   // guest

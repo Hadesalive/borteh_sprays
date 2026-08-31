@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import { useSyncExternalStore } from "react";
+import { Linking } from "react-native";
 import { useSession } from "./auth";
 import { supabase } from "./supabase";
 
@@ -266,6 +268,24 @@ export function useStorePhone() {
       return (data?.phone as string | null) ?? null;
     },
   });
+}
+
+/** One place for every "message us on WhatsApp" touchpoint in the app — the number is
+ *  always store_location.phone (owner-editable, never hardcoded), and every caller gets
+ *  the same haptic + error-swallow behavior instead of re-implementing it per screen.
+ *  Pass a prefill message to open the chat with real context already typed in (e.g. the
+ *  order number) — cheap to add, and it's the difference between a customer explaining
+ *  themselves from scratch and support seeing exactly what they need immediately. */
+export function useWhatsAppSupport() {
+  const { data: phone } = useStorePhone();
+  const open = (prefill?: string) => {
+    if (!phone) return;
+    Haptics.selectionAsync();
+    const base = `https://wa.me/${phone.replace(/[^\d]/g, "")}`;
+    const url = prefill ? `${base}?text=${encodeURIComponent(prefill)}` : base;
+    Linking.openURL(url).catch(() => {});
+  };
+  return { available: !!phone, open };
 }
 
 // ── Referrals ───────────────────────────────────────────────────────────────

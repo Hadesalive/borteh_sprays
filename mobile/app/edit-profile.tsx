@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { Trash } from "phosphor-react-native";
+import { CaretRight, LockKey, Trash } from "phosphor-react-native";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -89,11 +89,22 @@ export default function EditProfile() {
               <View style={s.readonly}>
                 <AppText variant="bodyLg" style={{ color: colors.ink40 }}>{phone || "—"}</AppText>
               </View>
-              <AppText variant="caption">Your phone is your login — contact us if you need to change it.</AppText>
+              <AppText variant="caption">Your phone is your login. Contact us if you need to change it.</AppText>
             </View>
 
             <Button title={busy ? "Saving…" : "Save changes"} onPress={submit} disabled={busy} style={{ marginTop: space.sm }} />
           </View>
+
+          <Pressable
+            style={s.passwordRow}
+            onPress={() => router.push("/change-password")}
+            accessibilityRole="button"
+            accessibilityLabel="Change password"
+          >
+            <LockKey size={20} color={colors.ink} weight="regular" />
+            <AppText variant="body" style={{ flex: 1 }}>Change password</AppText>
+            <CaretRight size={18} color={colors.ink40} weight="regular" />
+          </Pressable>
 
           <View style={{ flex: 1, minHeight: space["3xl"] }} />
 
@@ -109,7 +120,7 @@ export default function EditProfile() {
               <AppText variant="label" style={{ color: colors.error }}>{deleting ? "Deleting…" : "Delete account"}</AppText>
             </Pressable>
             <AppText variant="caption" style={s.dangerNote}>
-              Deleting is permanent — it removes your account and personal details.
+              Deleting is permanent. It removes your account and personal details.
             </AppText>
           </View>
         </ScrollView>
@@ -122,7 +133,8 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   form: { gap: space.lg, marginTop: space["2xl"] },
   readonly: { height: 52, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, justifyContent: "center", paddingHorizontal: space.lg },
+  passwordRow: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space["2xl"], paddingVertical: space.lg, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },
   danger: { paddingTop: space.xl, borderTopWidth: 1, borderColor: colors.line },
-  deleteBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm, height: 52, borderWidth: 1, borderColor: colors.error, borderRadius: 14, backgroundColor: colors.surface },
+  deleteBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm, height: 52, borderWidth: 1, borderColor: colors.error, backgroundColor: colors.surface },
   dangerNote: { textAlign: "center", color: colors.ink40, marginTop: space.xs },
 });

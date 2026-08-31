@@ -128,3 +128,15 @@ export async function resetPassword({ phone, name, newPassword }: { phone: strin
   }
   await signIn({ phone, password: newPassword });
 }
+
+/** Change the signed-in user's password. Re-verifies the current password first
+ *  via a real sign-in attempt — an active session alone (e.g. a phone left unlocked)
+ *  shouldn't be enough to lock the real owner out of their own account. */
+export async function changePassword({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) {
+  const phone = session?.user.user_metadata?.phone as string | undefined;
+  if (!phone) throw new Error("Couldn't verify your account. Try signing in again.");
+  const { error: verifyError } = await supabase.auth.signInWithPassword({ email: phoneToEmail(phone), password: currentPassword });
+  if (verifyError) throw new Error("Current password is incorrect.");
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}

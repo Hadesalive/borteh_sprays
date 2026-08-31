@@ -43,7 +43,7 @@ export default function Coupons() {
         <BackButton onPress={() => router.back()} />
         <AppText variant="heading" style={{ marginTop: space.lg }}>Coupons</AppText>
         <AppText variant="caption" style={{ marginTop: space.xs }}>
-          Yours alone — applied at checkout.
+          Yours alone, applied at checkout.
         </AppText>
 
         {!session ? (
@@ -64,7 +64,7 @@ export default function Coupons() {
             inline
             icon={<Ticket size={32} color={colors.ink40} weight="regular" />}
             title="No coupons right now."
-            body="When the maison sends you one, it lands here — and in your notifications."
+            body="When the maison sends you one, it lands here and in your notifications."
             action={<Button title="Browse fragrances" variant="secondary" onPress={() => router.push("/shop")} />}
           />
         ) : (
