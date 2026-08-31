@@ -54,9 +54,9 @@ export default function ScentPreferences() {
       <ThemedStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + 120, paddingHorizontal: space.gutter }}>
         <BackButton onPress={() => router.back()} />
-        <AppText variant="display" style={{ marginTop: space.lg }}>Scent preferences</AppText>
+        <AppText variant="display" style={{ marginTop: space.lg }}>Scent profile</AppText>
         <AppText variant="bodySoft" style={{ marginTop: space.xs }}>
-          Tune what shows up on your home. Add anything you love — even notes we don't stock yet.
+          Tune what shows up on your home. Add anything you love, even notes we don't stock yet.
         </AppText>
 
         {!session ? (
@@ -75,7 +75,7 @@ export default function ScentPreferences() {
 
       {session && loaded ? (
         <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
-          <Button title={busy ? "Saving…" : saved ? "Saved" : "Save preferences"} onPress={save} disabled={busy} />
+          <Button title={busy ? "Saving…" : saved ? "Saved" : "Save profile"} onPress={save} disabled={busy} />
         </View>
       ) : null}
     </View>
