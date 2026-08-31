@@ -15,8 +15,16 @@
 -- its own outcome ('late_on_dead_intent', distinct from a benign duplicate's
 -- 'already_processed') and files a row into public.refund, which surfaces in
 -- the admin_payment_attention queue. Scenarios A and E below are the
--- regression guard for that; D proves a genuine duplicate is still a quiet
--- no-op and does NOT reach the queue.
+-- regression guard for that; D proves a genuine duplicate DELIVERY of the
+-- same event is still a quiet no-op and does NOT reach the queue.
+--
+-- Two more real money-moved-without-fulfilment shapes joined the same queue
+-- later: a genuine SECOND payment (20260830115752_detect_duplicate_monime_payment.sql,
+-- 'duplicate_payment' — not to be confused with D's redelivered-event case)
+-- and a wrong-amount payment (20260830155314/20260830213511 — a real incident,
+-- order BS-2026-000035). Scenario F covers the former; C covers the latter,
+-- including that 20260830213511's public.payment_receipt ledger is what lets
+-- an over-payment actually clear trg_refund_cap instead of being rejected.
 --
 -- Runs entirely inside a transaction that ROLLS BACK, so it seeds nothing
 -- permanent. Each scenario uses its own product_variant/inventory_item so
@@ -36,6 +44,7 @@ declare
   v_brand uuid;
   v_store uuid;
   v_user  uuid := '99999999-9999-9999-9999-999999999999'::uuid;
+  v_staff uuid := '88888888-8888-8888-8888-888888888888'::uuid;
 begin
   insert into public.brand (name, slug) values ('Test Brand', 'test-brand-monime-flow') returning id into v_brand;
   insert into public.store_location (name, code, type) values ('Test Store', 'TEST-MONIME-FLOW', 'retail_store') returning id into v_store;
@@ -48,9 +57,18 @@ begin
   update public.app_user set phone = '+23200000000', display_name = 'Race Condition Tester'
    where id = v_user;
 
+  -- a staff account of our own — the mismatch/duplicate-payment notifications
+  -- go to every app_user with role in ('staff','owner'), and asserting an
+  -- exact count against whatever the local dev seed happens to contain would
+  -- be flaky. Scoping to this fixture's own staff id keeps C/F deterministic
+  -- no matter what else exists in the database.
+  insert into auth.users (id, email) values (v_staff, 'monime-flow-staff@example.com');
+  update public.app_user set phone = '+23200000001', display_name = 'Test Staff', role = 'staff'
+   where id = v_staff;
+
   -- stash ids where later blocks can find them without re-deriving slugs.
   create temporary table if not exists _fixture (key text primary key, id uuid);
-  insert into _fixture values ('brand', v_brand), ('store', v_store), ('user', v_user);
+  insert into _fixture values ('brand', v_brand), ('store', v_store), ('user', v_user), ('staff', v_staff);
 end $$;
 
 -- helper: create one product+variant+inventory_item for a scenario, return the variant id.
@@ -211,7 +229,16 @@ begin
 end $$;
 
 -- =====================================================================
--- Scenario C — amount/currency mismatch guard.
+-- Scenario C — amount/currency mismatch: the order is never confirmed, but
+-- the money that demonstrably moved is now recorded and queued rather than
+-- vanishing into a payment_webhook row nobody reads (real 2026-08-28
+-- incident, order BS-2026-000035: a Le 0.95 order, Monime reported Le 1.00
+-- paid — 20260830155314_surface_amount_mismatch_and_honest_sweep_log.sql).
+-- fn_record_monime_receipt runs BEFORE the refund-queue insert
+-- (20260830213511_refund_cap_measures_money_received.sql) — that ordering is
+-- what lets an OVER-payment actually clear trg_refund_cap: the receipt for
+-- the amount Monime says it took raises the cap enough to cover a matching
+-- refund, instead of the refund being rejected for exceeding the order total.
 -- =====================================================================
 do $$
 declare
@@ -220,18 +247,56 @@ declare
   v_intent  uuid;
   v_outcome text;
   v_order_status text;
+  v_refunds int;
+  v_receipts int;
+  v_staff_notes int;
 begin
   perform public.fn_reserve_stock(v_variant, 1, v_order);
   insert into public.payment_intent (order_id, provider, status, amount_minor, currency, idempotency_key, reservation_expires_at)
     values (v_order, 'monime', 'created', 190, 'SLE', 'test-mismatch-c', now() + interval '15 minutes')
     returning id into v_intent;
 
-  select public.fn_confirm_monime_payment(v_intent, 999, 'SLE') into v_outcome;
+  -- order is Le 1.90 (190); Monime reports a completed payment of Le 9.99 (999).
+  select public.fn_confirm_monime_payment(v_intent, 999, 'SLE', null, 'pmc-mismatch-c') into v_outcome;
   select status into v_order_status from public."order" where id = v_order;
 
   if v_outcome <> 'amount_mismatch' then raise exception 'FAIL ✗  expected amount_mismatch, got %', v_outcome; end if;
   if v_order_status <> 'pending_payment' then raise exception 'FAIL ✗  a mismatched event must not confirm the order, got %', v_order_status; end if;
-  raise notice 'PASS ✓  amount/currency mismatch is rejected without touching the order';
+
+  -- the money Monime says moved is recorded regardless of what happens next.
+  select count(*) into v_receipts from public.payment_receipt
+   where order_id = v_order and provider_ref = 'pmc-mismatch-c' and amount_minor = 999;
+  if v_receipts <> 1 then
+    raise exception 'FAIL ✗  the actually-reported amount must be recorded in payment_receipt even on a mismatch, got %', v_receipts;
+  end if;
+
+  -- queued for a human — the BS-2026-000035 incident this closes had no such row.
+  select count(*) into v_refunds from public.refund
+   where payment_intent_id = v_intent and reason = 'monime_amount_mismatch' and status = 'pending';
+  if v_refunds <> 1 then
+    raise exception 'FAIL ✗  expected exactly 1 pending refund-queue row for the mismatch (the receipt above should have cleared trg_refund_cap), got %', v_refunds;
+  end if;
+  select count(*) into v_refunds from public.admin_payment_attention where payment_intent_id = v_intent;
+  if v_refunds <> 1 then
+    raise exception 'FAIL ✗  the mismatched payment must appear in admin_payment_attention, got % rows', v_refunds;
+  end if;
+
+  select count(*) into v_staff_notes from public.notification
+   where user_id = (select id from _fixture where key = 'staff')
+     and reference_id = v_order and title = 'Payment for the wrong amount';
+  if v_staff_notes <> 1 then
+    raise exception 'FAIL ✗  staff must be alerted about the mismatch, got %', v_staff_notes;
+  end if;
+
+  -- a webhook retry of the SAME mismatched event must not pile up a second queue row.
+  select public.fn_confirm_monime_payment(v_intent, 999, 'SLE', null, 'pmc-mismatch-c') into v_outcome;
+  select count(*) into v_refunds from public.refund
+   where payment_intent_id = v_intent and reason = 'monime_amount_mismatch';
+  if v_refunds <> 1 then
+    raise exception 'FAIL ✗  a redelivered mismatch event must not queue a second refund row, got %', v_refunds;
+  end if;
+
+  raise notice 'PASS ✓  amount/currency mismatch leaves the order unconfirmed, records the receipt, and queues exactly one refund + staff alert';
 end $$;
 
 -- =====================================================================
@@ -312,10 +377,105 @@ begin
   raise notice 'PASS ✓  staff-cancelled orders that get paid late are flagged the same way the sweep-cancelled ones are';
 end $$;
 
+-- =====================================================================
+-- Scenario F — the `duplicate_payment` outcome: two DISTINCT payment codes
+-- both completing for the SAME intent (20260830115752_detect_duplicate_monime_payment.sql).
+-- Not to be confused with Scenario D, which is one event redelivered — this
+-- is a genuine second payment, told apart by paid_provider_ref (the code that
+-- actually confirmed the intent) disagreeing with the incoming p_provider_ref.
+-- Reachable since "Get a new code" started minting fresh codes (20260829115831):
+-- an old code paid just before being superseded by a retry's fresh code, which
+-- is then also paid.
+-- =====================================================================
+do $$
+declare
+  v_variant uuid := pg_temp.make_variant('DUPPAY-F');
+  v_order   uuid := pg_temp.make_order(v_variant);
+  v_intent  uuid;
+  v_outcome1 text;
+  v_outcome2 text;
+  v_outcome3 text;
+  v_order_status text;
+  v_qty_on_hand int;
+  v_refunds int;
+  v_receipts int;
+  v_staff_notes int;
+  v_buyer_notes int;
+begin
+  perform public.fn_reserve_stock(v_variant, 1, v_order);
+  insert into public.payment_intent (order_id, provider, status, amount_minor, currency, idempotency_key, reservation_expires_at)
+    values (v_order, 'monime', 'created', 190, 'SLE', 'test-duppay-f', now() + interval '15 minutes')
+    returning id into v_intent;
+
+  -- the first payment code confirms the order normally, recording which code did it.
+  select public.fn_confirm_monime_payment(v_intent, 190, 'SLE', null, 'pmc-duppay-first') into v_outcome1;
+  if v_outcome1 <> 'confirmed' then raise exception 'FAIL ✗  fixture: first payment should confirm, got %', v_outcome1; end if;
+
+  -- a second, genuinely different payment code is then ALSO paid for the same intent.
+  select public.fn_confirm_monime_payment(v_intent, 190, 'SLE', null, 'pmc-duppay-second') into v_outcome2;
+
+  select status into v_order_status from public."order" where id = v_order;
+  select qty_on_hand into v_qty_on_hand from public.inventory_item where variant_id = v_variant;
+
+  if v_outcome2 <> 'duplicate_payment' then
+    raise exception 'FAIL ✗  a second distinct payment code paying the same intent must return duplicate_payment, got %', v_outcome2;
+  end if;
+  if v_order_status <> 'confirmed' then
+    raise exception 'FAIL ✗  the order must stay confirmed off the FIRST payment alone, got %', v_order_status;
+  end if;
+  if v_qty_on_hand <> 9 then
+    raise exception 'FAIL ✗  stock must be sold exactly ONCE despite two real payments, got on_hand=%', v_qty_on_hand;
+  end if;
+
+  select count(*) into v_refunds from public.refund
+   where payment_intent_id = v_intent and reason = 'duplicate_monime_payment' and status = 'pending';
+  if v_refunds <> 1 then
+    raise exception 'FAIL ✗  expected exactly 1 pending refund-queue row for the duplicate payment, got %', v_refunds;
+  end if;
+
+  -- both payments genuinely moved money — both must be on the receipt ledger.
+  select count(*) into v_receipts from public.payment_receipt
+   where order_id = v_order and provider_ref in ('pmc-duppay-first', 'pmc-duppay-second');
+  if v_receipts <> 2 then
+    raise exception 'FAIL ✗  both distinct payments must be recorded in payment_receipt, got %', v_receipts;
+  end if;
+
+  select count(*) into v_staff_notes from public.notification
+   where user_id = (select id from _fixture where key = 'staff')
+     and reference_id = v_order and title = 'Order paid twice';
+  if v_staff_notes <> 1 then
+    raise exception 'FAIL ✗  staff must be alerted exactly once about the duplicate payment, got %', v_staff_notes;
+  end if;
+
+  select count(*) into v_buyer_notes from public.notification
+   where user_id = (select id from _fixture where key = 'user')
+     and reference_id = v_order and title = 'You were charged twice';
+  if v_buyer_notes <> 1 then
+    raise exception 'FAIL ✗  the customer must be told they were charged twice, got %', v_buyer_notes;
+  end if;
+
+  -- a REDELIVERY of the second payment code's own event must not double-file.
+  select public.fn_confirm_monime_payment(v_intent, 190, 'SLE', null, 'pmc-duppay-second') into v_outcome3;
+  select count(*) into v_refunds from public.refund
+   where payment_intent_id = v_intent and reason = 'duplicate_monime_payment';
+  if v_outcome3 <> 'duplicate_payment' then
+    raise exception 'FAIL ✗  a redelivered duplicate-payment event should still report duplicate_payment, got %', v_outcome3;
+  end if;
+  if v_refunds <> 1 then
+    raise exception 'FAIL ✗  a redelivered duplicate-payment event must not queue a second refund row, got %', v_refunds;
+  end if;
+
+  raise notice 'PASS ✓  a second distinct payment code returns duplicate_payment, sells stock only once, records both receipts, and alerts staff + the customer exactly once each';
+end $$;
+
 rollback;
 
 \echo ''
 \echo 'monime_payment_flow.sql complete — transaction rolled back, no data persisted.'
-\echo 'All five scenarios should print PASS. Scenario A and E are the regression guard for'
+\echo 'All six scenarios should print PASS. Scenario A and E are the regression guard for'
 \echo 'the 2026-08-29 incident: a late payment must return late_on_dead_intent and reach the'
-\echo 'refund queue; Scenario D guards the other side — a real duplicate must stay silent.'
+\echo 'refund queue. Scenario D guards the other side — a real event REDELIVERY must stay'
+\echo 'silent. Scenario F is the same silence check for a genuine SECOND payment instead —'
+\echo 'it must NOT stay silent, unlike D. Scenario C proves an amount mismatch (a real'
+\echo 'incident, BS-2026-000035) records what was received and queues it instead of'
+\echo 'vanishing into an unread column.'
