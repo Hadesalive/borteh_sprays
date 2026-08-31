@@ -58,15 +58,20 @@ const FALLBACK_SLIDES = [
 type QuizStep = { key: string; title: string; body: string };
 const QUIZ_STEPS: QuizStep[] = [
   { key: "gender", title: "Who's it for?", body: "We'll lead with the right side of the shelf." },
-  { key: "world", title: "Pick your world", body: "Choose any that pull you in — the more, the sharper." },
+  { key: "world", title: "Pick your world", body: "Choose any that pull you in. The more, the sharper." },
   { key: "character", title: "How should it feel?", body: "Loudness and sweetness set the whole mood." },
-  { key: "notes", title: "Notes you love — or don't", body: "Tap once for love, twice for not-for-me." },
+  { key: "notes", title: "Notes you love, or don't", body: "Tap once for love, twice for not-for-me." },
   { key: "context", title: "When & how much?", body: "So we suggest what fits the moment and the budget." },
 ];
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 const CAROUSEL_MS = 4000;
 const SPLASH_MS = 1600;
+// A dedicated decorative rose for the falling petals — not colors.error. They
+// happened to be the same red before; that borrowed a token reserved for
+// functional error/destructive states for a purely decorative flourish, and
+// would have silently drifted if that token ever changed for unrelated reasons.
+const PETAL_ROSE = "#C4573F";
 
 export default function Onboarding() {
   const router = useRouter();
@@ -373,7 +378,7 @@ function Petal({ delayMs, durationMs, leftPct, topPx, size, bronze }: {
     <ReAnimated.View
       style={[
         styles.petal,
-        { left: `${leftPct}%`, top: topPx, width: size, height: size, backgroundColor: bronze ? colors.accent : colors.error, opacity: bronze ? 0.7 : 1 },
+        { left: `${leftPct}%`, top: topPx, width: size, height: size, backgroundColor: bronze ? colors.accent : PETAL_ROSE, opacity: bronze ? 0.7 : 1 },
         style,
       ]}
     />
