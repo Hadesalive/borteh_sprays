@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ArrowLeft, Bell, Heart, Minus, Plus } from "phosphor-react-native";
+import { ArrowLeft, Bell, CaretDown, Drop, Heart, Minus, Plus, Truck } from "phosphor-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, UIManager, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,8 +12,9 @@ import { Button } from "@/components/Button";
 import { ListRow } from "@/components/ListRow";
 import { ProductCard } from "@/components/ProductCard";
 import { ComboRail } from "@/components/ComboRail";
+import { StarRow } from "@/components/StarRow";
 import { AppText } from "@/components/Text";
-import { FrostCircle, LinkLabel } from "@/components/ui";
+import { FrostCircle, LinkLabel, SectionHeader } from "@/components/ui";
 import { type Band, type Concentration, noteLine, type Product, type ProductVariant, useProducts, useSimilarProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
 import { addToBag } from "@/lib/cart";
@@ -22,8 +23,7 @@ import { formatLe } from "@/lib/format";
 import { useRestockSub, useToggleRestockSub } from "@/lib/notifications";
 import { productImage } from "@/lib/productImage";
 import { recordView } from "@/lib/recentlyViewed";
-import { useReviews } from "@/lib/reviews";
-import { Colors, space } from "@/lib/theme";
+import { Colors, lightColors, radius, space } from "@/lib/theme";
 import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 import { toggleWish, useWishlist } from "@/lib/wishlist";
@@ -32,6 +32,10 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 const ease = () => LayoutAnimation.configureNext(LayoutAnimation.create(220, LayoutAnimation.Types.easeInEaseOut, LayoutAnimation.Properties.opacity));
+
+// Track padding for the segmented control's sliding pill — same inset as
+// Shop's own gender segmented control, for a consistent language app-wide.
+const SEG_PAD = 3;
 
 const GENDER_LABEL: Record<Product["gender"], string> = { male: "Men", female: "Women", unisex: "Unisex" };
 const POS_LABEL = { top: "Top", heart: "Heart", base: "Base" } as const;
@@ -48,6 +52,76 @@ const CONC_NAME: Record<Concentration, string> = {
   Extrait: "Extrait de Parfum",
 };
 
+/** Size picker — Apple's own segmented-control structure (one sliding ink pill
+ *  behind plain-text segments in a rounded track), matching Shop's gender
+ *  filter, but driven by core Animated: each segment reports its own real
+ *  pixel position/width via onLayout (segments aren't assumed equal width),
+ *  and the pill's x + width animate to match on selection. Core Animated
+ *  only — see the file-level note on why this file never imports Reanimated. */
+function SizeControl({
+  variants,
+  selectedId,
+  onSelect,
+}: {
+  variants: ProductVariant[];
+  selectedId?: string;
+  onSelect: (v: ProductVariant) => void;
+}) {
+  const s = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const layouts = useRef<Record<string, { x: number; width: number }>>({});
+  const initialized = useRef(false);
+  const indicatorX = useRef(new Animated.Value(0)).current;
+  const indicatorW = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const l = layouts.current[selectedId];
+    if (!l || !initialized.current) return; // first paint snaps via onLayout instead — see below
+    Animated.parallel([
+      Animated.spring(indicatorX, { toValue: l.x, useNativeDriver: false, friction: 8, tension: 100 }),
+      Animated.spring(indicatorW, { toValue: l.width, useNativeDriver: false, friction: 8, tension: 100 }),
+    ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
+
+  return (
+    <View style={s.sizeTrack}>
+      {/* width is a layout property, not transform — but this is exactly the
+          skill's own carve-out: an absolutely positioned, childless fill with
+          nothing else to re-lay-out, where animating width (not scaleX) is
+          what keeps the pill's corner radius from smearing. */}
+      <Animated.View style={[s.sizeIndicator, { transform: [{ translateX: indicatorX }], width: indicatorW }]} />
+      {variants.map((v) => {
+        const active = v.id === selectedId;
+        const unavailable = v.band === "out";
+        return (
+          <Pressable
+            key={v.id}
+            onPress={() => onSelect(v)}
+            onLayout={(e) => {
+              const { x, width } = e.nativeEvent.layout;
+              layouts.current[v.id] = { x, width };
+              if (!initialized.current && v.id === selectedId) {
+                initialized.current = true;
+                indicatorX.setValue(x);
+                indicatorW.setValue(width);
+              }
+            }}
+            style={s.sizeSegSlot}
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
+          >
+            <AppText variant="label" maxFontSizeMultiplier={1.3} style={{ color: active ? colors.onInk : colors.ink60, textDecorationLine: unavailable ? "line-through" : "none" }}>
+              {v.sizeMl} ml
+            </AppText>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 export default function ProductDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const router = useRouter();
@@ -60,7 +134,6 @@ export default function ProductDetail() {
   const product = useMemo(() => (data ?? []).find((p) => p.slug === slug), [data, slug]);
   const wished = useWishlist();
   const session = useSession();
-  const { data: reviews } = useReviews(product?.id);
 
   const [variantId, setVariantId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
@@ -77,16 +150,13 @@ export default function ProductDetail() {
   const { data: subscribed = false } = useRestockSub(selected?.id);
   const toggleSub = useToggleRestockSub();
 
-  const enter = useRef(new Animated.Value(0)).current;
   const qtyScale = useRef(new Animated.Value(1)).current;
   const heartScale = useRef(new Animated.Value(1)).current;
-  const scrollRef = useRef<ScrollView>(null);
+  const minusScale = useRef(new Animated.Value(1)).current;
+  const plusScale = useRef(new Animated.Value(1)).current;
+  const chevronRotate = useRef(new Animated.Value(0)).current; // 0 = closed, 1 = open
   const scrollY = useRef(new Animated.Value(0)).current;
-  const reviewsY = useRef(0);
 
-  useEffect(() => {
-    Animated.timing(enter, { toValue: 1, duration: 320, useNativeDriver: true }).start();
-  }, [enter]);
   useEffect(() => {
     if (product) recordView(product.slug);
   }, [product]);
@@ -150,6 +220,14 @@ export default function ProductDetail() {
   const outOfStock = selected?.band === "out";
   const stock = selected ? STOCK[selected.band] : null;
   const notes = noteLine(product);
+  // A collapsed-row preview truncated at a fixed character count (numberOfLines={1}
+  // on the full note list) cuts mid-word wherever it happens to land — whole names
+  // + a "+N more" count reads clean regardless of how many notes there are.
+  const NOTE_PREVIEW_COUNT = 3;
+  const notePreview =
+    product.notes.length > NOTE_PREVIEW_COUNT
+      ? `${product.notes.slice(0, NOTE_PREVIEW_COUNT).map((n) => n.name).join(" · ")} +${product.notes.length - NOTE_PREVIEW_COUNT} more`
+      : notes;
   const eyebrow = [product.brand, selected ? CONC_NAME[selected.concentration] : null, product.releaseYear].filter(Boolean).join("  ·  ");
 
   const bump = (delta: number) => {
@@ -206,13 +284,12 @@ export default function ProductDetail() {
     <View style={s.screen}>
       <ThemedStatusBar />
       <ScrollView
-        ref={scrollRef}
         showsVerticalScrollIndicator={false}
         onScroll={(e) => scrollY.setValue(e.nativeEvent.contentOffset.y)}
         scrollEventThrottle={16}
         contentContainerStyle={{ paddingBottom: insets.bottom + 96 }}
       >
-        <Animated.View style={{ opacity: enter }}>
+        <View>
           {/* hero — full-bleed, bleeds up under the status bar (extra height = the inset) */}
           <View style={[s.hero, { height: heroH + insets.top }]}>
             <Image
@@ -257,48 +334,49 @@ export default function ProductDetail() {
               </View>
             ) : null}
 
-            {/* size + quantity */}
-            <View style={s.configRow}>
-              {variants.length > 1 ? (
-                <View style={s.sizeRow}>
-                  {variants.map((v, i) => {
-                    const active = v.id === selected?.id;
-                    const unavailable = v.band === "out";
-                    return (
-                      <Pressable
-                        key={v.id}
-                        onPress={() => pickSize(v)}
-                        style={[s.sizeSeg, i > 0 && { marginLeft: -1 }, active ? s.sizeSegOn : s.sizeSegOff]}
-                        accessibilityRole="button"
-                        accessibilityState={{ selected: active }}
-                      >
-                        <AppText variant="label" maxFontSizeMultiplier={1.3} style={{ color: active ? colors.ink : colors.ink40, textDecorationLine: unavailable ? "line-through" : "none" }}>
-                          {v.sizeMl} ml
-                        </AppText>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              ) : selected ? (
-                <View style={[s.sizeSeg, s.sizeSegOn]}>
-                  <AppText variant="label">{selected.sizeMl} ml</AppText>
-                </View>
+            {/* size + quantity — space-between only makes sense when both
+                sides have content; out-of-stock hides the stepper entirely,
+                which otherwise leaves the size control stranded on the left
+                with the whole right side of the row blank. */}
+            <View style={[s.configRow, outOfStock && s.configRowSingle]}>
+              {variants.length > 0 ? (
+                <SizeControl variants={variants} selectedId={selected?.id} onSelect={pickSize} />
               ) : (
                 <View />
               )}
 
               {!outOfStock ? (
                 <View style={s.stepper}>
-                  <Pressable onPress={() => bump(-1)} style={s.stepBtn} hitSlop={4} accessibilityLabel="Decrease quantity" disabled={qty <= 1}>
-                    <Minus size={20} color={qty <= 1 ? colors.ink40 : colors.ink} weight="regular" />
+                  <Pressable
+                    onPress={() => bump(-1)}
+                    onPressIn={() => Animated.spring(minusScale, { toValue: 0.9, useNativeDriver: true, speed: 40 }).start()}
+                    onPressOut={() => Animated.spring(minusScale, { toValue: 1, useNativeDriver: true, friction: 5 }).start()}
+                    style={s.stepBtn}
+                    hitSlop={4}
+                    accessibilityLabel="Decrease quantity"
+                    disabled={qty <= 1}
+                  >
+                    <Animated.View style={{ transform: [{ scale: minusScale }] }}>
+                      <Minus size={20} color={qty <= 1 ? colors.ink40 : colors.ink} weight="regular" />
+                    </Animated.View>
                   </Pressable>
                   <Animated.View style={{ transform: [{ scale: qtyScale }] }}>
                     <AppText variant="bodyLg" maxFontSizeMultiplier={1.2} style={s.qty}>
                       {qty}
                     </AppText>
                   </Animated.View>
-                  <Pressable onPress={() => bump(1)} style={s.stepBtn} hitSlop={4} accessibilityLabel="Increase quantity" disabled={qty >= 9}>
-                    <Plus size={20} color={qty >= 9 ? colors.ink40 : colors.ink} weight="regular" />
+                  <Pressable
+                    onPress={() => bump(1)}
+                    onPressIn={() => Animated.spring(plusScale, { toValue: 0.9, useNativeDriver: true, speed: 40 }).start()}
+                    onPressOut={() => Animated.spring(plusScale, { toValue: 1, useNativeDriver: true, friction: 5 }).start()}
+                    style={s.stepBtn}
+                    hitSlop={4}
+                    accessibilityLabel="Increase quantity"
+                    disabled={qty >= 9}
+                  >
+                    <Animated.View style={{ transform: [{ scale: plusScale }] }}>
+                      <Plus size={20} color={qty >= 9 ? colors.ink40 : colors.ink} weight="regular" />
+                    </Animated.View>
                   </Pressable>
                 </View>
               ) : null}
@@ -309,17 +387,30 @@ export default function ProductDetail() {
               {product.notes.length ? (
                 <View style={s.notesTop}>
                   <Pressable
-                    onPress={() => { ease(); setNotesOpen((v) => !v); }}
+                    onPress={() => {
+                      ease();
+                      Animated.timing(chevronRotate, { toValue: notesOpen ? 0 : 1, duration: 200, useNativeDriver: true }).start();
+                      setNotesOpen((v) => !v);
+                    }}
                     style={s.notesHead}
                     accessibilityRole="button"
                     accessibilityState={{ expanded: notesOpen }}
                     accessibilityLabel="Notes"
                   >
+                    <View style={s.notesIcon}>
+                      <Drop size={20} color={colors.ink} weight="regular" />
+                    </View>
                     <AppText variant="body" style={s.notesTitle}>Notes</AppText>
                     {!notesOpen ? (
-                      <AppText variant="body" numberOfLines={1} style={s.notesPreview}>{notes}</AppText>
+                      <AppText variant="body" numberOfLines={1} style={s.notesPreview}>{notePreview}</AppText>
                     ) : null}
-                    <AppText variant="body" style={s.notesToggle}>{notesOpen ? "–" : "+"}</AppText>
+                    <Animated.View
+                      style={{
+                        transform: [{ rotate: chevronRotate.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "180deg"] }) }],
+                      }}
+                    >
+                      <CaretDown size={16} color={colors.ink40} weight="regular" />
+                    </Animated.View>
                   </Pressable>
                   {notesOpen ? (
                     <View style={s.pyramid}>
@@ -337,11 +428,12 @@ export default function ProductDetail() {
                   ) : null}
                 </View>
               ) : null}
-              <ListRow title="Delivery" value="Freetown · cash on delivery" arrow={false} borderTop={!product.notes.length} />
               <ListRow
-                title="Reviews"
-                value={product.reviews > 0 ? `${product.rating.toFixed(1)} · ${product.reviews.toLocaleString()}` : "None yet"}
-                onPress={() => scrollRef.current?.scrollTo({ y: Math.max(0, reviewsY.current - 12), animated: true })}
+                title="Delivery"
+                value="Freetown · cash on delivery"
+                icon={<Truck size={20} color={colors.ink} weight="regular" />}
+                arrow={false}
+                borderTop={!product.notes.length}
               />
             </View>
 
@@ -352,7 +444,7 @@ export default function ProductDetail() {
                 <View style={{ flex: 1 }}>
                   <AppText variant="body">{selected?.sizeMl} ml is out of stock</AppText>
                   <AppText variant="caption" style={{ marginTop: 2 }}>
-                    {subscribed ? "You're on the list — we'll tell you the moment it returns." : "We'll tell you the moment it returns."}
+                    {subscribed ? "You're on the list. We'll tell you the moment it returns." : "We'll tell you the moment it returns."}
                   </AppText>
                 </View>
                 <LinkLabel label={subscribed ? "Added" : "Notify me"} onPress={onNotify} color={colors.accent} />
@@ -363,54 +455,67 @@ export default function ProductDetail() {
           {/* complete the pair — combos containing this fragrance */}
           <ComboRail title="Complete the pair" combos={combos} onOpen={(slug) => router.push({ pathname: "/combo/[slug]", params: { slug } })} />
 
-          {/* similar scents */}
+          {/* similar scents — SectionHeader, same as Reviews/Complete the
+              pair, in place of a bare heading in its own s.body wrapper */}
           {similar.length > 0 ? (
             <View style={{ marginTop: space["5xl"] }}>
-              <View style={s.body}>
-                <AppText variant="heading">Similar scents</AppText>
-              </View>
+              <SectionHeader title="Similar scents" />
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.rail}>
-                {similar.map((p) => (
-                  <ProductCard key={p.id} product={p} width={140} imageHeight={172} />
+                {similar.map((p, i) => (
+                  // alternating diagonal "petal" corners — the same rhythm
+                  // Shop's own grid uses — instead of every card being an
+                  // identical top-rounded rectangle
+                  <ProductCard key={p.id} product={p} width={140} imageHeight={172} shape={i % 2 === 0 ? "tearLeft" : "tearRight"} />
                 ))}
               </ScrollView>
             </View>
           ) : null}
 
-          {/* reviews */}
-          <View style={[s.body, { marginTop: space["5xl"] }]} onLayout={(e) => (reviewsY.current = e.nativeEvent.layout.y)}>
-            <AppText variant="heading">Reviews</AppText>
-            {product.reviews > 0 ? (
-              <View style={s.reviewSummary}>
-                <AppText variant="display">{product.rating.toFixed(1)}</AppText>
-                <AppText variant="caption">out of 5 · {product.reviews.toLocaleString()} reviews</AppText>
-              </View>
-            ) : (
-              <AppText variant="bodySoft" style={{ marginTop: space.md }}>
-                No reviews yet — be the first to share your thoughts.
-              </AppText>
-            )}
-
-            {reviews && reviews.length > 0
-              ? reviews.slice(0, 3).map((rv) => (
-                  <View key={rv.id} style={s.reviewItem}>
-                    <AppText variant="body">“{rv.body || rv.title || "Lovely scent."}”</AppText>
-                    <AppText variant="caption" style={{ marginTop: space.sm }}>
-                      {rv.reviewerName || "Customer"}
-                      {rv.mine && rv.status !== "published" ? " · pending" : ""}
-                    </AppText>
-                  </View>
-                ))
-              : null}
-
-            <Button
-              title="Write a review"
-              variant="secondary"
-              onPress={() => router.push(session ? { pathname: "/review", params: { productId: product.id, productName: product.name } } : "/login")}
-              style={{ marginTop: space.lg }}
+          {/* reviews — a compact average, the App Store/Play Store way, not a
+              dumped-in list of who wrote what. The full list lives on its own
+              screen, opened only when specifically asked for ("See all"),
+              via a trailing header link (same SectionHeader as "Complete the
+              pair"/"Similar scents"), not a separate bordered row underneath.
+              SectionHeader supplies its own gutter padding, so it sits
+              outside s.body rather than nested in it (which would double it). */}
+          <View style={{ marginTop: space["5xl"] }}>
+            <SectionHeader
+              title="Reviews"
+              trailing={product.reviews > 0 ? "See all" : undefined}
+              onPressTrailing={() => router.push({ pathname: "/reviews", params: { productId: product.id, productName: product.name } })}
             />
+            <View style={s.body}>
+              {product.reviews > 0 ? (
+                // The whole summary is itself the tap target to the full screen —
+                // not just the header link — one big star row leading, the
+                // number/count a quiet caption underneath.
+                <Pressable
+                  onPress={() => router.push({ pathname: "/reviews", params: { productId: product.id, productName: product.name } })}
+                  style={s.reviewSummary}
+                  accessibilityRole="button"
+                  accessibilityLabel="See all reviews"
+                >
+                  <StarRow rating={product.rating} size={24} />
+                  <AppText variant="caption" style={{ marginTop: space.xs }}>
+                    {product.rating.toFixed(1)} · {product.reviews.toLocaleString()} reviews
+                  </AppText>
+                </Pressable>
+              ) : (
+                <>
+                  <AppText variant="bodySoft" style={{ marginTop: space.md }}>
+                    No reviews yet. Be the first to share your thoughts.
+                  </AppText>
+                  <Button
+                    title="Write a review"
+                    variant="secondary"
+                    onPress={() => router.push(session ? { pathname: "/review", params: { productId: product.id, productName: product.name } } : "/login")}
+                    style={{ marginTop: space.lg }}
+                  />
+                </>
+              )}
+            </View>
           </View>
-        </Animated.View>
+        </View>
       </ScrollView>
 
       {/* Status-bar mask: transparent over the hero (the image bleeds under the clock), fading to
@@ -430,16 +535,22 @@ export default function ProductDetail() {
         ]}
       />
 
-      {/* fixed hero controls — frosted for contrast over photography */}
+      {/* fixed hero controls — frosted for contrast over photography. Fixed
+          light on-photo color, not themed ink: these sit over an arbitrary
+          product photo, not over the app's own paper/ink chrome, and a
+          light-tinted frost circle disappears against a white/pale bottle
+          shot if the icon inside is dark too. */}
       <Pressable onPress={() => router.back()} style={[s.floatL, { top: insets.top + space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back">
         <FrostCircle size={44}>
-          <ArrowLeft size={22} color={colors.ink} weight="regular" />
+          <ArrowLeft size={22} color={lightColors.paper} weight="regular" />
         </FrostCircle>
       </Pressable>
       <Pressable onPress={toggleLike} style={[s.floatR, { top: insets.top + space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel={liked ? "Remove from saved" : "Save"}>
         <FrostCircle size={44}>
+          {/* Bronze when saved, not red — this design system reserves red (`error`)
+              for functional error/destructive states, not a "liked" affordance. */}
           <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-            <Heart size={22} color="#EA2A3E" weight={liked ? "fill" : "regular"} />
+            <Heart size={22} color={liked ? colors.accent : lightColors.paper} weight={liked ? "fill" : "regular"} />
           </Animated.View>
         </FrostCircle>
       </Pressable>
@@ -475,19 +586,24 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   measurer: { position: "absolute", left: 0, right: 0, top: 0, opacity: 0 },
 
   configRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.lg, marginTop: space["2xl"] },
-  sizeRow: { flexDirection: "row" },
-  sizeSeg: { height: 44, paddingHorizontal: space.lg, alignItems: "center", justifyContent: "center", borderWidth: 1 },
-  sizeSegOn: { borderColor: colors.ink },
-  sizeSegOff: { borderColor: colors.line },
+  configRowSingle: { justifyContent: "flex-start" },
+  // segmented control: one sliding ink pill in a rounded track — same
+  // structure as Shop's own gender filter. alignSelf explicit so the track
+  // always hugs its own segments' content width and never stretches to fill
+  // configRow's row, even though nothing here was actually observed stretching.
+  sizeTrack: { flexDirection: "row", alignSelf: "flex-start", position: "relative", backgroundColor: colors.surface, borderRadius: radius.pill, padding: SEG_PAD, height: 44 },
+  sizeSegSlot: { alignItems: "center", justifyContent: "center", paddingHorizontal: space.lg },
+  sizeIndicator: { position: "absolute", top: SEG_PAD, bottom: SEG_PAD, left: 0, backgroundColor: colors.ink, borderRadius: radius.pill },
   stepper: { flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.line },
   stepBtn: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
   qty: { minWidth: 32, textAlign: "center" },
 
   notesTop: { borderTopWidth: 1, borderTopColor: colors.line, borderBottomWidth: 1, borderBottomColor: colors.line },
   notesHead: { flexDirection: "row", alignItems: "center", gap: space.md, minHeight: 56 },
+  // same 20px icon-slot convention as ListRow's own leading icon
+  notesIcon: { width: 20, alignItems: "center" },
   notesTitle: { color: colors.ink },
   notesPreview: { flex: 1, textAlign: "right", color: colors.ink60 },
-  notesToggle: { color: colors.ink40, width: 16, textAlign: "center" },
   pyramid: { paddingBottom: space.lg, gap: space.md },
   pyramidRow: { flexDirection: "row", gap: space.lg },
   pyramidLabel: { color: colors.ink40, width: 52, paddingTop: 3 },
@@ -496,8 +612,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   notice: { flexDirection: "row", alignItems: "center", gap: space.md, marginTop: space["2xl"], borderWidth: 1, borderColor: colors.line, padding: space.lg },
 
   rail: { paddingHorizontal: space.gutter, gap: space.lg, paddingTop: space.lg },
-  reviewSummary: { flexDirection: "row", alignItems: "baseline", gap: space.md, marginTop: space.md, paddingBottom: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
-  reviewItem: { paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
+  reviewSummary: { gap: 4, alignItems: "flex-start", marginTop: space.md, paddingBottom: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
 
   statusMask: { position: "absolute", top: 0, left: 0, right: 0, backgroundColor: colors.paper, zIndex: 10 },
   floatL: { position: "absolute", left: space.gutter, zIndex: 11 },

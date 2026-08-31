@@ -43,6 +43,17 @@ export function useReviews(productId?: string) {
   });
 }
 
+/** Per-star counts (index 0 = 1★ … index 4 = 5★), for a distribution bar —
+ *  shared by the product page's compact summary and the full reviews screen. */
+export function bucketRatings(reviews: Review[] | undefined): number[] {
+  const counts = [0, 0, 0, 0, 0];
+  for (const rv of reviews ?? []) {
+    const bucket = Math.max(1, Math.min(5, Math.round(rv.rating)));
+    counts[bucket - 1]++;
+  }
+  return counts;
+}
+
 /** Create or update the caller's review (one per product). Re-enters moderation as "pending". */
 export async function submitReview(input: { productId: string; rating: number; title?: string; body?: string; reviewerName: string }) {
   const {
