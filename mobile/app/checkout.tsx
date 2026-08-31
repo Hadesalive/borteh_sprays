@@ -1,7 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { Check, DeviceMobile, Money, Tag } from "phosphor-react-native";
+import { Check, Money, Tag } from "phosphor-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -10,6 +11,7 @@ import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { AppText } from "@/components/Text";
+import { PaymentWaitPanel } from "@/components/PaymentWait";
 import { HeaderActions, LinkLabel, ToggleSwitch } from "@/components/ui";
 import { UssdPaymentCard } from "@/components/UssdPayment";
 import { takePendingCoupon, tierFor, useLoyalty, useLoyaltyConfig, useLoyaltyTiers, validatePromo } from "@/lib/account";
@@ -20,12 +22,11 @@ import { cartTotalMinor, clearBag, useCart, useCartCombos } from "@/lib/cart";
 import { resolveComboClaims, useCombos } from "@/lib/combos";
 import { formatLe } from "@/lib/format";
 import { placeOrder, useOrder, type PaymentMethod } from "@/lib/orders";
-import { initMomoPayment, type MomoProvider } from "@/lib/payments";
+import { setDefaultPayment, useDefaultPayment, useDefaultPaymentLoaded } from "@/lib/paymentPrefs";
+import { initMomoPayment, MOMO_LABEL, MOMO_LOGO, type MomoProvider } from "@/lib/payments";
 import { Colors, font, space } from "@/lib/theme";
 import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
-
-const MOMO_LABEL: Record<MomoProvider, string> = { m17: "Orange Money", m18: "Afrimoney" };
 
 export default function Checkout() {
   const router = useRouter();
@@ -41,9 +42,28 @@ export default function Checkout() {
   const [name, setName] = useState((session?.user.user_metadata?.display_name as string) || "");
   const [phone, setPhone] = useState((session?.user.user_metadata?.phone as string) || "");
   const [landmark, setLandmark] = useState("");
+  const [notes, setNotes] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash_on_delivery");
   const [momoProvider, setMomoProvider] = useState<MomoProvider | null>(null);
+  // Collapsed-by-default once we know their last choice, so returning customers
+  // aren't shown all three options every time — first-timers (no default yet)
+  // see the full list immediately, since there's nothing to collapse to.
+  const [methodExpanded, setMethodExpanded] = useState(false);
+  const [appliedDefault, setAppliedDefault] = useState(false);
+  const defaultPayment = useDefaultPayment();
+  const defaultPaymentLoaded = useDefaultPaymentLoaded();
+  useEffect(() => {
+    if (appliedDefault || !defaultPaymentLoaded) return;
+    setAppliedDefault(true);
+    if (defaultPayment) {
+      setPaymentMethod(defaultPayment.method);
+      setMomoProvider(defaultPayment.momoProvider);
+    } else {
+      setMethodExpanded(true); // nothing remembered yet — show all options
+    }
+  }, [appliedDefault, defaultPayment, defaultPaymentLoaded]);
   const [ussdCode, setUssdCode] = useState<string | null>(null);
+  const [ussdExpiresAt, setUssdExpiresAt] = useState<string | null>(null);
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
   const [coupon, setCoupon] = useState("");
   const [applied, setApplied] = useState<{ code: string; label: string; discountMinor: number } | null>(null);
@@ -84,7 +104,10 @@ export default function Checkout() {
   const shownTier = Math.min(tierDiscount, subtotal - shownCombo);
   const shownPromo = Math.max(0, discount - shownCombo - shownTier);
   const lines = useMemo(
-    () => items.map((it) => ({ ...it, name: (products ?? []).find((p) => p.slug === it.slug)?.name ?? it.slug })),
+    () => items.map((it) => {
+      const product = (products ?? []).find((p) => p.slug === it.slug);
+      return { ...it, name: product?.name ?? it.slug, thumbUrl: product?.imageUrl ?? null };
+    }),
     [items, products],
   );
 
@@ -125,10 +148,23 @@ export default function Checkout() {
     setStep("payment");
   };
 
+  // Only the FIRST-ever payment sets the default automatically — after that,
+  // picking something different at checkout is a one-off for THIS order, not
+  // a silent change to what they usually pay with. Changing the actual
+  // default on purpose is the Settings screen's job (default-payment.tsx).
   const chooseMomo = (provider: MomoProvider) => {
     Haptics.selectionAsync();
     setPaymentMethod("monime");
     setMomoProvider(provider);
+    if (!defaultPayment) setDefaultPayment("monime", provider);
+    setMethodExpanded(false);
+  };
+
+  const chooseCash = () => {
+    setPaymentMethod("cash_on_delivery");
+    setMomoProvider(null);
+    if (!defaultPayment) setDefaultPayment("cash_on_delivery", null);
+    setMethodExpanded(false);
   };
 
   // Fires once the customer has seen (and presumably dialed) the USSD code,
@@ -156,6 +192,7 @@ export default function Checkout() {
   const abandonPlacement = (orderId: string) => {
     setStep("payment");
     setUssdCode(null);
+    setUssdExpiresAt(null);
     setPlacedOrderId(null);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     qc.invalidateQueries({ queryKey: ["orders"] });
@@ -196,6 +233,7 @@ export default function Checkout() {
         landmark,
         phone,
         recipientName: name,
+        notes: notes.trim() || undefined,
         promoCode: applied?.code ?? null, // re-validated + priced by the server
         redeemPoints, // balance-checked + capped by the server
         combos: comboPayload, // pairs to deal-price; server re-validates + reprices
@@ -207,8 +245,9 @@ export default function Checkout() {
       // is never proof of payment, only that the code exists to dial.
       if (paymentMethod === "monime" && paymentIntentId && momoProvider) {
         try {
-          const { ussdCode: code } = await initMomoPayment(paymentIntentId, momoProvider);
+          const { ussdCode: code, expiresAt } = await initMomoPayment(paymentIntentId, momoProvider);
           setUssdCode(code);
+          setUssdExpiresAt(expiresAt ?? null);
           setPlacedOrderId(orderId);
           setStep("ussd");
         } catch (e) {
@@ -219,7 +258,7 @@ export default function Checkout() {
           // behind the alert flashed "Total Le 0" while it was still up.
           Alert.alert(
             "Couldn't get a payment code",
-            "Your order is saved — open it from Orders to try again.",
+            "Your order is saved. Open it from Orders to try again.",
             [{
               text: "OK",
               onPress: () => {
@@ -254,7 +293,7 @@ export default function Checkout() {
               <HeaderActions />
             </View>
             <AppText variant="heading" style={{ marginTop: space.lg }}>Checkout</AppText>
-            <AppText variant="bodySoft" style={{ marginTop: space.xs }}>Step 1 of 2 — where it's going</AppText>
+            <AppText variant="bodySoft" style={{ marginTop: space.xs }}>Step 1 of 2: where it's going</AppText>
 
             <AppText variant="label" style={s.eyebrow}>Delivery</AppText>
             <View style={{ gap: space.md, marginTop: space.md }}>
@@ -267,6 +306,35 @@ export default function Checkout() {
                 </View>
               </View>
               <Field label="Delivery landmark / area" value={landmark} onChangeText={setLandmark} placeholder="e.g. Lumley, near the petrol station" autoCapitalize="sentences" />
+              <Field
+                label="Notes for the rider (optional)"
+                value={notes}
+                onChangeText={setNotes}
+                placeholder="e.g. call before arriving, leave with security"
+                autoCapitalize="sentences"
+                multiline
+              />
+            </View>
+
+            {/* mini bag — real context while they fill in delivery details, not filler */}
+            <AppText variant="label" style={s.eyebrow}>In your bag</AppText>
+            <View style={s.bagCard}>
+              {lines.map((l, i) => (
+                <View key={l.variantId} style={[s.bagRow, i < lines.length - 1 && s.bagRowBorder]}>
+                  <View style={s.bagThumb}>
+                    {l.thumbUrl ? <Image source={{ uri: l.thumbUrl }} style={StyleSheet.absoluteFill} contentFit="cover" /> : null}
+                  </View>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <AppText variant="bodySoft" numberOfLines={1}>{l.name}</AppText>
+                    <AppText variant="caption" style={{ marginTop: 2 }}>{l.qty}× · {l.sizeMl} ml</AppText>
+                  </View>
+                  <AppText variant="body">{formatLe(l.priceMinor * l.qty)}</AppText>
+                </View>
+              ))}
+              <View style={s.bagTotalRow}>
+                <AppText variant="bodySoft">Subtotal</AppText>
+                <AppText variant="body" style={{ fontFamily: font.semibold }}>{formatLe(subtotal)}</AppText>
+              </View>
             </View>
 
             {error ? <AppText variant="caption" style={{ color: colors.error, marginTop: space.lg }}>{error}</AppText> : null}
@@ -285,15 +353,17 @@ export default function Checkout() {
     return (
       <View style={s.screen}>
         <ThemedStatusBar />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: insets.bottom + 120, paddingHorizontal: space.gutter }}>
-          <View style={s.topRow}>
-            <HeaderActions />
-          </View>
-          <AppText variant="heading" style={{ marginTop: space.lg }}>Pay by USSD</AppText>
+        {/* No BackButton (can't casually bail mid-payment) AND no HeaderActions
+            — notification/profile nav has no place on a focused, single-task
+            payment screen, same reasoning Apple Pay uses to strip its own
+            chrome during an active payment sheet. */}
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + space["2xl"], paddingBottom: insets.bottom + 120, paddingHorizontal: space.gutter }}>
+          <AppText variant="heading">Pay by USSD</AppText>
           <AppText variant="bodySoft" style={{ marginTop: space.xs }}>Your order is saved and waiting on this payment.</AppText>
           <View style={{ marginTop: space.xl }}>
             <UssdPaymentCard ussdCode={ussdCode} providerLabel={MOMO_LABEL[momoProvider]} />
           </View>
+          <PaymentWaitPanel expiresAt={ussdExpiresAt} />
         </ScrollView>
         <View style={[s.footer, { paddingBottom: insets.bottom + space.lg }]}>
           <Button title="Done" onPress={() => finishPlacement(placedOrderId)} />
@@ -313,39 +383,70 @@ export default function Checkout() {
             <HeaderActions />
           </View>
           <AppText variant="heading" style={{ marginTop: space.lg }}>Payment</AppText>
-          <AppText variant="bodySoft" style={{ marginTop: space.xs }}>Step 2 of 2 — how you're paying</AppText>
+          <AppText variant="bodySoft" style={{ marginTop: space.xs }}>Step 2 of 2: how you're paying</AppText>
 
           {/* Payment */}
           <AppText variant="label" style={s.eyebrow}>Payment method</AppText>
-          <View style={{ marginTop: space.xs }}>
-            <PaymentRow
-              icon={<Money size={20} color={colors.ink} weight="regular" />}
-              title="Cash on delivery"
-              subtitle="Pay the rider on arrival"
-              on={paymentMethod === "cash_on_delivery"}
-              first
-              onPress={() => { setPaymentMethod("cash_on_delivery"); setMomoProvider(null); }}
-              s={s}
-              colors={colors}
-            />
-            <PaymentRow
-              icon={<DeviceMobile size={20} color={colors.ink} weight="regular" />}
-              title="Orange Money"
-              subtitle="Pay by mobile money, via Monime"
-              on={paymentMethod === "monime" && momoProvider === "m17"}
-              onPress={() => chooseMomo("m17")}
-              s={s}
-              colors={colors}
-            />
-            <PaymentRow
-              icon={<DeviceMobile size={20} color={colors.ink} weight="regular" />}
-              title="Afrimoney"
-              subtitle="Pay by mobile money, via Monime"
-              on={paymentMethod === "monime" && momoProvider === "m18"}
-              onPress={() => chooseMomo("m18")}
-              s={s}
-              colors={colors}
-            />
+          {methodExpanded ? (
+            <AppText variant="caption" style={{ marginTop: 2 }}>Pick whichever's easiest. We'll confirm the rest by phone.</AppText>
+          ) : null}
+          <View style={{ marginTop: space.sm, gap: space.sm }}>
+            {!methodExpanded ? (
+              // Collapsed to the remembered default — most returning customers pay
+              // the same way every time, so there's no need to re-show all three
+              // options on every checkout. First-timers never see this state (see
+              // the mount effect above).
+              <Pressable onPress={() => { Haptics.selectionAsync(); setMethodExpanded(true); }} accessibilityRole="button" accessibilityLabel="Change payment method">
+                {/* paddingHorizontal: 0 override — this summary card has no
+                    border to anchor against (unlike the coupon box below),
+                    so its content needs to sit flush at the gutter to align
+                    with everything else on the screen, not inset from it. */}
+                <View style={[s.payRow, s.payRowOn, { paddingHorizontal: 0 }]}>
+                  {paymentMethod === "monime" && momoProvider ? (
+                    <View style={[s.logoBadge, { width: 56 }]}>
+                      <Image source={MOMO_LOGO[momoProvider]} style={{ width: "100%", height: "100%" }} contentFit="contain" />
+                    </View>
+                  ) : (
+                    <Money size={20} color={colors.ink} weight="regular" />
+                  )}
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <AppText variant="body">{paymentMethod === "monime" && momoProvider ? MOMO_LABEL[momoProvider] : "Cash on delivery"}</AppText>
+                    <AppText variant="caption" style={{ marginTop: 2 }}>Your default payment method</AppText>
+                  </View>
+                  <AppText variant="label" style={{ color: colors.accent, textDecorationLine: "underline" }}>Change</AppText>
+                </View>
+              </Pressable>
+            ) : (
+              <>
+                <PaymentRow
+                  icon={<Money size={20} color={colors.ink} weight="regular" />}
+                  title="Cash on delivery"
+                  subtitle="Pay the rider on arrival"
+                  on={paymentMethod === "cash_on_delivery"}
+                  onPress={chooseCash}
+                  s={s}
+                  colors={colors}
+                />
+                <PaymentRow
+                  logo={MOMO_LOGO.m17}
+                  title="Orange Money"
+                  subtitle="Pay by mobile money, via Monime"
+                  on={paymentMethod === "monime" && momoProvider === "m17"}
+                  onPress={() => chooseMomo("m17")}
+                  s={s}
+                  colors={colors}
+                />
+                <PaymentRow
+                  logo={MOMO_LOGO.m18}
+                  title="Afrimoney"
+                  subtitle="Pay by mobile money, via Monime"
+                  on={paymentMethod === "monime" && momoProvider === "m18"}
+                  onPress={() => chooseMomo("m18")}
+                  s={s}
+                  colors={colors}
+                />
+              </>
+            )}
             {applied ? (
               <View style={s.couponRow}>
                 <Check size={18} color={colors.accent} weight="regular" />
@@ -385,7 +486,7 @@ export default function Checkout() {
                 <AppText variant="body">Use my points</AppText>
                 <AppText variant="caption" style={{ marginTop: 2 }}>
                   {usePoints && redeemPoints > 0
-                    ? `${redeemPoints} points — ${formatLe(redeemValue)} off`
+                    ? `${redeemPoints} points, ${formatLe(redeemValue)} off`
                     : `${loyalty?.points ?? 0} points ≈ ${formatLe((loyalty?.points ?? 0) * pointValue)}`}
                 </AppText>
               </View>
@@ -453,9 +554,9 @@ export default function Checkout() {
 // A proper radio row (indicator + icon + title/subtitle) — one call site per
 // payment method in Checkout(), state/onPress owned by the caller.
 function PaymentRow({
-  icon, title, subtitle, on, first, onPress, s, colors,
+  icon, logo, logoWidth, title, subtitle, on, onPress, s, colors,
 }: {
-  icon: React.ReactNode; title: string; subtitle: string; on: boolean; first?: boolean;
+  icon?: React.ReactNode; logo?: number; logoWidth?: number; title: string; subtitle: string; on: boolean;
   onPress: () => void; s: ReturnType<typeof makeStyles>; colors: Colors;
 }) {
   const { pressStyle, onPressIn, onPressOut } = usePressScale();
@@ -468,13 +569,21 @@ function PaymentRow({
       accessibilityState={{ checked: on }}
       accessibilityLabel={title}
     >
-      <Animated.View style={[s.payRow, first && s.top, on && s.payRowOn, pressStyle]}>
+      <Animated.View style={[s.payRow, on && s.payRowOn, pressStyle]}>
         <View style={[s.radio, on && s.radioOn]}>{on ? <View style={s.radioDot} /> : null}</View>
         {icon}
         <View style={{ flex: 1, minWidth: 0 }}>
           <AppText variant="body">{title}</AppText>
           <AppText variant="caption" style={{ marginTop: 2 }}>{subtitle}</AppText>
         </View>
+        {/* Real provider mark, trailing — same placement the reference gives
+            Mastercard: large enough to actually read, own white seat since
+            the logo isn't designed for an arbitrary background. */}
+        {logo ? (
+          <View style={[s.logoBadge, { width: logoWidth ?? 56 }]}>
+            <Image source={logo} style={{ width: "100%", height: "100%" }} contentFit="contain" />
+          </View>
+        ) : null}
       </Animated.View>
     </Pressable>
   );
@@ -484,12 +593,26 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   eyebrow: { color: colors.ink60, marginTop: space["2xl"] },
-  payRow: { flexDirection: "row", alignItems: "center", gap: space.md, paddingVertical: space.md, paddingHorizontal: space.sm, borderBottomWidth: 1, borderBottomColor: colors.line },
-  payRowOn: { backgroundColor: colors.surface },
-  top: { borderTopWidth: 1, borderTopColor: colors.line },
-  radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 1, borderColor: colors.ink40, alignItems: "center", justifyContent: "center" },
-  radioOn: { borderColor: colors.ink },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.ink },
+  // Each method is its own bordered seat, not a melted-together list — reads
+  // as distinct considered choices, not a form. Selected state gets the
+  // maison's bronze accent, not a generic grey tint.
+  // minHeight so Cash's small icon and the mobile-money rows' taller logo
+  // badges don't produce three visibly different row heights — every option
+  // reads as the same size choice regardless of what's inside it.
+  // No drawn border — rows are separated by whitespace (Gestalt proximity)
+  // instead of a boundary; the radio's filled/hollow state alone communicates
+  // selection, same as a native iOS/Android radio list.
+  payRow: { flexDirection: "row", alignItems: "center", gap: space.md, minHeight: 80, paddingVertical: space.md, paddingHorizontal: space.md, backgroundColor: colors.paper },
+  payRowOn: {},
+  radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 1, borderColor: colors.lineStrong, alignItems: "center", justifyContent: "center" },
+  radioOn: { borderColor: colors.accent },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.accent },
+  // A brand mark's own white seat — squared to match the maison's flat
+  // language (theme.ts radius.lg = 0), not a soft pill. Height is shared;
+  // width is per-logo (passed as logoWidth) since Orange Money's wordmark is
+  // wide and Afrimoney's is square — a shared box let the square one shrink
+  // to the box's short side and swim in empty space either way.
+  logoBadge: { height: 56, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: colors.line, padding: 6 },
   couponRow: { flexDirection: "row", alignItems: "center", gap: space.md, height: 48, marginTop: space.sm, borderBottomWidth: 1, borderBottomColor: colors.line },
   couponInline: { flexDirection: "row", gap: space.sm, marginTop: space.md },
   couponPill: { flex: 1, flexDirection: "row", alignItems: "center", gap: space.sm, height: 48, paddingHorizontal: space.md, borderWidth: 1, borderColor: colors.line },
@@ -497,6 +620,11 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   pointsRow: { flexDirection: "row", alignItems: "center", gap: space.lg, paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.line },
   couponInput: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },
   sumRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.md, paddingVertical: space.sm },
+  bagCard: { marginTop: space.sm, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper },
+  bagRow: { flexDirection: "row", alignItems: "center", gap: space.md, padding: space.md },
+  bagRowBorder: { borderBottomWidth: 1, borderBottomColor: colors.line },
+  bagThumb: { width: 44, height: 44, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, overflow: "hidden" },
+  bagTotalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: space.md, paddingVertical: space.md, borderTopWidth: 1, borderTopColor: colors.line },
   totalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: space.md, marginTop: space.sm, borderTopWidth: 1, borderTopColor: colors.line },
   footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.gutter, paddingTop: space.lg, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
 });

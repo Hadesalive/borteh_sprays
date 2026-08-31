@@ -24,7 +24,7 @@ export function UssdPaymentCard({ ussdCode, providerLabel }: { ussdCode: string;
       <AppText variant="label" style={{ color: colors.ink60 }}>{providerLabel}</AppText>
       <AppText variant="display" style={s.code}>{ussdCode}</AppText>
       <AppText variant="bodySoft" style={{ marginTop: space.sm }}>
-        Dial this on your phone to pay. We'll confirm here automatically once it goes through — no need to come back and check.
+        Dial this on your phone to pay. We'll confirm here automatically once it goes through, no need to come back and check.
       </AppText>
       <View style={{ marginTop: space.lg }}>
         <Button title="Dial now" icon={<Phone size={18} color={colors.onInk} weight="regular" />} onPress={dial} />

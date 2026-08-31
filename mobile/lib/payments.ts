@@ -3,6 +3,12 @@ import { supabase } from "./supabase";
 /** Monime's own mobile-money provider ids (confirmed live via GET /v1/momos?country=SL). */
 export type MomoProvider = "m17" | "m18"; // m17 = Orange Money, m18 = Afrimoney
 
+/** Shared across checkout, order retry, and the default-payment setting —
+ *  one source of truth so the label/mark never drifts between screens. */
+export const MOMO_LABEL: Record<MomoProvider, string> = { m17: "Orange Money", m18: "Afrimoney" };
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+export const MOMO_LOGO: Record<MomoProvider, number> = { m17: require("@/assets/payments/orange-money.png"), m18: require("@/assets/payments/afrimoney.png") };
+
 /** Creates a Monime Payment Code (USSD) for a payment_intent fn_place_order
  *  already created (status='created'). momoProvider is required — it locks
  *  the code to exactly that mobile-money channel. Returns the USSD string to
