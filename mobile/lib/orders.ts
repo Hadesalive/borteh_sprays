@@ -8,6 +8,9 @@ export type Order = {
   id: string;
   number: string;
   status: OrderStatus;
+  /** Only set once status is cancelled/returned — drives which explanation the
+   *  order screen shows ("you cancelled it" vs "payment window closed" vs "cancelled by staff"). */
+  cancelReason: string | null;
   paymentMethod: PaymentMethod;
   /** Set only while a Monime payment is outstanding — lets the order screen retry it. */
   paymentIntentId: string | null;
@@ -15,6 +18,9 @@ export type Order = {
    *  payment_intent.metadata (set by payment-init). Needed to regenerate the same
    *  USSD code on retry without asking the customer to pick a provider again. */
   momoProvider: string | null;
+  /** When the currently-shown USSD code stops being dialable — drives the
+   *  countdown on the USSD/pending-payment screens. Null once paid/cancelled. */
+  ussdCodeExpiresAt: string | null;
   subtotalMinor: number;
   deliveryFeeMinor: number | null;
   discountMinor: number;
@@ -80,11 +86,23 @@ export async function placeOrder(input: {
   return { orderId: row.order_id, orderNumber: row.order_number, paymentIntentId: row.payment_intent_id ?? null };
 }
 
+/** Customer self-service cancel — server enforces ownership AND that the
+ *  order is still pending_payment (fn_cancel_own_order). A confirmed order
+ *  is a real refund/support conversation, not a one-tap action, so this
+ *  simply won't apply past that point. */
+export async function cancelOrder(orderId: string): Promise<void> {
+  const { data, error } = await supabase.rpc("fn_cancel_own_order", { p_order_id: orderId });
+  if (error) throw error;
+  if (data === "not_cancellable") throw new Error("This order can no longer be cancelled. It's already being prepared.");
+  if (data === "not_found") throw new Error("Order not found.");
+  if (data !== "cancelled") throw new Error("Couldn't cancel this order. Try again.");
+}
+
 const ORDER_SELECT =
-  "id, order_number, status, payment_method, subtotal_minor, delivery_fee_minor, discount_minor, loyalty_redeem_minor, total_minor, " +
+  "id, order_number, status, cancel_reason, payment_method, subtotal_minor, delivery_fee_minor, discount_minor, loyalty_redeem_minor, total_minor, " +
   "landmark_snapshot, contact_phone_snapshot, recipient_name_snapshot, placed_at, created_at, " +
   "order_item(product_name_snapshot, variant_label_snapshot, qty, unit_price_minor, line_total_minor), " +
-  "payment_intent(id, status, metadata)";
+  "payment_intent(id, status, metadata, ussd_code_expires_at)";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalize(r: any): Order {
@@ -94,9 +112,11 @@ function normalize(r: any): Order {
     id: r.id,
     number: r.order_number,
     status: r.status,
+    cancelReason: r.cancel_reason ?? null,
     paymentMethod: r.payment_method,
     paymentIntentId: openIntent?.id ?? null,
     momoProvider: openIntent?.metadata?.momo_provider ?? null,
+    ussdCodeExpiresAt: openIntent?.ussd_code_expires_at ?? null,
     subtotalMinor: r.subtotal_minor,
     deliveryFeeMinor: r.delivery_fee_minor,
     discountMinor: r.discount_minor ?? 0,

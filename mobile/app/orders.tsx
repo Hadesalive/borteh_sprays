@@ -1,14 +1,16 @@
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { Receipt } from "phosphor-react-native";
-import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { DotsThree, Receipt } from "phosphor-react-native";
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { EmptyState } from "@/components/EmptyState";
 import { Skel } from "@/components/Skeleton";
 import { AppText } from "@/components/Text";
+import { LinkLabel } from "@/components/ui";
 import { useProducts } from "@/lib/api";
 import { formatLe } from "@/lib/format";
+import { setHideCancelledOrders, useHideCancelledOrders } from "@/lib/orderPrefs";
 import { type Order, STATUS_LABEL, STATUS_TONE, useOrders } from "@/lib/orders";
 import { Colors, font, space } from "@/lib/theme";
 import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
@@ -39,13 +41,32 @@ export default function Orders() {
   const { data: products } = useProducts();
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
+  const hideCancelled = useHideCancelledOrders();
+
+  // A view filter, not a delete — cancelled orders stay in the database
+  // (support/accounting record intact), this only controls what's shown.
+  const visibleOrders = hideCancelled ? (orders ?? []).filter((o) => o.status !== "cancelled") : orders ?? [];
+
+  const openActions = () => {
+    Alert.alert(
+      "Orders",
+      undefined,
+      [
+        {
+          text: hideCancelled ? "Show cancelled orders" : "Hide cancelled orders",
+          onPress: () => setHideCancelledOrders(!hideCancelled),
+        },
+        { text: "Cancel", style: "cancel" },
+      ],
+    );
+  };
 
   const fmtDate = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "");
 
   // Group by month — "July 2026" — so the ledger reads chronologically at a glance.
   const monthLabel = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString(undefined, { month: "long", year: "numeric" }) : "Earlier");
   const sections: { title: string; data: Order[] }[] = [];
-  for (const o of orders ?? []) {
+  for (const o of visibleOrders) {
     const title = monthLabel(o.placedAt);
     const prev = sections[sections.length - 1];
     if (prev && prev.title === title) prev.data.push(o);
@@ -82,7 +103,14 @@ export default function Orders() {
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={() => refetch()} tintColor={colors.ink40} colors={[colors.ink]} progressBackgroundColor={colors.surface} />}
       >
         <BackButton onPress={() => router.back()} />
-        <AppText variant="heading" style={{ marginTop: space.lg }}>Orders</AppText>
+        <View style={s.titleRow}>
+          <AppText variant="heading">Orders</AppText>
+          {orders && orders.length > 0 ? (
+            <Pressable onPress={openActions} hitSlop={12} accessibilityRole="button" accessibilityLabel="Order list actions">
+              <DotsThree size={26} color={colors.ink} weight="bold" />
+            </Pressable>
+          ) : null}
+        </View>
 
         {!orders || orders.length === 0 ? (
           isLoading ? (
@@ -97,6 +125,16 @@ export default function Orders() {
               body="When you place an order it'll show up here."
             />
           )
+        ) : visibleOrders.length === 0 ? (
+          // Every order exists, just hidden by the cancelled-orders filter —
+          // distinct from "no orders yet" so it doesn't read as an empty account.
+          <EmptyState
+            inline
+            icon={<Receipt size={32} color={colors.ink40} weight="regular" />}
+            title="Nothing to show."
+            body="Cancelled orders are hidden right now."
+            action={<LinkLabel label="Show cancelled orders" onPress={() => setHideCancelledOrders(false)} />}
+          />
         ) : (
           <>
             {sections.map((sec) => (
@@ -149,12 +187,14 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
 
   // open editorial receipt list — rows on paper, hairline separators, no card chrome
+  titleRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", marginTop: space.lg },
   groupLabel: { color: colors.ink40, marginTop: space["2xl"], marginBottom: space.xs },
   row: { flexDirection: "row", alignItems: "center", gap: space.md, paddingVertical: space.lg, backgroundColor: colors.paper },
   rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.line },
 
-  // the leading object — first item's photo, or the receipt glyph on the same bordered seat
-  lead: { width: 52, height: 52, borderRadius: 10, overflow: "hidden", borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" },
+  // the leading object — first item's photo, or the receipt glyph on the same bordered seat.
+  // Square (radius 0) — same fix as notifications.tsx's identical lead box.
+  lead: { width: 52, height: 52, overflow: "hidden", borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" },
 
   number: { fontFamily: font.medium },
   meta: { alignItems: "flex-end" },
