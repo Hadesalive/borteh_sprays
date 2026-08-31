@@ -1,7 +1,7 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
@@ -12,11 +12,13 @@ import { LinkLabel } from "@/components/ui";
 import { applyReferral, checkReferral } from "@/lib/account";
 import { signUp } from "@/lib/auth";
 import { Colors, space } from "@/lib/theme";
-import { ThemedStatusBar, useThemedStyles } from "@/lib/theme-context";
+import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
+import { PRIVACY_POLICY_URL } from "@/lib/urls";
 
 export default function SignUp() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -125,6 +127,13 @@ export default function SignUp() {
 
           <View style={s.footer}>
             <Button title={busy ? "Creating account…" : "Create account"} onPress={submit} disabled={busy} />
+            <AppText variant="caption" style={s.legal}>
+              By creating an account, you agree to our{" "}
+              <AppText variant="caption" style={{ color: colors.accent }} onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+                Privacy Policy
+              </AppText>
+              .
+            </AppText>
             <View style={s.altRow}>
               <AppText variant="bodySoft">Already have an account?</AppText>
               <LinkLabel label="Sign in" onPress={() => router.replace("/login")} />
@@ -142,5 +151,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   form: { gap: space.lg, marginTop: space["3xl"] },
   spacer: { flexGrow: 1, minHeight: space["2xl"] },
   footer: { gap: space.md, paddingTop: space.xl },
+  legal: { textAlign: "center", color: colors.ink40 },
   altRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm },
 });
