@@ -407,7 +407,9 @@ export default function Checkout() {
                       <Image source={MOMO_LOGO[momoProvider]} style={{ width: "100%", height: "100%" }} contentFit="contain" />
                     </View>
                   ) : (
-                    <Money size={20} color={colors.ink} weight="regular" />
+                    <View style={[s.logoBadge, s.logoBadgeIcon, { width: 56 }]}>
+                      <Money size={20} color={colors.ink} weight="regular" />
+                    </View>
                   )}
                   <View style={{ flex: 1, minWidth: 0 }}>
                     <AppText variant="body">{paymentMethod === "monime" && momoProvider ? MOMO_LABEL[momoProvider] : "Cash on delivery"}</AppText>
@@ -571,17 +573,21 @@ function PaymentRow({
     >
       <Animated.View style={[s.payRow, on && s.payRowOn, pressStyle]}>
         <View style={[s.radio, on && s.radioOn]}>{on ? <View style={s.radioDot} /> : null}</View>
-        {icon}
         <View style={{ flex: 1, minWidth: 0 }}>
           <AppText variant="body">{title}</AppText>
           <AppText variant="caption" style={{ marginTop: 2 }}>{subtitle}</AppText>
         </View>
-        {/* Real provider mark, trailing — same placement the reference gives
-            Mastercard: large enough to actually read, own white seat since
-            the logo isn't designed for an arbitrary background. */}
+        {/* Trailing mark, every method the same: a real provider logo gets its
+            own white seat since it isn't designed for an arbitrary background;
+            cash's icon gets the identical seat so all three rows read as the
+            same considered choice instead of two logos and a loose glyph. */}
         {logo ? (
           <View style={[s.logoBadge, { width: logoWidth ?? 56 }]}>
             <Image source={logo} style={{ width: "100%", height: "100%" }} contentFit="contain" />
+          </View>
+        ) : icon ? (
+          <View style={[s.logoBadge, s.logoBadgeIcon, { width: logoWidth ?? 56 }]}>
+            {icon}
           </View>
         ) : null}
       </Animated.View>
@@ -613,6 +619,9 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   // wide and Afrimoney's is square — a shared box let the square one shrink
   // to the box's short side and swim in empty space either way.
   logoBadge: { height: 56, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: colors.line, padding: 6 },
+  // Cash's icon has no native artwork to fill the seat, unlike a logo image —
+  // center it instead of letting it sit flush top-left.
+  logoBadgeIcon: { alignItems: "center", justifyContent: "center" },
   couponRow: { flexDirection: "row", alignItems: "center", gap: space.md, height: 48, marginTop: space.sm, borderBottomWidth: 1, borderBottomColor: colors.line },
   couponInline: { flexDirection: "row", gap: space.sm, marginTop: space.md },
   couponPill: { flex: 1, flexDirection: "row", alignItems: "center", gap: space.sm, height: 48, paddingHorizontal: space.md, borderWidth: 1, borderColor: colors.line },

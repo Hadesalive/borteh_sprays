@@ -67,6 +67,12 @@ const QUIZ_STEPS: QuizStep[] = [
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 const CAROUSEL_MS = 4000;
 const SPLASH_MS = 1600;
+// Every phase's content sits in a column capped at this width and centered.
+// A no-op on phones (already narrower than this), it's what keeps the hero
+// image, quiz copy, and CTA from stretching edge-to-edge into a sparse,
+// oversized crop on iPad — the same "readable column" iPad apps reach for
+// instead of redesigning proportions per screen size.
+const MAX_CONTENT_W = 480;
 // A dedicated decorative rose for the falling petals — not colors.error. They
 // happened to be the same red before; that borrowed a token reserved for
 // functional error/destructive states for a purely decorative flourish, and
@@ -165,21 +171,23 @@ export default function Onboarding() {
     return (
       <View style={[s.screen, { paddingTop: insets.top }]}>
         <ThemedStatusBar />
-        <View style={[s.image, { height: imgH }]}>
-          <CarouselSlide key={slideStep} source={slide.imageUrl ? { uri: slide.imageUrl } : slide.img} />
-          <Pressable onPress={() => finish(false)} style={[s.skip, { top: space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel={skipLabel}>
-            <AppText variant="label">{skipLabel}</AppText>
-          </Pressable>
-        </View>
-        <View style={s.body}>
-          <ReAnimated.View key={slideStep} entering={FadeIn.duration(300)} exiting={FadeOut.duration(150)}>
-            <RomanProgress total={slides.length} index={slideStep} />
-            <AppText variant="display" style={{ marginTop: space.md }}>{slide.title}</AppText>
-            <AppText variant="bodySoft" style={{ marginTop: space.sm }}>{slide.body}</AppText>
-          </ReAnimated.View>
-        </View>
-        <View style={[s.footer, { paddingBottom: insets.bottom + space["2xl"] }]}>
-          <Button title={carouselCta} onPress={() => { Haptics.selectionAsync(); setPhase("quiz"); }} />
+        <View style={s.content}>
+          <View style={[s.image, { height: imgH }]}>
+            <CarouselSlide key={slideStep} source={slide.imageUrl ? { uri: slide.imageUrl } : slide.img} />
+            <Pressable onPress={() => finish(false)} style={[s.skip, { top: space.md }]} hitSlop={8} accessibilityRole="button" accessibilityLabel={skipLabel}>
+              <AppText variant="label">{skipLabel}</AppText>
+            </Pressable>
+          </View>
+          <View style={s.body}>
+            <ReAnimated.View key={slideStep} entering={FadeIn.duration(300)} exiting={FadeOut.duration(150)}>
+              <RomanProgress total={slides.length} index={slideStep} />
+              <AppText variant="display" style={{ marginTop: space.md }}>{slide.title}</AppText>
+              <AppText variant="bodySoft" style={{ marginTop: space.sm }}>{slide.body}</AppText>
+            </ReAnimated.View>
+          </View>
+          <View style={[s.footer, { paddingBottom: insets.bottom + space["2xl"] }]}>
+            <Button title={carouselCta} onPress={() => { Haptics.selectionAsync(); setPhase("quiz"); }} />
+          </View>
         </View>
       </View>
     );
@@ -190,21 +198,23 @@ export default function Onboarding() {
     return (
       <View style={[s.screen, { paddingTop: insets.top }]}>
         <ThemedStatusBar />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
-          <ProgressBar fraction={1} />
-          <AppText variant="label" style={[s.eyebrow, { marginTop: space.xl }]}>Your scent profile</AppText>
-          <AppText variant="display" style={{ marginTop: space.sm }}>
-            {words.length ? words.join(".\n") + "." : "We'll learn as you browse."}
-          </AppText>
-          <AppText variant="bodySoft" style={{ marginTop: space.md, maxWidth: 300 }}>
-            {matchCount != null && matchCount > 0
-              ? `${matchCount} ${matchCount === 1 ? "scent" : "scents"} on the shelf match your taste. Your home is tuned to them.`
-              : "Saved. Your home will tune to this as the shelf grows."}
-          </AppText>
-          <ClosestMatches />
-        </ScrollView>
-        <View style={[s.footer, { paddingBottom: insets.bottom + space["2xl"] }]}>
-          <Button title={busy ? busyLabel : finishCta} onPress={() => finish(false)} disabled={busy} />
+        <View style={s.content}>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
+            <ProgressBar fraction={1} />
+            <AppText variant="label" style={[s.eyebrow, { marginTop: space.xl }]}>Your scent profile</AppText>
+            <AppText variant="display" style={{ marginTop: space.sm }}>
+              {words.length ? words.join(".\n") + "." : "We'll learn as you browse."}
+            </AppText>
+            <AppText variant="bodySoft" style={{ marginTop: space.md, maxWidth: 300 }}>
+              {matchCount != null && matchCount > 0
+                ? `${matchCount} ${matchCount === 1 ? "scent" : "scents"} on the shelf match your taste. Your home is tuned to them.`
+                : "Saved. Your home will tune to this as the shelf grows."}
+            </AppText>
+            <ClosestMatches />
+          </ScrollView>
+          <View style={[s.footer, { paddingBottom: insets.bottom + space["2xl"] }]}>
+            <Button title={busy ? busyLabel : finishCta} onPress={() => finish(false)} disabled={busy} />
+          </View>
         </View>
       </View>
     );
@@ -239,80 +249,82 @@ export default function Onboarding() {
   return (
     <View style={[s.screen, { paddingTop: insets.top }]}>
       <ThemedStatusBar />
-      <View style={{ paddingHorizontal: space.gutter, paddingTop: space.md }}>
-        <ProgressBar fraction={(quizStep + 1) / QUIZ_STEPS.length} />
-      </View>
-      <View style={s.topBar}>
-        <Pressable onPress={backQuiz} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
-          <AppText variant="label" style={{ color: colors.ink40 }}>← Back</AppText>
-        </Pressable>
-        <Pressable onPress={() => finish(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={skipLabel}>
-          <AppText variant="label" style={{ color: colors.ink40 }}>{skipLabel}</AppText>
-        </Pressable>
-      </View>
+      <View style={s.content}>
+        <View style={{ paddingHorizontal: space.gutter, paddingTop: space.md }}>
+          <ProgressBar fraction={(quizStep + 1) / QUIZ_STEPS.length} />
+        </View>
+        <View style={s.topBar}>
+          <Pressable onPress={backQuiz} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+            <AppText variant="label" style={{ color: colors.ink40 }}>← Back</AppText>
+          </Pressable>
+          <Pressable onPress={() => finish(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={skipLabel}>
+            <AppText variant="label" style={{ color: colors.ink40 }}>{skipLabel}</AppText>
+          </Pressable>
+        </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
-        <ReAnimated.View key={quizStep} entering={FadeIn.duration(250)} exiting={FadeOut.duration(120)}>
-          <AppText variant="body" style={s.stepEyebrow}>Question {quizStep + 1} of {QUIZ_STEPS.length}</AppText>
-          <AppText variant="display" style={{ marginTop: space.xs }}>{step.title}</AppText>
-          <AppText variant="bodySoft" style={{ marginTop: space.sm }}>{step.body}</AppText>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
+          <ReAnimated.View key={quizStep} entering={FadeIn.duration(250)} exiting={FadeOut.duration(120)}>
+            <AppText variant="body" style={s.stepEyebrow}>Question {quizStep + 1} of {QUIZ_STEPS.length}</AppText>
+            <AppText variant="display" style={{ marginTop: space.xs }}>{step.title}</AppText>
+            <AppText variant="bodySoft" style={{ marginTop: space.sm }}>{step.body}</AppText>
 
-          <View style={{ marginTop: space["2xl"], gap: space.xl }}>
-            {step.key === "gender" && (
-              <RomanList options={GENDERS} value={answers.gender} onChange={(g) => setAnswers((a) => ({ ...a, gender: g }))} />
-            )}
+            <View style={{ marginTop: space["2xl"], gap: space.xl }}>
+              {step.key === "gender" && (
+                <RomanList options={GENDERS} value={answers.gender} onChange={(g) => setAnswers((a) => ({ ...a, gender: g }))} />
+              )}
 
-            {step.key === "world" && (
-              <ChoiceGrid options={DIRECTIONS} selected={answers.directions} multi onToggle={(c) => setAnswers((a) => ({ ...a, directions: toggleInArray(a.directions, c) }))} />
-            )}
+              {step.key === "world" && (
+                <ChoiceGrid options={DIRECTIONS} selected={answers.directions} multi onToggle={(c) => setAnswers((a) => ({ ...a, directions: toggleInArray(a.directions, c) }))} />
+              )}
 
-            {step.key === "character" && (
-              <>
-                <View>
-                  <AppText variant="label" style={s.q}>Intensity</AppText>
-                  <View style={{ marginTop: space.sm }}>
-                    <Segment options={INTENSITIES} value={answers.intensity} onChange={(v) => setAnswers((a) => ({ ...a, intensity: v }))} />
+              {step.key === "character" && (
+                <>
+                  <View>
+                    <AppText variant="label" style={s.q}>Intensity</AppText>
+                    <View style={{ marginTop: space.sm }}>
+                      <Segment options={INTENSITIES} value={answers.intensity} onChange={(v) => setAnswers((a) => ({ ...a, intensity: v }))} />
+                    </View>
                   </View>
-                </View>
-                <View>
-                  <AppText variant="label" style={s.q}>Sweetness</AppText>
-                  <View style={{ marginTop: space.sm }}>
-                    <Segment options={SWEETNESS} value={answers.sweetness} onChange={(v) => setAnswers((a) => ({ ...a, sweetness: v }))} />
+                  <View>
+                    <AppText variant="label" style={s.q}>Sweetness</AppText>
+                    <View style={{ marginTop: space.sm }}>
+                      <Segment options={SWEETNESS} value={answers.sweetness} onChange={(v) => setAnswers((a) => ({ ...a, sweetness: v }))} />
+                    </View>
                   </View>
-                </View>
-              </>
-            )}
+                </>
+              )}
 
-            {step.key === "notes" && (
-              <NoteGrid notes={NOTES} loves={answers.loves} avoids={answers.avoids} onCycle={cycleNote} />
-            )}
+              {step.key === "notes" && (
+                <NoteGrid notes={NOTES} loves={answers.loves} avoids={answers.avoids} onCycle={cycleNote} />
+              )}
 
-            {step.key === "context" && (
-              <>
-                <View>
-                  <AppText variant="label" style={s.q}>Occasions</AppText>
-                  <View style={{ marginTop: space.sm }}>
-                    <ChoiceGrid options={OCCASIONS} selected={answers.occasions} multi onToggle={(c) => setAnswers((a) => ({ ...a, occasions: toggleInArray(a.occasions, c) }))} />
+              {step.key === "context" && (
+                <>
+                  <View>
+                    <AppText variant="label" style={s.q}>Occasions</AppText>
+                    <View style={{ marginTop: space.sm }}>
+                      <ChoiceGrid options={OCCASIONS} selected={answers.occasions} multi onToggle={(c) => setAnswers((a) => ({ ...a, occasions: toggleInArray(a.occasions, c) }))} />
+                    </View>
                   </View>
-                </View>
-                <View>
-                  <AppText variant="label" style={s.q}>Budget</AppText>
-                  <View style={{ marginTop: space.sm }}>
-                    <Segment options={BUDGETS} value={answers.budget} onChange={(v) => setAnswers((a) => ({ ...a, budget: v }))} />
+                  <View>
+                    <AppText variant="label" style={s.q}>Budget</AppText>
+                    <View style={{ marginTop: space.sm }}>
+                      <Segment options={BUDGETS} value={answers.budget} onChange={(v) => setAnswers((a) => ({ ...a, budget: v }))} />
+                    </View>
                   </View>
-                </View>
-              </>
-            )}
-          </View>
-        </ReAnimated.View>
-      </ScrollView>
+                </>
+              )}
+            </View>
+          </ReAnimated.View>
+        </ScrollView>
 
-      <View style={[s.footer, { paddingBottom: insets.bottom + space["2xl"] }]}>
-        <Button
-          title={isLast ? quizDone : answered ? quizCta : "Skip this one"}
-          onPress={advanceQuiz}
-          variant={isLast ? "primary" : answered ? "primary" : "secondary"}
-        />
+        <View style={[s.footer, { paddingBottom: insets.bottom + space["2xl"] }]}>
+          <Button
+            title={isLast ? quizDone : answered ? quizCta : "Skip this one"}
+            onPress={advanceQuiz}
+            variant={isLast ? "primary" : answered ? "primary" : "secondary"}
+          />
+        </View>
       </View>
     </View>
   );
@@ -458,6 +470,7 @@ const styles = StyleSheet.create({
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
+  content: { flex: 1, width: "100%", maxWidth: MAX_CONTENT_W, alignSelf: "center" },
   image: { backgroundColor: colors.surface, overflow: "hidden" },
   skip: { position: "absolute", right: space.gutter, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, paddingHorizontal: space.md, paddingVertical: space.sm },
   topBar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: space.gutter, paddingTop: space.md, paddingBottom: space.xs },
