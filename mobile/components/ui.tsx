@@ -3,9 +3,11 @@ import { useRouter } from "expo-router";
 import { Bell, MagnifyingGlass, SlidersHorizontal, User } from "phosphor-react-native";
 import { type ReactNode } from "react";
 import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
+import Animated from "react-native-reanimated";
+import { usePressScale } from "@/lib/animations";
 import { useSession } from "@/lib/auth";
 import { useUnreadCount } from "@/lib/notifications";
-import { Colors, font, label as labelToken, space } from "@/lib/theme";
+import { Colors, font, label as labelToken, radius, space } from "@/lib/theme";
 import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { AppText } from "./Text";
 
@@ -89,14 +91,19 @@ export function HeaderActions({ light = false }: { light?: boolean } = {}) {
 }
 
 /** Frosted round bed for controls floating over photography — the ONE sanctioned blur:
- *  functional contrast (an ink glyph is invisible on a dark bottle shot), never decoration.
- *  Blur on iOS; the paper tint keeps it readable where Android falls back to translucency. */
+ *  functional contrast against arbitrary product photography, never decoration. A light
+ *  tint here only guarantees contrast on dark photos — it disappears on a white/pale
+ *  bottle shot, taking the button with it. A dark scrim works against any photo brightness
+ *  (light or dark), so pair this with a light on-photo icon color at the call site, not a
+ *  themed ink color. Dark on iOS blur; the scrim + rim keep it visible where Android falls
+ *  back to translucency. */
 export function FrostCircle({ size = 36, children }: { size?: number; children: ReactNode }) {
   const s = useThemedStyles(makeStyles);
   return (
     <View style={[s.frost, { width: size, height: size, borderRadius: size / 2 }]}>
-      <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(250,248,245,0.6)" }]} />
+      <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(20,16,12,0.4)" }]} />
+      <View style={[StyleSheet.absoluteFill, { borderRadius: size / 2, borderWidth: 1, borderColor: "rgba(255,255,255,0.22)" }]} />
       {children}
     </View>
   );
@@ -164,16 +171,19 @@ export function SearchButton({ onPress, onFilter, placeholder = "Search fragranc
   );
 }
 
-/** Squared toggle chip — ink fill when active, 1px line when idle. */
+/** Capsule toggle chip — ink fill when active, 1px line when idle. */
 export function CategoryChip({ label, icon, active, onPress }: { label: string; icon?: ReactNode; active?: boolean; onPress?: () => void }) {
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
+  const { pressStyle, onPressIn, onPressOut } = usePressScale();
   return (
-    <Pressable onPress={onPress} style={[s.chip, active ? s.chipActive : s.chipIdle]}>
-      {icon}
-      <AppText variant="label" style={{ color: active ? colors.onInk : colors.ink }}>
-        {label}
-      </AppText>
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut} accessibilityRole="button" accessibilityState={{ selected: !!active }} accessibilityLabel={label}>
+      <Animated.View style={[s.chip, active ? s.chipActive : s.chipIdle, pressStyle]}>
+        {icon}
+        <AppText variant="label" style={{ color: active ? colors.onInk : colors.ink }}>
+          {label}
+        </AppText>
+      </Animated.View>
     </Pressable>
   );
 }
@@ -229,7 +239,9 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   searchDivider: { width: StyleSheet.hairlineWidth, alignSelf: "stretch", marginVertical: space.md, backgroundColor: colors.line },
   input: { flex: 1, fontFamily: font.regular, fontSize: 14, color: colors.ink, padding: 0 },
   placeholder: { fontFamily: font.regular, fontSize: 14, color: colors.ink40 },
-  chip: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: space.md, paddingVertical: space.sm },
+  // capsule token — same rounded language as the segmented control/filter
+  // chips elsewhere, not a squared box
+  chip: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: space.lg, paddingVertical: space.sm, borderRadius: radius.pill },
   chipActive: { backgroundColor: colors.ink, borderWidth: 1, borderColor: colors.ink },
   chipIdle: { backgroundColor: "transparent", borderWidth: 1, borderColor: colors.line },
   scentTile: { minHeight: 72, backgroundColor: colors.surface, paddingHorizontal: space.lg, paddingVertical: space.md, justifyContent: "center" },

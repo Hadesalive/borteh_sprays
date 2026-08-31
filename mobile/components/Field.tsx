@@ -21,6 +21,7 @@ export function Field({
   error,
   helper,
   minimal, // accepted for back-compat; Maison fields are all bordered
+  multiline,
 }: {
   label: string;
   value: string;
@@ -35,6 +36,7 @@ export function Field({
   error?: string;
   helper?: string;
   minimal?: boolean;
+  multiline?: boolean;
 }) {
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
@@ -45,7 +47,7 @@ export function Field({
       <AppText variant="label" style={{ color: hasError ? colors.error : colors.ink60 }}>
         {label}
       </AppText>
-      <View style={[s.field, { borderColor: hasError ? colors.error : colors.line }]}>
+      <View style={[s.field, multiline && s.fieldMultiline, { borderColor: hasError ? colors.error : colors.line }]}>
         <TextInput
           value={value}
           onChangeText={onChangeText}
@@ -58,7 +60,10 @@ export function Field({
           autoFocus={autoFocus}
           returnKeyType={returnKeyType}
           onSubmitEditing={onSubmitEditing}
-          style={s.input}
+          multiline={multiline}
+          numberOfLines={multiline ? 3 : undefined}
+          textAlignVertical={multiline ? "top" : undefined}
+          style={[s.input, multiline && s.inputMultiline]}
         />
         {secure ? (
           <Pressable onPress={() => setHidden((v) => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={hidden ? "Show password" : "Hide password"}>
@@ -78,5 +83,7 @@ export function Field({
 const makeStyles = (colors: Colors) => StyleSheet.create({
   wrap: { gap: space.xs },
   field: { flexDirection: "row", alignItems: "center", gap: space.md, height: 52, paddingHorizontal: space.lg, borderWidth: 1, backgroundColor: colors.paper },
+  fieldMultiline: { height: 88, alignItems: "flex-start", paddingVertical: space.md },
   input: { flex: 1, fontFamily: font.regular, fontSize: 16, color: colors.ink, padding: 0 },
+  inputMultiline: { flex: 1, height: "100%" },
 });

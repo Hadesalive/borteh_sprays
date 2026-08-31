@@ -18,6 +18,12 @@ export const lightColors = {
   ink60: "#6F675C", // secondary text
   ink40: "#A39A8D", // tertiary, inactive icons, placeholders
   line: "#E6E3DD", // 1px borders, separators (used instead of shadows)
+  // `line` is a subtle separator, calibrated for adjacent same-tone surfaces —
+  // NOT for a standalone interactive-component boundary (only ~1.2:1 against
+  // paper). Use lineStrong wherever a border alone must signal "this is a
+  // distinct, tappable control" (unselected radio cards, etc.) — ≥3:1 against
+  // paper in both palettes, meeting WCAG 1.4.11 non-text contrast.
+  lineStrong: "#8F8573",
   accent: "#8A5327", // bronze — links, active selection, ONE moment per screen
   success: "#33714D", // functional only (in stock, order placed)
   error: "#A63A2B", // functional only (errors, destructive)
@@ -55,6 +61,7 @@ export const darkColors: Colors = {
   ink60: "#A8A093", // secondary text
   ink40: "#6E665A", // tertiary, inactive icons, placeholders
   line: "#322B22", // 1px borders, separators
+  lineStrong: "#7A7266", // ≥3:1 against dark paper — see light palette's note
   accent: "#C08A4E", // brightened bronze for contrast on dark
   success: "#5B9E77",
   error: "#E0715F",

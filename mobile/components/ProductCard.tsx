@@ -8,14 +8,11 @@ import { type Product, productSubline } from "@/lib/api";
 import { formatLe } from "@/lib/format";
 import { openPeek } from "@/lib/quickPeek";
 import { productImage } from "@/lib/productImage";
-import { Colors, space } from "@/lib/theme";
-import { useThemedStyles } from "@/lib/theme-context";
+import { Colors, lightColors, space } from "@/lib/theme";
+import { useTheme, useThemedStyles } from "@/lib/theme-context";
 import { track } from "@/lib/track";
 import { toggleWish, useWishlist } from "@/lib/wishlist";
 import { AppText } from "./Text";
-
-// The heart uses the brand's flower red, not the muted functional error tone.
-const HEART_RED = "#EA2A3E";
 
 // Maison card: 3:4 image on a surface bed with softly rounded TOP corners (squared
 // at the base where it meets the type), bare heart top-right, serif name, brand·notes,
@@ -40,6 +37,7 @@ export function ProductCard({
   shape?: "top" | "tearLeft" | "tearRight";
 }) {
   const router = useRouter();
+  const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
   const liked = useWishlist().includes(product.slug);
   const scale = useRef(new Animated.Value(1)).current;
@@ -96,9 +94,12 @@ export function ProductCard({
               accessibilityRole="button"
               accessibilityLabel={liked ? "Remove from saved" : "Save"}
             >
-              {/* Brand-red heart with a soft shadow so it reads on light or dark photography */}
+              {/* Bronze when saved (this design system's one accent, not red — red
+                  is reserved for functional error/destructive states), a paper-
+                  light outline otherwise; the drop shadow keeps either legible
+                  over light or dark photography. */}
               <Animated.View style={[s.heartGlyph, { transform: [{ scale: heartScale }] }]}>
-                <Heart size={24} color={HEART_RED} weight={liked ? "fill" : "regular"} />
+                <Heart size={24} color={liked ? colors.accent : lightColors.paper} weight={liked ? "fill" : "regular"} />
               </Animated.View>
             </Pressable>
           </View>

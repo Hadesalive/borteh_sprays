@@ -9,7 +9,7 @@ import { useTheme, useThemedStyles } from "@/lib/theme-context";
 type Variant = "primary" | "secondary" | "ghost" | "outline" | "tonal";
 
 /** The one button — h52, squared, one primary per screen. A price rides in the
- *  label via `trailing`: "Add to bag — Le 680". Keeps the press-spring + haptic. */
+ *  label via `trailing`: "Add to bag · Le 680". Keeps the press-spring + haptic. */
 export function Button({
   title,
   onPress,
@@ -48,7 +48,7 @@ export function Button({
   const kind: "primary" | "secondary" | "ghost" = variant === "outline" ? "secondary" : variant === "tonal" ? "primary" : variant;
   const destructive = tone === "destructive";
   const labelColor = kind === "primary" ? colors.onInk : destructive ? colors.error : colors.ink;
-  const composed = trailing ? `${title} — ${trailing}` : title;
+  const composed = trailing ? `${title} · ${trailing}` : title;
 
   return (
     <Pressable

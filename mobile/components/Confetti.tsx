@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Animated, Easing, StyleSheet, useWindowDimensions, View } from "react-native";
+import { AccessibilityInfo, Animated, Easing, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useTheme } from "@/lib/theme-context";
 
-// A restrained confetti burst for the order-placed moment. Built on the built-in
-// Animated API (reanimated isn't installed) with the Maison palette — ink, bronze,
-// a lighter bronze, and the success green of the check — never rainbow. Pieces pop
-// up from the check, arc over, and settle out. Purely visual; self-unmounts.
+// A restrained confetti burst for the order-placed moment. Built on the core
+// Animated API (transform/opacity only, useNativeDriver throughout, so it's
+// already off the JS thread) with the Maison palette — ink, bronze, a lighter
+// bronze, and the success green of the check — never rainbow. Pieces pop up
+// from the check, arc over, and settle out. Purely visual; self-unmounts.
+// Skips entirely under Reduce Motion — this is delight-tier, not state.
 
 type Piece = {
   key: number;
@@ -28,6 +30,17 @@ export function Confetti({ originY = 0, count = 46 }: { originY?: number; count?
   const PALETTE = [colors.ink, colors.accent, "#B9793B", colors.success];
   const { width, height } = useWindowDimensions();
   const [done, setDone] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    AccessibilityInfo.isReduceMotionEnabled().then((r) => {
+      if (!cancelled) setReduceMotion(r);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const pieces = useMemo<Piece[]>(
     () =>
@@ -56,13 +69,18 @@ export function Confetti({ originY = 0, count = 46 }: { originY?: number; count?
   );
 
   useEffect(() => {
+    if (reduceMotion === null) return; // still checking — don't burst on a guess
+    if (reduceMotion) {
+      setDone(true);
+      return;
+    }
     const anims = pieces.map((p) =>
       Animated.timing(p.v, { toValue: 1, duration: p.duration, delay: p.delay, easing: Easing.out(Easing.quad), useNativeDriver: true }),
     );
     Animated.parallel(anims).start(() => setDone(true));
-  }, [pieces]);
+  }, [pieces, reduceMotion]);
 
-  if (done) return null;
+  if (done || reduceMotion === null) return null;
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
