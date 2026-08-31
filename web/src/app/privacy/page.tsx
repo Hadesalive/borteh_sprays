@@ -165,7 +165,13 @@ export default function PrivacyPolicyPage() {
               <li>Change your password at any time.</li>
               <li>Turn off promotional notifications while still receiving order updates.</li>
               <li>Hide yourself from the public leaderboard while still seeing your own rank.</li>
-              <li>Delete your account and personal data at any time from within the app.</li>
+              <li>
+                Delete your account and personal data at any time, from within the app or by{" "}
+                <a href="/data-deletion" className="text-foreground underline decoration-border underline-offset-2 hover:text-brand hover:decoration-brand">
+                  requesting it here
+                </a>
+                .
+              </li>
               <li>Contact us to ask what information we hold about you, or to request a correction.</li>
             </ul>
           </section>
