@@ -66,7 +66,7 @@ export default function PrivacyPolicyPage() {
         <p className="mt-8 max-w-xl text-[1.0625rem] leading-relaxed text-foreground/90">
           This describes what the Borteh Sprays app collects when you use it, why, who we share it
           with, and the choices you have. We&rsquo;ve written it in plain language, and it&rsquo;s
-          accurate to what the app actually does &mdash; not a generic template.
+          accurate to what the app actually does, not a generic template.
         </p>
 
         <p className="mt-6 max-w-xl border-l-2 border-brand/40 pl-4 text-sm leading-relaxed text-muted-foreground italic">
@@ -97,15 +97,15 @@ export default function PrivacyPolicyPage() {
             <H2 id="collect">Information we collect</H2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">When you create an account and use the app, we collect:</p>
             <ul className="mt-4 space-y-3 border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
-              <li><strong className="text-foreground">Account details</strong> &mdash; your name, phone number (used to sign in), and password. Your password is stored in encrypted (hashed) form; we cannot see it.</li>
-              <li><strong className="text-foreground">Delivery information</strong> &mdash; the delivery address or landmark you provide, and the phone number we use to confirm delivery.</li>
-              <li><strong className="text-foreground">Order history</strong> &mdash; items purchased, quantities, prices, order status, and (if applicable) why an order was cancelled.</li>
-              <li><strong className="text-foreground">Payment information</strong> &mdash; which payment method you chose (mobile money or cash on delivery) and the status of that payment. We do not collect or store your mobile money PIN, card numbers, or other payment credentials &mdash; those are handled directly by our payment processor, Monime, not by Borteh.</li>
-              <li><strong className="text-foreground">Loyalty &amp; rewards data</strong> &mdash; your points balance, lifetime spend, membership tier, and any referral codes you use or share.</li>
-              <li><strong className="text-foreground">Preferences</strong> &mdash; fragrances you save, and answers to our scent quiz (preferred notes, gender category, budget, occasions), used to personalize what you see.</li>
-              <li><strong className="text-foreground">Reviews</strong> &mdash; any review or rating you submit for a product.</li>
-              <li><strong className="text-foreground">Notification token</strong> &mdash; a device identifier used to deliver push notifications, only if you enable them.</li>
-              <li><strong className="text-foreground">Usage data</strong> &mdash; which products, collections, and features you view or tap, used to power recommendations like &ldquo;picked for you.&rdquo; This is first-party data we use ourselves; we do not share it with advertising networks or data brokers, and we do not use it for cross-app tracking.</li>
+              <li><strong className="text-foreground">Account details.</strong> Your name, phone number (used to sign in), and password. Your password is stored in encrypted (hashed) form; we cannot see it.</li>
+              <li><strong className="text-foreground">Delivery information.</strong> The delivery address or landmark you provide, and the phone number we use to confirm delivery.</li>
+              <li><strong className="text-foreground">Order history.</strong> Items purchased, quantities, prices, order status, and (if applicable) why an order was cancelled.</li>
+              <li><strong className="text-foreground">Payment information.</strong> Which payment method you chose (mobile money or cash on delivery) and the status of that payment. We do not collect or store your mobile money PIN, card numbers, or other payment credentials; those are handled directly by our payment processor, Monime, not by Borteh.</li>
+              <li><strong className="text-foreground">Loyalty &amp; rewards data.</strong> Your points balance, lifetime spend, membership tier, and any referral codes you use or share.</li>
+              <li><strong className="text-foreground">Preferences.</strong> Fragrances you save, and answers to our scent quiz (preferred notes, gender category, budget, occasions), used to personalize what you see.</li>
+              <li><strong className="text-foreground">Reviews.</strong> Any review or rating you submit for a product.</li>
+              <li><strong className="text-foreground">Notification token.</strong> A device identifier used to deliver push notifications, only if you enable them.</li>
+              <li><strong className="text-foreground">Usage data.</strong> Which products, collections, and features you view or tap, used to power recommendations like &ldquo;picked for you.&rdquo; This is first-party data we use ourselves; we do not share it with advertising networks or data brokers, and we do not use it for cross-app tracking.</li>
             </ul>
           </section>
 
@@ -113,7 +113,7 @@ export default function PrivacyPolicyPage() {
             <H2 id="use">How we use it</H2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               We use your information to create and run your account, process and deliver your orders,
-              and operate the loyalty and referral program &mdash; calculating points, tier discounts,
+              and operate the loyalty and referral program: calculating points, tier discounts,
               and rewards. We use your browsing history, purchases, and quiz answers to personalize what
               you see in the app. We send order updates, which are part of the service and always on,
               and promotional offers only if you&rsquo;ve opted in. And we use your information to
@@ -127,8 +127,8 @@ export default function PrivacyPolicyPage() {
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Borteh has an optional &ldquo;Top Buyers&rdquo; leaderboard that ranks customers by
               lifetime spend. By default, your name and spend amount may be visible to other customers
-              on this leaderboard. You can turn this off at any time from the leaderboard screen &mdash;
-              you&rsquo;ll still always be able to see your own rank, but other customers won&rsquo;t
+              on this leaderboard. You can turn this off at any time from the leaderboard screen.
+              You&rsquo;ll still always be able to see your own rank, but other customers won&rsquo;t
               see your entry.
             </p>
           </section>
@@ -137,10 +137,10 @@ export default function PrivacyPolicyPage() {
             <H2 id="share">Who we share it with</H2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">We don&rsquo;t sell your personal information. We share it only where necessary to run the service:</p>
             <ul className="mt-4 space-y-3 border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
-              <li><strong className="text-foreground">Supabase</strong> &mdash; our database, authentication, and file storage provider, which hosts the information described above.</li>
-              <li><strong className="text-foreground">Monime</strong> &mdash; a licensed Sierra Leone payment processor, which handles mobile money payments. We share the order amount and a reference number, not your mobile money PIN.</li>
-              <li><strong className="text-foreground">Expo</strong> &mdash; the push notification delivery service, if you have notifications enabled.</li>
-              <li><strong className="text-foreground">WhatsApp (Meta)</strong> &mdash; if you choose to contact support over WhatsApp, that conversation is subject to WhatsApp&rsquo;s own privacy policy, not this one.</li>
+              <li><strong className="text-foreground">Supabase.</strong> Our database, authentication, and file storage provider, which hosts the information described above.</li>
+              <li><strong className="text-foreground">Monime.</strong> A licensed Sierra Leone payment processor, which handles mobile money payments. We share the order amount and a reference number, not your mobile money PIN.</li>
+              <li><strong className="text-foreground">Expo.</strong> The push notification delivery service, if you have notifications enabled.</li>
+              <li><strong className="text-foreground">WhatsApp (Meta).</strong> If you choose to contact support over WhatsApp, that conversation is subject to WhatsApp&rsquo;s own privacy policy, not this one.</li>
             </ul>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               We may also disclose information if required by law, or to protect the rights, safety, or
@@ -182,8 +182,8 @@ export default function PrivacyPolicyPage() {
           <section>
             <H2 id="security">Security</H2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              We use reasonable technical and organizational measures &mdash; including encrypted
-              connections and access controls &mdash; to protect your information. No method of storage
+              We use reasonable technical and organizational measures, including encrypted
+              connections and access controls, to protect your information. No method of storage
               or transmission is completely secure, so we can&rsquo;t guarantee absolute security.
             </p>
           </section>
