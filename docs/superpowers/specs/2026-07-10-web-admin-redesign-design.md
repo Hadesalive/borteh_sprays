@@ -2,7 +2,16 @@
 
 **Date:** 2026-07-10
 **Scope:** `web/` (Borteh admin dashboard)
-**Status:** design approved, pending implementation plan
+**Status:** superseded by `2026-09-02-admin-redesign-design.md` — see note below
+
+> **Superseded 2026-09-02.** This spec's non-goal was explicitly "no new
+> visual direction." The stakeholder has since asked for one (brand-aligned
+> with the mobile app). The new spec absorbs this one's still-valid,
+> unimplemented findings (orphaned indigo dark mode, unbounded queries on
+> most list pages, missing loading/error states beyond Overview + Orders
+> list) rather than tracking them separately. Read
+> `2026-09-02-admin-redesign-design.md` first; this file remains for
+> historical context on what was already verified/fixed as of July.
 
 ## Problem
 
