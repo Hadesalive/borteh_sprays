@@ -56,6 +56,12 @@ still present today — see "Relationship to the July spec."
   (Recharts wrapper) primitives, token-driven colors.
 - **Rollout:** foundation wave first (tokens + shared components, proven on
   2 pages), then three grouped waves for the rest.
+- **Forms:** every form gets a real HCI pass — grouped sections, always-visible
+  labels, inline field-level errors, one clear primary action — not just a
+  reskin of the current flat input stacks. See "Forms UX" below.
+- **Responsiveness:** the whole admin must work on a phone/tablet, not just
+  desktop — sidebar, tables, and forms all need a real small-viewport
+  treatment. See "Responsiveness" below.
 
 ## Non-goals
 
@@ -124,6 +130,74 @@ A small set of components every page must use, not just could use:
   state shaped to the page's real layout (not a generic spinner), and a
   plain-language error state with a retry affordance (never a developer-facing
   string or a blank screen).
+- **`FormSection`** — a labeled fieldset (heading + optional description +
+  its fields), the building block every form is assembled from instead of a
+  flat input stack.
+- **`FormField`** — wraps one input with an always-visible label, optional
+  helper text, and an inline error slot, on top of shadcn's existing `Input`/
+  `Select`/`Textarea` primitives (not replacing them, just giving every field
+  a consistent label/helper/error shell).
+
+## Forms UX
+
+The Product editor (307 lines, the most complex form in the app), and the
+Collections/Combos/Brands "new" forms and Settings sub-pages, currently read
+as flat stacks of inputs with no grouping and no clear hierarchy. This pass
+applies real HCI conventions, not just new colors on the same structure:
+
+- **Separation of concerns via `FormSection`.** Every form breaks into
+  named, visually distinct sections matching how a person actually thinks
+  about the task — e.g. the Product editor becomes "Details" (name, brand,
+  description), "Pricing & stock" (price, quantity, SKU), "Notes & scent
+  profile", "Images" — instead of one undifferentiated column. This is the
+  same grouping convention the mobile checkout screen already uses
+  (`DELIVERY` / `PAYMENT METHOD` as separate labeled blocks) — one house
+  convention across both apps, not a new one invented for admin.
+- **Labels are always visible**, above the field, never placeholder-only
+  (placeholder-as-label fails the moment someone starts typing — violates
+  Nielsen's "recognition over recall" and is not an accepted pattern here).
+- **Mark optional fields "optional," not required fields "required."** Most
+  fields in these forms are required; labeling the minority reduces visual
+  noise instead of adding an asterisk to everything.
+- **Inline, field-level errors.** Validation errors render directly under
+  the field they belong to, in specific and actionable language ("Price
+  must be greater than 0," not "Invalid input") — not a generic toast or a
+  summary banner disconnected from the field that's wrong. On submit with
+  errors, focus jumps to the first invalid field.
+- **One clear primary action per form**, visually dominant; destructive
+  actions (delete) are separated into a menu or a distinctly de-emphasized
+  spot, never sitting next to Save at equal visual weight.
+- **Correct input types and formatting hints** — numeric keypad triggers for
+  price/quantity fields, currency formatting on price inputs, etc.
+- **Dirty-state awareness on longer forms** (Product editor at minimum): the
+  primary action is visibly disabled until something has actually changed,
+  and navigating away with unsaved changes prompts before discarding.
+
+## Responsiveness
+
+The admin is desktop-only today (fixed sidebar, dense multi-column tables
+and forms with no small-viewport handling verified in the survey). Every
+migrated page must work on a phone or tablet, not just desktop — plausible
+real usage includes checking Orders from a phone and running Dispatch/POS
+from a tablet at the counter.
+
+- **Sidebar** — adopt shadcn `Sidebar`'s own built-in mobile behavior (an
+  off-canvas sheet below the mobile breakpoint) rather than hand-rolling a
+  second responsive pattern; the primitive already supports this.
+- **Tables** — `DataTable` supports a horizontal-scroll container as the
+  default responsive strategy for data-dense tables (Orders, Products,
+  Customers, Inventory), rather than forcing an awkward card-per-row
+  transform on wide tables. Individual pages may opt into a stacked-card
+  view instead where that genuinely reads better at a glance (e.g. Dispatch's
+  kanban, which is already card-based).
+- **Forms** — grid layouts that are multi-column on desktop collapse to a
+  single column below the mobile breakpoint; `FormSection`/`FormField` are
+  responsive by default so no per-page work is needed beyond using them.
+- **Touch targets** — minimum 44×44pt on every interactive element, matching
+  the convention already established in the mobile app this session.
+- **POS and Dispatch get explicit tablet/phone verification**, not just a
+  responsive-grid pass — they're the pages most likely to be used on a
+  handheld device on the shop floor.
 
 ## Functional fixes in scope (live data only)
 
@@ -208,6 +282,14 @@ Acceptance criteria (carried forward from the July spec, still applicable):
   returns nothing (`components/ui`'s token-derived `rounded-[calc(var(--radius)...)]`
   forms are exempt).
 - No page links to a route that 404s.
+- Every form: submitting with an invalid field shows the error under that
+  field (not a toast) and moves focus to it; the primary action is visibly
+  disabled until the form is actually dirty (on forms with a meaningful
+  initial state, e.g. Product editor).
+- Resize each migrated page to a phone width (375px) and a tablet width
+  (768px): the sidebar becomes an off-canvas drawer, tables scroll
+  horizontally instead of overflowing the viewport, forms stack to one
+  column, and no interactive element is smaller than 44×44pt.
 
 ## Risks
 
