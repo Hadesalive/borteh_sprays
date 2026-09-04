@@ -6,6 +6,7 @@ import { ExportButton } from "@/components/admin/export-button";
 import { listOrders, getOrderStats, getMonimeChannels, getPaymentsNeedingAttention, PAGE_SIZE } from "@/lib/queries/orders";
 import { PaymentAttention } from "@/components/admin/payment-attention";
 import { OrdersTable, type OrderRow, type SummaryStat } from "@/components/admin/orders-table";
+import { PageHeader } from "@/components/admin/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -71,24 +72,20 @@ export default async function OrdersPage({
 
   return (
     <div className="px-5 pb-6 pt-2">
-      <div className="flex items-center justify-between py-2 pb-4">
-        <div>
-          <h1 className="text-xl font-[650] tracking-[-0.2px]">Orders</h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Every online and counter order, newest first.
-          </p>
-        </div>
+      <PageHeader title="Orders" description="Every online and counter order, newest first.">
         <ExportButton
           label="Export this page"
           filename="borteh-orders.csv"
           headers={["Order", "Placed", "Customer", "Phone", "Channel", "Payment", "Status", "Total (Le)"]}
           rows={orders.map((o) => [`#${o.number}`, o.placed, o.customer, o.phone, o.channel, o.payment, o.statusLabel, formatLe(o.minor, 2)])}
         />
+      </PageHeader>
+
+      <div className="mt-4">
+        <PaymentAttention rows={attention} />
+
+        <OrdersTable orders={orders} summary={summary} page={page} total={total} />
       </div>
-
-      <PaymentAttention rows={attention} />
-
-      <OrdersTable orders={orders} summary={summary} page={page} total={total} />
     </div>
   );
 }
