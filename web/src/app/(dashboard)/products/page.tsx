@@ -46,6 +46,8 @@ export default async function ProductsPage() {
     .is("deleted_at", null)
     .order("name", { ascending: true });
 
+  if (error) throw error;
+
   const records = (data ?? []) as unknown as ProductRecord[];
 
   const rows: ProductRow[] = records.map((p) => {
@@ -81,7 +83,5 @@ export default async function ProductsPage() {
     { n: formatInt(outOfStock), label: "out of stock", tone: outOfStock ? "text-destructive" : "text-foreground" },
   ];
 
-  const empty = error ? "Couldn't load products — check the Supabase keys in web/.env.local." : "No products yet.";
-
-  return <ProductsTable rows={rows} summary={summary} empty={empty} />;
+  return <ProductsTable rows={rows} summary={summary} empty="No products yet." />;
 }
