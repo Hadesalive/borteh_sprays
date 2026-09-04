@@ -10,7 +10,7 @@
 
   --font-sans: var(--font-inter);
   --font-heading: var(--font-inter);
-  --font-display: var(--font-inter);
+  --font-display: var(--font-serif);
   --font-mono: var(--font-jetbrains);
 
   --color-sidebar-ring: var(--sidebar-ring);
@@ -75,9 +75,10 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* v5 card chrome — 12px radius and a whisper-thin drop shadow.
-     Owner-supplied; deliberately softer than the 0.375rem control radius. */
-  --radius-card: 0.75rem;
+  /* v6 card chrome — square corners (0 radius), matching the mobile app's
+     "Maison" identity. Shadow stays: a whisper-thin drop shadow, unchanged
+     from v5 — depth cue, not a rounding decision. */
+  --radius-card: 0;
   --shadow-card: 0 1px 0 rgba(26, 26, 26, 0.07);
 
   /* v5 ink button bevel — a lit top edge, a shaded bottom, a hairline drop. */
@@ -85,32 +86,32 @@
 }
 
 :root {
-  --radius: 0.375rem;
+  --radius: 0;
 
-  /* Borteh Admin v5 — warm paper neutrals, bronze accent */
-  --background: #ffffff;
-  --foreground: #2e2c29;
-  --card: #ffffff;
-  --card-foreground: #2e2c29;
-  --popover: #ffffff;
-  --popover-foreground: #2e2c29;
-  --secondary: #f2f0ec;
-  --secondary-foreground: #2e2c29;
-  --muted: #f7f6f3;
-  --muted-foreground: #615e58;
-  --accent: #edeae4;
-  --accent-foreground: #2e2c29;
-  --border: #e5e2dc;
-  --input: #e5e2dc;
+  /* Borteh Admin v6 — aligned to the mobile app's Maison palette (paper/ink/bronze) */
+  --background: #fcfbf9;
+  --foreground: #221e19;
+  --card: #fcfbf9;
+  --card-foreground: #221e19;
+  --popover: #fcfbf9;
+  --popover-foreground: #221e19;
+  --secondary: #edece9;
+  --secondary-foreground: #221e19;
+  --muted: #edece9;
+  --muted-foreground: #6f675c;
+  --accent: #f3eadd;
+  --accent-foreground: #221e19;
+  --border: #e6e3dd;
+  --input: #e6e3dd;
 
-  /* Primary — dark ink (buttons/actions, per the v5 design). Bronze is the brand accent. */
-  --primary: #2e2c29;
-  --primary-foreground: #ffffff;
+  /* Primary — dark ink (buttons/actions). Bronze is the brand accent. */
+  --primary: #221e19;
+  --primary-foreground: #fcfbf9;
   --brand: #8a5327;
-  --brand-foreground: #ffffff;
+  --brand-foreground: #fcfbf9;
   --ring: #8a5327;
 
-  /* Semantic */
+  /* Semantic — unchanged from v5, already accessible, not part of this pass */
   --destructive: #8e0b21;
   --destructive-foreground: #ffffff;
   --destructive-soft: #fee8eb;
@@ -128,75 +129,77 @@
   --info-soft: #eaf4ff;
   --info-soft-foreground: #00527c;
 
-  /* Charts — bronze lead, warm neutral + status support */
+  /* Charts — bronze lead, warm neutral + status support (rewritten fully in Task 6) */
   --chart-1: #8a5327;
-  --chart-2: #615e58;
+  --chart-2: #6f675c;
   --chart-3: #00527c;
   --chart-4: #014b40;
-  --chart-5: #b5b2ac;
+  --chart-5: #a39a8d;
 
   /* Sidebar — light paper rail with bronze accents */
-  --sidebar: #f2f0ec;
-  --sidebar-foreground: #615e58;
+  --sidebar: #edece9;
+  --sidebar-foreground: #6f675c;
   --sidebar-primary: #8a5327;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #2e2c29;
-  --sidebar-border: #e5e2dc;
+  --sidebar-primary-foreground: #fcfbf9;
+  --sidebar-accent: #fcfbf9;
+  --sidebar-accent-foreground: #221e19;
+  --sidebar-border: #e6e3dd;
   --sidebar-ring: #8a5327;
 }
 
 .dark {
-  --background: oklch(0.185 0.012 265);
-  --foreground: oklch(0.96 0.005 265);
-  --card: oklch(0.225 0.013 265);
-  --card-foreground: oklch(0.96 0.005 265);
-  --popover: oklch(0.225 0.013 265);
-  --popover-foreground: oklch(0.96 0.005 265);
-  --secondary: oklch(0.27 0.013 265);
-  --secondary-foreground: oklch(0.96 0.005 265);
-  --muted: oklch(0.27 0.013 265);
-  --muted-foreground: oklch(0.70 0.014 265);
-  --accent: oklch(0.29 0.015 265);
-  --accent-foreground: oklch(0.96 0.005 265);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
+  --background: #16130f;
+  --foreground: #f2ede4;
+  --card: #16130f;
+  --card-foreground: #f2ede4;
+  --popover: #16130f;
+  --popover-foreground: #f2ede4;
+  --secondary: #211c16;
+  --secondary-foreground: #f2ede4;
+  --muted: #211c16;
+  --muted-foreground: #a8a093;
+  --accent: #2a2019;
+  --accent-foreground: #f2ede4;
+  --border: #322b22;
+  --input: #322b22;
 
-  --primary: oklch(0.62 0.17 270);
-  --primary-foreground: oklch(0.99 0.01 270);
-  --ring: oklch(0.62 0.16 270);
+  --primary: #f2ede4;
+  --primary-foreground: #16130f;
+  --brand: #c08a4e;
+  --brand-foreground: #16130f;
+  --ring: #c08a4e;
 
-  --destructive: oklch(0.66 0.17 27);
-  --destructive-foreground: oklch(0.16 0.02 27);
-  --destructive-soft: oklch(0.30 0.06 27);
-  --destructive-soft-foreground: oklch(0.85 0.10 27);
-  --success: oklch(0.64 0.12 152);
-  --success-foreground: oklch(0.16 0.02 152);
-  --success-soft: oklch(0.30 0.06 152);
-  --success-soft-foreground: oklch(0.85 0.10 152);
-  --warning: oklch(0.76 0.12 75);
-  --warning-foreground: oklch(0.20 0.03 70);
-  --warning-soft: oklch(0.32 0.06 75);
-  --warning-soft-foreground: oklch(0.88 0.09 75);
-  --info: oklch(0.65 0.13 245);
-  --info-foreground: oklch(0.16 0.02 245);
-  --info-soft: oklch(0.30 0.06 245);
-  --info-soft-foreground: oklch(0.85 0.09 245);
+  --destructive: #e0715f;
+  --destructive-foreground: #16130f;
+  --destructive-soft: #3a2119;
+  --destructive-soft-foreground: #f2c4b8;
+  --success: #5b9e77;
+  --success-foreground: #0e1f16;
+  --success-soft: #16281d;
+  --success-soft-foreground: #a8dabb;
+  --warning: #c79a3e;
+  --warning-foreground: #221a08;
+  --warning-soft: #2e2610;
+  --warning-soft-foreground: #e8ce8f;
+  --info: #5fa8d6;
+  --info-foreground: #0c1e29;
+  --info-soft: #142631;
+  --info-soft-foreground: #a9d4ee;
 
-  --chart-1: oklch(0.66 0.16 270);
-  --chart-2: oklch(0.64 0.03 265);
-  --chart-3: oklch(0.64 0.12 230);
-  --chart-4: oklch(0.66 0.13 300);
-  --chart-5: oklch(0.66 0.10 190);
+  --chart-1: #c08a4e;
+  --chart-2: #a8a093;
+  --chart-3: #5fa8d6;
+  --chart-4: #5b9e77;
+  --chart-5: #6e665a;
 
-  --sidebar: oklch(0.205 0.014 264);
-  --sidebar-foreground: oklch(0.82 0.013 264);
-  --sidebar-primary: oklch(0.64 0.17 270);
-  --sidebar-primary-foreground: oklch(0.99 0.01 270);
-  --sidebar-accent: oklch(0.30 0.05 270);
-  --sidebar-accent-foreground: oklch(0.97 0.012 270);
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.64 0.16 270);
+  --sidebar: #16130f;
+  --sidebar-foreground: #a8a093;
+  --sidebar-primary: #c08a4e;
+  --sidebar-primary-foreground: #16130f;
+  --sidebar-accent: #211c16;
+  --sidebar-accent-foreground: #f2ede4;
+  --sidebar-border: #322b22;
+  --sidebar-ring: #c08a4e;
 }
 
 @layer base {
