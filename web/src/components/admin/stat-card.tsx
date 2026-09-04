@@ -5,6 +5,15 @@ import { formatPct } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 
 function Delta({ ratio, caption }: { ratio: number; caption: string }) {
+  if (!isFinite(ratio) || Math.abs(ratio) <= 0.0005) {
+    return (
+      <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+        <span className="nums text-xs font-medium text-muted-foreground">—</span>
+        <span>{caption}</span>
+      </p>
+    );
+  }
+
   const up = ratio > 0;
   return (
     <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">

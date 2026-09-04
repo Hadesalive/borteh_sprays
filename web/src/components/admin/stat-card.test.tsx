@@ -24,6 +24,16 @@ describe("StatCard", () => {
     expect(delta).toHaveClass("text-destructive");
   });
 
+  it("renders a muted placeholder (not a colored arrow) for a flat/zero delta", () => {
+    render(<StatCard label="Taken today" value="Le 1,240" delta={{ ratio: 0, caption: "vs last 7 days" }} />);
+    const placeholder = screen.getByText("—");
+    expect(placeholder).toHaveClass("text-muted-foreground");
+    expect(placeholder).not.toHaveClass("text-success");
+    expect(placeholder).not.toHaveClass("text-destructive");
+    expect(screen.queryByText(/▲|▼/)).not.toBeInTheDocument();
+    expect(screen.getByText("vs last 7 days")).toBeInTheDocument();
+  });
+
   it("wraps in a link when href is given", () => {
     render(<StatCard label="Taken today" value="Le 1,240" href="/analytics" />);
     expect(screen.getByRole("link")).toHaveAttribute("href", "/analytics");

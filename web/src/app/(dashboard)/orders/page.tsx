@@ -71,7 +71,7 @@ export default async function OrdersPage({
   ];
 
   return (
-    <div className="px-5 pb-6 pt-2">
+    <>
       <PageHeader title="Orders" description="Every online and counter order, newest first.">
         <ExportButton
           label="Export this page"
@@ -81,11 +81,13 @@ export default async function OrdersPage({
         />
       </PageHeader>
 
-      <div className="mt-4">
-        <PaymentAttention rows={attention} />
+      <div className="px-5 pb-6 pt-2">
+        <div className="mt-4">
+          <PaymentAttention rows={attention} />
 
-        <OrdersTable orders={orders} summary={summary} page={page} total={total} />
+          <OrdersTable orders={orders} summary={summary} page={page} total={total} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

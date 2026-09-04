@@ -38,7 +38,7 @@ export function ExportButton({
       type="button"
       onClick={download}
       disabled={rows.length === 0}
-      className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-[13px] font-medium shadow-[0_1px_0_rgba(26,26,26,0.07)] transition-colors hover:bg-muted disabled:opacity-50"
+      className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-[13px] font-medium shadow-card transition-colors hover:bg-muted disabled:opacity-50"
     >
       <DownloadSimple weight="duotone" className="size-4" />
       {label}

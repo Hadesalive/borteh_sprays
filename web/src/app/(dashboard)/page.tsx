@@ -56,7 +56,7 @@ export default async function OverviewPage() {
   const queueTotal = panels.queue.reduce((s, o) => s + (o.total_minor ?? 0), 0);
 
   return (
-    <div className="px-5 pb-6 pt-2">
+    <>
       <PageHeader title="Overview">
         <Link href="/analytics" className="inline-flex h-8 items-center gap-1.5 border border-border bg-card px-3 text-[13px] font-medium shadow-card transition-colors hover:bg-muted">
           <DownloadSimple weight="duotone" className="size-4" />
@@ -68,120 +68,122 @@ export default async function OverviewPage() {
         </Link>
       </PageHeader>
 
-      <div className="mt-4">
-        <StatCard
-          label="Taken today"
-          value={formatLe(stats.revenue_today_minor)}
-          delta={{ ratio: revenueDelta, caption: "vs the previous 7 days" }}
-        />
-      </div>
-
-      {/* Chart */}
-      <Card className="mt-4 p-4">
-        <div className={cardHead}>
-          <span className={cardTitle}>Revenue</span>
-          <span className="nums text-xs text-muted-foreground">Last 7 days · {formatLe(stats.revenue_7d_minor)}</span>
+      <div className="px-5 pb-6 pt-2">
+        <div className="mt-4">
+          <StatCard
+            label="Taken today"
+            value={formatLe(stats.revenue_today_minor)}
+            delta={{ ratio: revenueDelta, caption: "vs the previous 7 days" }}
+          />
         </div>
-        <RevenueChart data={revenue7d} labels={dayLabels} />
-        <div className="mt-3 flex items-center gap-4 border-t border-accent pt-3 text-xs text-muted-foreground">
-          <span className="nums">{formatInt(stats.orders_7d)} orders</span>
-          <span className="nums">{perOrder.toFixed(1)} items / order</span>
-          <span className="nums">{formatPct(deliveredRate)} delivered</span>
-        </div>
-      </Card>
 
-      {/* Live queue + Low stock */}
-      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <Card className="p-4">
+        {/* Chart */}
+        <Card className="mt-4 p-4">
           <div className={cardHead}>
-            <span className={cardTitle}>Live queue</span>
-            <Link href="/orders" className={cardLink}>All orders</Link>
+            <span className={cardTitle}>Revenue</span>
+            <span className="nums text-xs text-muted-foreground">Last 7 days · {formatLe(stats.revenue_7d_minor)}</span>
           </div>
-          <div className="mt-1">
-            {panels.queue.length ? panels.queue.map((o) => (
-              <div key={o.id} className={rowLine}>
-                <span className="nums font-medium">#{o.order_number ?? "—"}</span>
-                <span className="min-w-0 flex-1 truncate text-muted-foreground">{o.customer_name}</span>
-                <Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip>
-                <span className="nums font-medium">{formatLe(o.total_minor ?? 0, 2)}</span>
+          <RevenueChart data={revenue7d} labels={dayLabels} />
+          <div className="mt-3 flex items-center gap-4 border-t border-accent pt-3 text-xs text-muted-foreground">
+            <span className="nums">{formatInt(stats.orders_7d)} orders</span>
+            <span className="nums">{perOrder.toFixed(1)} items / order</span>
+            <span className="nums">{formatPct(deliveredRate)} delivered</span>
+          </div>
+        </Card>
+
+        {/* Live queue + Low stock */}
+        <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <Card className="p-4">
+            <div className={cardHead}>
+              <span className={cardTitle}>Live queue</span>
+              <Link href="/orders" className={cardLink}>All orders</Link>
+            </div>
+            <div className="mt-1">
+              {panels.queue.length ? panels.queue.map((o) => (
+                <div key={o.id} className={rowLine}>
+                  <span className="nums font-medium">#{o.order_number ?? "—"}</span>
+                  <span className="min-w-0 flex-1 truncate text-muted-foreground">{o.customer_name}</span>
+                  <Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip>
+                  <span className="nums font-medium">{formatLe(o.total_minor ?? 0, 2)}</span>
+                </div>
+              )) : <p className="py-3 text-[13px] text-muted-foreground">Queue is clear.</p>}
+            </div>
+            {panels.queue.length > 0 && (
+              <div className="mt-3 flex items-center justify-between border-t border-accent pt-3 text-xs">
+                <span className="font-semibold text-muted-foreground">In the queue</span>
+                <span className="nums font-medium">{panels.queue.length} active · {formatLe(queueTotal)}</span>
               </div>
-            )) : <p className="py-3 text-[13px] text-muted-foreground">Queue is clear.</p>}
-          </div>
-          {panels.queue.length > 0 && (
-            <div className="mt-3 flex items-center justify-between border-t border-accent pt-3 text-xs">
-              <span className="font-semibold text-muted-foreground">In the queue</span>
-              <span className="nums font-medium">{panels.queue.length} active · {formatLe(queueTotal)}</span>
-            </div>
-          )}
-        </Card>
-
-        <Card className="p-4">
-          <div className={cardHead}>
-            <span className={cardTitle}>Low stock</span>
-            <Link href="/inventory" className={cardLink}>Inventory</Link>
-          </div>
-          {panels.lowStock.length ? panels.lowStock.map((r, i) => (
-            <div key={i} className={rowLine}>
-              <span className="min-w-0 flex-1 truncate">{r.product_name} <span className="text-muted-foreground">{r.size_ml} ml</span></span>
-              <span className={cn("nums text-xs font-medium", r.qty_available <= 0 ? "text-destructive" : "text-warning")}>{r.qty_available <= 0 ? "Out" : r.qty_available}</span>
-            </div>
-          )) : <p className="py-2 text-[13px] text-muted-foreground">Everything in stock.</p>}
-        </Card>
-      </div>
-
-      {/* Top sellers + Restock demand */}
-      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <Card className="p-4">
-          <div className={cardHead}>
-            <span className={cardTitle}>Top sellers · 7d</span>
-            <Link href="/analytics" className={cardLink}>Reports</Link>
-          </div>
-          {panels.topSellers.length ? panels.topSellers.map((t, i) => (
-            <div key={i} className={rowLine}>
-              <span className="w-[190px] shrink-0 truncate">{t.product_name} <span className="text-muted-foreground">{t.variant_label}</span></span>
-              <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-accent">
-                <div className="h-full rounded-sm bg-brand" style={{ width: `${(t.revenue_minor / topMax) * 100}%` }} />
-              </div>
-              <span className="nums w-[100px] text-right font-medium">{formatLe(t.revenue_minor, 2)}</span>
-            </div>
-          )) : <p className="py-2 text-[13px] text-muted-foreground">No sales yet.</p>}
-        </Card>
-
-        <Card className="p-4">
-          <div className={cardHead}>
-            <span className={cardTitle}>Restock demand</span>
-          </div>
-          {panels.restockDemand.length ? panels.restockDemand.map((r, i) => (
-            <div key={i} className={rowLine}>
-              <span className="min-w-0 flex-1 truncate">{r.product_name} <span className="text-muted-foreground">{r.size_ml} ml</span></span>
-              <span className="nums font-medium">{r.subscriber_count} <span className="font-normal text-muted-foreground">waiting</span></span>
-            </div>
-          )) : <p className="py-2 text-[13px] text-muted-foreground">No one waiting.</p>}
-        </Card>
-      </div>
-
-      {/* Recent orders */}
-      <Card className="mt-4 p-4">
-        <div className={cardHead}>
-          <span className={cardTitle}>Recent orders</span>
-          <Link href="/orders" className={cardLink}>View all</Link>
-        </div>
-        <table className="mt-1 w-full border-collapse text-[13px]">
-          <tbody>
-            {recent.length ? recent.map((o) => (
-              <tr key={o.id} className="h-9 border-t border-accent">
-                <td className="nums w-14 py-1.5 pr-3 font-medium">#{o.order_number ?? "—"}</td>
-                <td className="px-3 py-1.5">{recentNames.get(o.user_id ?? "") || "Walk-in"}</td>
-                <td className="px-3 py-1.5 text-muted-foreground">{paymentLabel(o.payment_method, recentChannels.get(o.id))}</td>
-                <td className="px-3 py-1.5"><Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip></td>
-                <td className="nums py-1.5 text-right font-medium">{formatLe(o.total_minor ?? 0, 2)}</td>
-              </tr>
-            )) : (
-              <tr><td className="py-3 text-muted-foreground">No orders yet.</td></tr>
             )}
-          </tbody>
-        </table>
-      </Card>
-    </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className={cardHead}>
+              <span className={cardTitle}>Low stock</span>
+              <Link href="/inventory" className={cardLink}>Inventory</Link>
+            </div>
+            {panels.lowStock.length ? panels.lowStock.map((r, i) => (
+              <div key={i} className={rowLine}>
+                <span className="min-w-0 flex-1 truncate">{r.product_name} <span className="text-muted-foreground">{r.size_ml} ml</span></span>
+                <span className={cn("nums text-xs font-medium", r.qty_available <= 0 ? "text-destructive" : "text-warning")}>{r.qty_available <= 0 ? "Out" : r.qty_available}</span>
+              </div>
+            )) : <p className="py-2 text-[13px] text-muted-foreground">Everything in stock.</p>}
+          </Card>
+        </div>
+
+        {/* Top sellers + Restock demand */}
+        <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <Card className="p-4">
+            <div className={cardHead}>
+              <span className={cardTitle}>Top sellers · 7d</span>
+              <Link href="/analytics" className={cardLink}>Reports</Link>
+            </div>
+            {panels.topSellers.length ? panels.topSellers.map((t, i) => (
+              <div key={i} className={rowLine}>
+                <span className="w-[190px] shrink-0 truncate">{t.product_name} <span className="text-muted-foreground">{t.variant_label}</span></span>
+                <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-accent">
+                  <div className="h-full rounded-sm bg-brand" style={{ width: `${(t.revenue_minor / topMax) * 100}%` }} />
+                </div>
+                <span className="nums w-[100px] text-right font-medium">{formatLe(t.revenue_minor, 2)}</span>
+              </div>
+            )) : <p className="py-2 text-[13px] text-muted-foreground">No sales yet.</p>}
+          </Card>
+
+          <Card className="p-4">
+            <div className={cardHead}>
+              <span className={cardTitle}>Restock demand</span>
+            </div>
+            {panels.restockDemand.length ? panels.restockDemand.map((r, i) => (
+              <div key={i} className={rowLine}>
+                <span className="min-w-0 flex-1 truncate">{r.product_name} <span className="text-muted-foreground">{r.size_ml} ml</span></span>
+                <span className="nums font-medium">{r.subscriber_count} <span className="font-normal text-muted-foreground">waiting</span></span>
+              </div>
+            )) : <p className="py-2 text-[13px] text-muted-foreground">No one waiting.</p>}
+          </Card>
+        </div>
+
+        {/* Recent orders */}
+        <Card className="mt-4 p-4">
+          <div className={cardHead}>
+            <span className={cardTitle}>Recent orders</span>
+            <Link href="/orders" className={cardLink}>View all</Link>
+          </div>
+          <table className="mt-1 w-full border-collapse text-[13px]">
+            <tbody>
+              {recent.length ? recent.map((o) => (
+                <tr key={o.id} className="h-9 border-t border-accent">
+                  <td className="nums w-14 py-1.5 pr-3 font-medium">#{o.order_number ?? "—"}</td>
+                  <td className="px-3 py-1.5">{recentNames.get(o.user_id ?? "") || "Walk-in"}</td>
+                  <td className="px-3 py-1.5 text-muted-foreground">{paymentLabel(o.payment_method, recentChannels.get(o.id))}</td>
+                  <td className="px-3 py-1.5"><Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip></td>
+                  <td className="nums py-1.5 text-right font-medium">{formatLe(o.total_minor ?? 0, 2)}</td>
+                </tr>
+              )) : (
+                <tr><td className="py-3 text-muted-foreground">No orders yet.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </Card>
+      </div>
+    </>
   );
 }

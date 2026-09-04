@@ -9,5 +9,5 @@ export default defineConfig({
     reuseExistingServer: true,
     timeout: 120_000,
   },
-  expect: { toHaveScreenshot: { maxDiffPixels: 0 } },
+  expect: { toHaveScreenshot: { maxDiffPixels: 0, threshold: 0 } },
 });
