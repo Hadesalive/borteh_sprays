@@ -48,7 +48,7 @@ export default async function OrderDetailPage({
   const { id } = await params;
   const db = createServerClient();
 
-  const { data: order } = await db
+  const { data: order, error } = await db
     .from("order")
     .select(
       "id, order_number, status, fulfillment_type, payment_method, user_id, delivery_zone_id, subtotal_minor, delivery_fee_minor, discount_minor, total_minor, notes, contact_phone_snapshot, recipient_name_snapshot, landmark_snapshot, geo_lat_snapshot, geo_lng_snapshot, placed_at, confirmed_at, delivered_at, cancelled_at, created_at"
@@ -56,6 +56,7 @@ export default async function OrderDetailPage({
     .eq("id", id)
     .maybeSingle();
 
+  if (error) throw error;
   if (!order) notFound();
 
   const [itemsRes, customerRes, zoneRes, countRes] = await Promise.all([
@@ -66,6 +67,8 @@ export default async function OrderDetailPage({
       : Promise.resolve({ data: null }),
     db.from("order").select("id", { count: "exact", head: true }).eq("user_id", order.user_id),
   ]);
+
+  if (itemsRes.error) throw itemsRes.error;
 
   const items = (itemsRes.data ?? []) as Array<{
     product_name_snapshot: string;

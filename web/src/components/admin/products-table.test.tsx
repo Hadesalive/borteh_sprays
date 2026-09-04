@@ -20,7 +20,7 @@ describe("ProductsTable", () => {
   it("renders product rows without any hardcoded hex colors", () => {
     const { container } = render(<ProductsTable rows={rows} summary={[]} empty="No products." />);
     expect(screen.getByText("Midnight Oud")).toBeInTheDocument();
-    expect(container.innerHTML.replace(/\sclass="[^"]*"/g, "")).not.toMatch(/#[0-9a-fA-F]{3,6}/);
+    expect(container.innerHTML).not.toMatch(/\[#[0-9a-fA-F]{3,8}\]/);
   });
 
   it("shows the empty state copy when there are no products", () => {
