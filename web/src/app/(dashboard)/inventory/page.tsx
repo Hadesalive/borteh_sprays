@@ -2,7 +2,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { formatInt, formatLe } from "@/lib/format";
 import { type Tone } from "@/components/admin/chip";
 import { InventoryTable, type InvRow } from "@/components/admin/inventory-table";
-import { type SummaryStat } from "@/components/admin/orders-table";
+import { type DataTableSummaryStat } from "@/components/admin/data-table";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +49,8 @@ export default async function InventoryPage() {
     db.from("restock_subscription").select("id", { count: "exact", head: true }).eq("status", "active"),
   ]);
 
+  if (invRes.error) throw invRes.error;
+
   const records = (invRes.data ?? []) as unknown as InventoryRecord[];
   const restockers = restockRes.count ?? 0;
 
@@ -81,7 +83,7 @@ export default async function InventoryPage() {
   const low = rows.filter((r) => r.statusLabel === "Low").length;
   const out = rows.filter((r) => r.statusLabel === "Out").length;
 
-  const summary: SummaryStat[] = [
+  const summary: DataTableSummaryStat[] = [
     { n: formatInt(rows.length), label: "SKUs", tone: "text-foreground" },
     { n: formatInt(unitsOnHand), label: "units on hand", tone: "text-foreground" },
     { n: formatLe(stockValue), label: "stock value", tone: "text-foreground" },
@@ -90,7 +92,5 @@ export default async function InventoryPage() {
     { n: formatInt(restockers), label: "restock subscribers", tone: "text-foreground" },
   ];
 
-  const empty = invRes.error ? "Inventory is unavailable right now." : "No inventory items yet.";
-
-  return <InventoryTable rows={rows} summary={summary} empty={empty} />;
+  return <InventoryTable rows={rows} summary={summary} empty="No inventory items yet." />;
 }
