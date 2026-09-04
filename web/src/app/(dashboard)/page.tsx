@@ -9,21 +9,11 @@ import { listOrders, getMonimeChannels } from "@/lib/queries/orders";
 import { paymentLabel } from "@/lib/payment-channel";
 import { Chip, humanize, statusTone } from "@/components/admin/chip";
 import { RevenueChart } from "@/components/admin/revenue-chart";
+import { PageHeader } from "@/components/admin/page-header";
+import { StatCard } from "@/components/admin/stat-card";
 import { Card } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
-
-function Delta({ ratio }: { ratio: number }) {
-  if (!isFinite(ratio) || ratio === 0) {
-    return <span className="nums text-xs font-medium text-muted-foreground">—</span>;
-  }
-  const up = ratio > 0;
-  return (
-    <span className={cn("nums text-xs font-medium", up ? "text-success" : "text-destructive")}>
-      {up ? "▲" : "▼"} {formatPct(Math.abs(ratio), 1)}
-    </span>
-  );
-}
 
 const cardHead = "flex items-baseline justify-between";
 const cardTitle = "text-[13px] font-semibold";
@@ -67,33 +57,27 @@ export default async function OverviewPage() {
 
   return (
     <div className="px-5 pb-6 pt-2">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <header className="py-2 pb-6">
-          <h1 className="text-xl font-[650] tracking-[-0.2px]">Overview</h1>
-          <p className="mt-4 nums text-[2.75rem] leading-none font-semibold tracking-[-0.02em]">
-            {formatLe(stats.revenue_today_minor)}
-          </p>
-          <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-            <span>taken today</span>
-            <Delta ratio={revenueDelta} />
-            <span>vs the previous 7 days</span>
-          </p>
-        </header>
-        <div className="flex gap-2 pt-2">
-          <Link href="/analytics" className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-[13px] font-medium shadow-card transition-colors hover:bg-muted">
-            <DownloadSimple weight="duotone" className="size-4" />
-            Reports
-          </Link>
-          <Link href="/pos" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[13px] font-medium text-primary-foreground shadow-bevel transition-colors hover:bg-[#1a1917]">
-            <Plus weight="duotone" className="size-4" />
-            Open POS
-          </Link>
-        </div>
+      <PageHeader title="Overview">
+        <Link href="/analytics" className="inline-flex h-8 items-center gap-1.5 border border-border bg-card px-3 text-[13px] font-medium shadow-card transition-colors hover:bg-muted">
+          <DownloadSimple weight="duotone" className="size-4" />
+          Reports
+        </Link>
+        <Link href="/pos" className="inline-flex h-8 items-center gap-1.5 bg-primary px-3 text-[13px] font-medium text-primary-foreground shadow-bevel transition-colors hover:bg-primary/90">
+          <Plus weight="duotone" className="size-4" />
+          Open POS
+        </Link>
+      </PageHeader>
+
+      <div className="mt-4">
+        <StatCard
+          label="Taken today"
+          value={formatLe(stats.revenue_today_minor)}
+          delta={{ ratio: revenueDelta, caption: "vs the previous 7 days" }}
+        />
       </div>
 
       {/* Chart */}
-      <Card className="p-4">
+      <Card className="mt-4 p-4">
         <div className={cardHead}>
           <span className={cardTitle}>Revenue</span>
           <span className="nums text-xs text-muted-foreground">Last 7 days · {formatLe(stats.revenue_7d_minor)}</span>
@@ -138,7 +122,7 @@ export default async function OverviewPage() {
           </div>
           {panels.lowStock.length ? panels.lowStock.map((r, i) => (
             <div key={i} className={rowLine}>
-              <span className="min-w-0 flex-1 truncate">{r.product_name} <span className="text-[#B5B2AC]">{r.size_ml} ml</span></span>
+              <span className="min-w-0 flex-1 truncate">{r.product_name} <span className="text-muted-foreground">{r.size_ml} ml</span></span>
               <span className={cn("nums text-xs font-medium", r.qty_available <= 0 ? "text-destructive" : "text-warning")}>{r.qty_available <= 0 ? "Out" : r.qty_available}</span>
             </div>
           )) : <p className="py-2 text-[13px] text-muted-foreground">Everything in stock.</p>}
@@ -154,7 +138,7 @@ export default async function OverviewPage() {
           </div>
           {panels.topSellers.length ? panels.topSellers.map((t, i) => (
             <div key={i} className={rowLine}>
-              <span className="w-[190px] shrink-0 truncate">{t.product_name} <span className="text-[#B5B2AC]">{t.variant_label}</span></span>
+              <span className="w-[190px] shrink-0 truncate">{t.product_name} <span className="text-muted-foreground">{t.variant_label}</span></span>
               <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-accent">
                 <div className="h-full rounded-sm bg-brand" style={{ width: `${(t.revenue_minor / topMax) * 100}%` }} />
               </div>
@@ -169,8 +153,8 @@ export default async function OverviewPage() {
           </div>
           {panels.restockDemand.length ? panels.restockDemand.map((r, i) => (
             <div key={i} className={rowLine}>
-              <span className="min-w-0 flex-1 truncate">{r.product_name} <span className="text-[#B5B2AC]">{r.size_ml} ml</span></span>
-              <span className="nums font-medium">{r.subscriber_count} <span className="font-normal text-[#B5B2AC]">waiting</span></span>
+              <span className="min-w-0 flex-1 truncate">{r.product_name} <span className="text-muted-foreground">{r.size_ml} ml</span></span>
+              <span className="nums font-medium">{r.subscriber_count} <span className="font-normal text-muted-foreground">waiting</span></span>
             </div>
           )) : <p className="py-2 text-[13px] text-muted-foreground">No one waiting.</p>}
         </Card>
