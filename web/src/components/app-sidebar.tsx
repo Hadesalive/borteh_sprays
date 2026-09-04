@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { CaretUpDown, SignOut } from "@phosphor-icons/react";
 
 import { createAuthBrowserClient } from "@/lib/supabase/auth-browser";
-import { primaryNav, catalogNav, contentNav, insightNav, settingsItem, type NavItem } from "@/lib/nav";
+import { primaryNav, catalogNav, contentNav, insightNav, settingsItem, badgeCountFor, type NavItem, type BadgeCounts } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -35,32 +35,33 @@ function isActivePath(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
-function NavItems({ items }: { items: NavItem[] }) {
+function NavItems({ items, badgeCounts }: { items: NavItem[]; badgeCounts?: BadgeCounts }) {
   const pathname = usePathname();
   return (
     <SidebarMenu>
-      {items.map((item) => (
-        <SidebarMenuItem key={item.href}>
-          <SidebarMenuButton
-            isActive={isActivePath(pathname, item.href)}
-            tooltip={item.title}
-            render={<Link href={item.href} />}
-          >
-            <item.icon />
-            <span>{item.title}</span>
-          </SidebarMenuButton>
-          {item.badge ? (
-            <SidebarMenuBadge className="text-sidebar-primary">
-              {item.badge}
-            </SidebarMenuBadge>
-          ) : null}
-        </SidebarMenuItem>
-      ))}
+      {items.map((item) => {
+        const badge = badgeCounts ? badgeCountFor(item.href, badgeCounts) : item.badge;
+        return (
+          <SidebarMenuItem key={item.href}>
+            <SidebarMenuButton
+              isActive={isActivePath(pathname, item.href)}
+              tooltip={item.title}
+              render={<Link href={item.href} />}
+            >
+              <item.icon />
+              <span>{item.title}</span>
+            </SidebarMenuButton>
+            {badge ? (
+              <SidebarMenuBadge className="text-sidebar-primary">{badge}</SidebarMenuBadge>
+            ) : null}
+          </SidebarMenuItem>
+        );
+      })}
     </SidebarMenu>
   );
 }
 
-export function AppSidebar({ user }: { user?: { name: string; role: string } }) {
+export function AppSidebar({ user, badgeCounts }: { user?: { name: string; role: string }; badgeCounts?: BadgeCounts }) {
   const pathname = usePathname();
   const router = useRouter();
   const name = user?.name ?? "Mr. Borteh";
@@ -95,13 +96,13 @@ export function AppSidebar({ user }: { user?: { name: string; role: string } }) 
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <NavItems items={primaryNav} />
+            <NavItems items={primaryNav} badgeCounts={badgeCounts} />
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarSeparator className="mx-2" />
         <SidebarGroup>
           <SidebarGroupContent>
-            <NavItems items={catalogNav} />
+            <NavItems items={catalogNav} badgeCounts={badgeCounts} />
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarSeparator className="mx-2" />

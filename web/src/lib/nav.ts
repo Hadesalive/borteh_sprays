@@ -21,22 +21,23 @@ export type NavItem = {
   title: string;
   href: string;
   icon: Icon;
-  /** Optional count shown as a sidebar badge (e.g. orders needing action). */
+  /** Optional static count shown as a sidebar badge. Prefer badgeCountFor
+   *  for anything that should reflect live data — see that function. */
   badge?: number;
 };
 
 // Daily-driver destinations — the things the owner touches every shift.
 export const primaryNav: NavItem[] = [
   { title: "Overview", href: "/", icon: SquaresFour },
-  { title: "Orders", href: "/orders", icon: ShoppingBag, badge: 6 },
-  { title: "Dispatch", href: "/dispatch", icon: Truck, badge: 3 },
+  { title: "Orders", href: "/orders", icon: ShoppingBag },
+  { title: "Dispatch", href: "/dispatch", icon: Truck },
   { title: "Point of sale", href: "/pos", icon: Barcode },
 ];
 
 // Catalog & merchandising — what the shop sells and how the app shows it.
 export const catalogNav: NavItem[] = [
   { title: "Products", href: "/products", icon: Drop },
-  { title: "Inventory", href: "/inventory", icon: Package, badge: 4 },
+  { title: "Inventory", href: "/inventory", icon: Package },
   { title: "Collections", href: "/collections", icon: Stack },
   { title: "Combos", href: "/combos", icon: Cards },
   { title: "Brands", href: "/brands", icon: Sparkle },
@@ -68,3 +69,32 @@ export const allNavItems: NavItem[] = [
   ...insightNav,
   settingsItem,
 ];
+
+export type BadgeCounts = {
+  pending_count: number;
+  low_stock_count: number;
+  out_of_stock_count: number;
+  out_for_delivery_count: number;
+};
+
+/**
+ * Live sidebar badge counts, replacing the hardcoded literals this file
+ * used to carry. Returns undefined (not 0) for both "no badge defined for
+ * this route" and "the count is zero" — a badge that can read "0" is worse
+ * than no badge, since it invites a glance that finds nothing wrong.
+ */
+export function badgeCountFor(href: string, counts: BadgeCounts): number | undefined {
+  const n = (() => {
+    switch (href) {
+      case "/orders":
+        return counts.pending_count;
+      case "/inventory":
+        return counts.low_stock_count + counts.out_of_stock_count;
+      case "/dispatch":
+        return counts.out_for_delivery_count;
+      default:
+        return undefined;
+    }
+  })();
+  return n && n > 0 ? n : undefined;
+}
