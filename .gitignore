@@ -27,3 +27,6 @@ out/
 
 # supabase CLI temp
 supabase/.temp/
+
+# superpowers SDD scratch workspaces
+.superpowers/
