@@ -127,7 +127,7 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
                   key={c.id}
                   type="button"
                   onClick={() => addCombo(c)}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left transition-colors hover:border-foreground/20 hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left transition-colors hover:border-foreground/20 hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
                 >
                   <span className="text-sm font-medium">{c.name}</span>
                   <span className="nums rounded bg-success-soft px-1.5 py-0.5 text-[0.7rem] font-medium text-success-soft-foreground">
@@ -180,16 +180,16 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
                 <p className="truncate text-xs text-muted-foreground">{l.item.meta}</p>
               </div>
               <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setQty(l.item.id, l.qty - 1)} className="grid size-6 place-items-center rounded border border-border text-muted-foreground transition-colors hover:bg-muted">
+                <button type="button" onClick={() => setQty(l.item.id, l.qty - 1)} className="grid size-11 place-items-center rounded border border-border text-muted-foreground transition-colors hover:bg-muted">
                   <Minus className="size-3" />
                 </button>
                 <span className="nums w-5 text-center text-sm">{l.qty}</span>
-                <button type="button" onClick={() => setQty(l.item.id, Math.min(l.qty + 1, l.item.stock))} className="grid size-6 place-items-center rounded border border-border text-muted-foreground transition-colors hover:bg-muted">
+                <button type="button" onClick={() => setQty(l.item.id, Math.min(l.qty + 1, l.item.stock))} className="grid size-11 place-items-center rounded border border-border text-muted-foreground transition-colors hover:bg-muted">
                   <Plus className="size-3" />
                 </button>
               </div>
               <span className="nums w-20 text-right text-sm font-semibold">{formatLe(l.item.price * l.qty, 2)}</span>
-              <button type="button" aria-label="Remove" onClick={() => setQty(l.item.id, 0)} className="text-muted-foreground transition-colors hover:text-destructive">
+              <button type="button" aria-label="Remove" onClick={() => setQty(l.item.id, 0)} className="grid size-11 shrink-0 place-items-center text-muted-foreground transition-colors hover:text-destructive">
                 <Trash className="size-4" />
               </button>
             </li>
@@ -236,7 +236,7 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
               type="button"
               onClick={() => setTender(t)}
               className={cn(
-                "inline-flex h-10 items-center justify-center gap-1.5 rounded-md border text-sm font-medium transition-colors",
+                "inline-flex h-11 items-center justify-center gap-1.5 rounded-md border text-sm font-medium transition-colors",
                 tender === t ? "border-primary bg-primary/5 text-primary" : "border-border hover:bg-muted"
               )}
             >
