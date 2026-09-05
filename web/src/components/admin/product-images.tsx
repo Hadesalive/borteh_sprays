@@ -5,6 +5,7 @@ import { useRef, useState, useTransition, type ChangeEvent } from "react";
 import { Star, CaretLeft, CaretRight, Trash, UploadSimple, ImageSquare } from "@phosphor-icons/react";
 
 import { cn } from "@/lib/utils";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardAction } from "@/components/ui/card";
 import { uploadProductImage, setPrimaryImage, reorderImages, deleteProductImage } from "@/app/(dashboard)/products/actions";
 
 export type ProductImage = { id: string; url: string; storagePath: string; isPrimary: boolean };
@@ -43,23 +44,23 @@ export function ProductImages({ productId, images }: { productId: string; images
   }
 
   return (
-    <div className="overflow-hidden rounded-[12px] border border-border bg-card shadow-[0_1px_0_rgba(26,26,26,0.07)]">
-      <div className="flex items-center justify-between gap-2 border-b border-border px-5 py-3">
-        <div>
-          <h2 className="text-[13px] font-[650] tracking-[-0.1px]">Images</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">The primary image (★) shows in the app catalog. Drag order sets the gallery sequence.</p>
-        </div>
-        <label className={cn(
-          "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted",
-          pending && "pointer-events-none opacity-60"
-        )}>
-          <UploadSimple weight="duotone" className="size-4" />
-          Upload
-          <input ref={fileRef} type="file" accept="image/*" className="sr-only" onChange={onFile} disabled={pending} />
-        </label>
-      </div>
+    <Card className="overflow-hidden p-0">
+      <CardHeader className="border-b pt-4">
+        <CardTitle>Images</CardTitle>
+        <CardDescription>The primary image (★) shows in the app catalog. Drag order sets the gallery sequence.</CardDescription>
+        <CardAction>
+          <label className={cn(
+            "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted",
+            pending && "pointer-events-none opacity-60"
+          )}>
+            <UploadSimple weight="duotone" className="size-4" />
+            Upload
+            <input ref={fileRef} type="file" accept="image/*" className="sr-only" onChange={onFile} disabled={pending} />
+          </label>
+        </CardAction>
+      </CardHeader>
 
-      <div className="px-5 py-4">
+      <CardContent className="py-4">
         {err ? <p className="mb-3 text-[12px] text-destructive-soft-foreground">{err}</p> : null}
         {images.length === 0 ? (
           <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border py-10 text-center text-[13px] text-muted-foreground transition-colors hover:bg-muted">
@@ -110,7 +111,7 @@ export function ProductImages({ productId, images }: { productId: string; images
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

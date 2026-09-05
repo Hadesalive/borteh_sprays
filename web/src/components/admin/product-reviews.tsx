@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { SealCheck } from "@phosphor-icons/react";
 
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardAction } from "@/components/ui/card";
 import { Chip, type Tone } from "@/components/admin/chip";
 import { setReviewStatus } from "@/app/(dashboard)/products/actions";
 
@@ -28,7 +29,7 @@ function Stars({ n }: { n: number }) {
   return (
     <span aria-label={`${n} out of 5`} className="text-[13px] leading-none">
       <span className="text-brand">{"★".repeat(Math.max(0, Math.min(5, n)))}</span>
-      <span className="text-[#D6D3CD]">{"★".repeat(5 - Math.max(0, Math.min(5, n)))}</span>
+      <span className="text-muted-foreground">{"★".repeat(5 - Math.max(0, Math.min(5, n)))}</span>
     </span>
   );
 }
@@ -74,7 +75,7 @@ function ReviewItem({ r, productId }: { r: ReviewRow; productId: string }) {
           {err ? <span className="text-[12px] text-destructive-soft-foreground">{err}</span> : null}
           {r.status !== "published" ? (
             <button type="button" disabled={pending} onClick={() => set("published")}
-              className="h-7 rounded-md bg-primary px-2.5 text-[12px] font-medium text-primary-foreground transition-colors hover:bg-[#1a1917] disabled:opacity-40">
+              className="h-7 rounded-md bg-primary px-2.5 text-[12px] font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40">
               Publish
             </button>
           ) : null}
@@ -95,22 +96,24 @@ export function ProductReviews({ productId, reviews }: { productId: string; revi
   const pending = reviews.filter((r) => r.status === "pending").length;
 
   return (
-    <div className="overflow-hidden rounded-[12px] border border-border bg-card shadow-[0_1px_0_rgba(26,26,26,0.07)]">
-      <div className="flex items-center justify-between gap-2 border-b border-border px-5 py-3">
-        <div>
-          <h2 className="text-[13px] font-[650] tracking-[-0.1px]">Reviews</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">Only published reviews count toward the product rating.</p>
-        </div>
-        <span className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
-          {pending ? <Chip tone="warning">{pending} pending</Chip> : null}
-          <span className="nums">{published} published</span>
-        </span>
-      </div>
-      {reviews.length === 0 ? (
-        <p className="px-5 py-8 text-center text-[13px] text-muted-foreground">No reviews yet.</p>
-      ) : (
-        reviews.map((r) => <ReviewItem key={r.id} r={r} productId={productId} />)
-      )}
-    </div>
+    <Card className="overflow-hidden p-0">
+      <CardHeader className="border-b pt-4">
+        <CardTitle>Reviews</CardTitle>
+        <CardDescription>Only published reviews count toward the product rating.</CardDescription>
+        <CardAction>
+          <span className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+            {pending ? <Chip tone="warning">{pending} pending</Chip> : null}
+            <span className="nums">{published} published</span>
+          </span>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="p-0">
+        {reviews.length === 0 ? (
+          <p className="px-5 py-8 text-center text-[13px] text-muted-foreground">No reviews yet.</p>
+        ) : (
+          reviews.map((r) => <ReviewItem key={r.id} r={r} productId={productId} />)
+        )}
+      </CardContent>
+    </Card>
   );
 }

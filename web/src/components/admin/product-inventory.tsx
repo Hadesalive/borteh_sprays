@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 
 import { cn } from "@/lib/utils";
 import { formatInt } from "@/lib/format";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Chip, type Tone } from "@/components/admin/chip";
 import { receiveStock, adjustStock, stocktake } from "@/app/(dashboard)/products/actions";
 
@@ -75,7 +76,7 @@ function VariantRow({ v, productId }: { v: InventoryVariant; productId: string }
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="truncate text-[13px] font-medium">{v.label}</div>
-          <div className="nums truncate text-[12px] text-[#B5B2AC]">{v.sku}</div>
+          <div className="nums truncate text-[12px] text-muted-foreground">{v.sku}</div>
         </div>
         <Chip tone={b.tone}>{b.label}</Chip>
       </div>
@@ -124,7 +125,7 @@ function VariantRow({ v, productId }: { v: InventoryVariant; productId: string }
             type="button"
             onClick={apply}
             disabled={pending || !val.trim()}
-            className="h-8 shrink-0 rounded-md bg-primary px-3 text-[13px] font-medium text-primary-foreground transition-colors hover:bg-[#1a1917] disabled:opacity-40"
+            className="h-8 shrink-0 rounded-md bg-primary px-3 text-[13px] font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
           >
             {pending ? "…" : "Apply"}
           </button>
@@ -137,16 +138,18 @@ function VariantRow({ v, productId }: { v: InventoryVariant; productId: string }
 
 export function ProductInventory({ productId, variants }: { productId: string; variants: InventoryVariant[] }) {
   return (
-    <div className="h-fit overflow-hidden rounded-[12px] border border-border bg-card shadow-[0_1px_0_rgba(26,26,26,0.07)]">
-      <div className="border-b border-border px-5 py-3">
-        <h2 className="text-[13px] font-[650] tracking-[-0.1px]">Inventory</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">Every stock move is logged and attributed. Receiving into an out-of-stock variant notifies waitlisters.</p>
-      </div>
-      {variants.length === 0 ? (
-        <p className="px-5 py-8 text-center text-[13px] text-muted-foreground">No variants to stock yet.</p>
-      ) : (
-        variants.map((v) => <VariantRow key={v.variantId} v={v} productId={productId} />)
-      )}
-    </div>
+    <Card className="h-fit overflow-hidden p-0">
+      <CardHeader className="border-b pt-4">
+        <CardTitle>Inventory</CardTitle>
+        <CardDescription>Every stock move is logged and attributed. Receiving into an out-of-stock variant notifies waitlisters.</CardDescription>
+      </CardHeader>
+      <CardContent className="p-0">
+        {variants.length === 0 ? (
+          <p className="px-5 py-8 text-center text-[13px] text-muted-foreground">No variants to stock yet.</p>
+        ) : (
+          variants.map((v) => <VariantRow key={v.variantId} v={v} productId={productId} />)
+        )}
+      </CardContent>
+    </Card>
   );
 }
