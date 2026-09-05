@@ -8,7 +8,10 @@ export default function AnalyticsLoading() {
           <Skeleton className="h-6 w-24" />
           <Skeleton className="mt-1.5 h-3 w-64" />
         </div>
-        <Skeleton className="h-8 w-40" />
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-8 w-28" />
+          <Skeleton className="h-8 w-32" />
+        </div>
       </div>
       <div className="px-5 pb-6 pt-2">
         <Skeleton className="h-24 w-full" />

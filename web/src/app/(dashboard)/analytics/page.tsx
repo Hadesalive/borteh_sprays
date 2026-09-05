@@ -165,11 +165,17 @@ export default async function AnalyticsPage() {
               <CardTitle role="heading" aria-level={2}>Payment mix</CardTitle>
             </CardHeader>
             <CardContent className="py-4">
-              {rev7 > 0 ? <PaymentMixChart codMinor={codMinor} prepaidMinor={prepaidMinor} /> : <p className="text-[13px] text-muted-foreground">No sales yet.</p>}
-              <div className="mt-3 flex flex-col gap-1 text-[13px]">
-                <div className="flex justify-between"><span className="text-muted-foreground">Cash &amp; COD</span><span className="nums font-medium">{formatLe(codMinor)} · {formatPct(codShare)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Prepaid</span><span className="nums font-medium">{formatLe(prepaidMinor)} · {formatPct(1 - codShare)}</span></div>
-              </div>
+              {rev7 > 0 ? (
+                <>
+                  <PaymentMixChart codMinor={codMinor} prepaidMinor={prepaidMinor} />
+                  <div className="mt-3 flex flex-col gap-1 text-[13px]">
+                    <div className="flex justify-between"><span className="text-muted-foreground">Cash &amp; COD</span><span className="nums font-medium">{formatLe(codMinor)} · {formatPct(codShare)}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Prepaid</span><span className="nums font-medium">{formatLe(prepaidMinor)} · {formatPct(1 - codShare)}</span></div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-[13px] text-muted-foreground">No sales yet.</p>
+              )}
               <div className="mt-4 flex flex-col gap-1 border-t border-accent pt-3 text-[13px]">
                 <div className="flex justify-between"><span className="text-muted-foreground">Delivered rate</span><span className="nums font-medium">{formatPct(deliveredRate)}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Cancellation rate</span><span className="nums font-medium">{formatPct(cancelRate, 1)}</span></div>
@@ -186,18 +192,25 @@ export default async function AnalyticsPage() {
               <CardTitle role="heading" aria-level={2}>Order funnel</CardTitle>
             </CardHeader>
             <CardContent className="py-4">
-              <OrderFunnelChart stages={funnel} />
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                {funnel.slice(1).map((f, i) => {
-                  const prev = funnel[i].count;
-                  const drop = prev ? 1 - f.count / prev : 0;
-                  return (
-                    <span key={f.stage} className="nums">
-                      {f.stage} <span className="text-destructive">−{formatPct(drop)}</span>
-                    </span>
-                  );
-                })}
-              </div>
+              {orders7 > 0 ? (
+                <>
+                  <OrderFunnelChart stages={funnel} />
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    {funnel.slice(1).map((f, i) => {
+                      const prev = funnel[i].count;
+                      const drop = prev ? 1 - f.count / prev : 0;
+                      return (
+                        <span key={f.stage} className="nums">
+                          {f.stage} <span className="font-medium text-foreground">{formatInt(f.count)}</span>{" "}
+                          <span className={drop > 0 ? "text-destructive" : "text-muted-foreground"}>−{formatPct(drop)}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <p className="text-[13px] text-muted-foreground">No sales yet.</p>
+              )}
             </CardContent>
           </Card>
 
