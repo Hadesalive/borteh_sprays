@@ -174,8 +174,8 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
 
         <ul className="mt-4 flex-1 divide-y divide-border">
           {lines.map((l) => (
-            <li key={l.item.id} className="flex items-center gap-3 py-3">
-              <div className="min-w-0 flex-1">
+            <li key={l.item.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 py-3">
+              <div className="w-full min-w-0">
                 <p className="truncate text-sm font-medium">{l.item.name}</p>
                 <p className="truncate text-xs text-muted-foreground">{l.item.meta}</p>
               </div>
@@ -188,7 +188,7 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
                   <Plus className="size-3" />
                 </button>
               </div>
-              <span className="nums w-20 text-right text-sm font-semibold">{formatLe(l.item.price * l.qty, 2)}</span>
+              <span className="nums ml-auto w-20 text-right text-sm font-semibold">{formatLe(l.item.price * l.qty, 2)}</span>
               <button type="button" aria-label="Remove" onClick={() => setQty(l.item.id, 0)} className="grid size-11 shrink-0 place-items-center text-muted-foreground transition-colors hover:text-destructive">
                 <Trash className="size-4" />
               </button>

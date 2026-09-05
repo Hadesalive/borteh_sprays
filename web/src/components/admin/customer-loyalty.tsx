@@ -86,14 +86,16 @@ export function CustomerLoyalty({
               className="nums h-9 w-24 rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
             />
           </FormField>
-          <FormField label="Reason" htmlFor="grant-reason" optional>
-            <input
-              id="grant-reason"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="h-9 min-w-0 flex-1 rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
-            />
-          </FormField>
+          <div className="min-w-0 flex-1">
+            <FormField label="Reason" htmlFor="grant-reason" optional>
+              <input
+                id="grant-reason"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className="h-9 w-full rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+              />
+            </FormField>
+          </div>
           <button
             type="button"
             onClick={grant}
