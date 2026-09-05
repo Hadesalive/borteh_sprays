@@ -32,8 +32,8 @@ it* — a matcher change can silently drop proxy coverage. So:
      of the action's return shape.
 2. **Dashboard layout** (`web/src/app/(dashboard)/layout.tsx`) now `redirect("/login")` when the
    session isn't staff — belt-and-suspenders for the initial server render.
-3. **Every Server Action is gated.** All 16 `actions.ts` files (14 pre-existing +
-   `content/onboarding` + `content/copy`) call `requireStaff()`/`getStaffUser()` before mutating.
+3. **Every Server Action is gated.** All 15 `actions.ts` files (14 pre-existing +
+   `content/onboarding`) call `requireStaff()`/`getStaffUser()` before mutating.
    Verified: funcs == guards in each file.
 
 ## The one owner operational prerequisite
