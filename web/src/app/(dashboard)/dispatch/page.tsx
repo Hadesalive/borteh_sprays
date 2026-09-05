@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, Truck } from "@phosphor-icons/react/dist/ssr";
+import { MapPin } from "@phosphor-icons/react/dist/ssr";
 
 import { cn } from "@/lib/utils";
 import { formatLe } from "@/lib/format";
@@ -18,7 +18,6 @@ type Job = {
   items: number;
   payment: { label: string; tone: PillTone };
   cod: number | null;
-  rider: string | null;
 };
 
 function isToday(ts: string | null): boolean {
@@ -79,7 +78,6 @@ export default async function DispatchPage() {
       items: itemCount.get(o.id as string) ?? 0,
       payment: isCod ? { label: "COD", tone: "warning" } : { label: "Prepaid", tone: "info" },
       cod: isCod ? (o.total_minor as number) : null,
-      rider: null,
     };
     const status = o.status as string;
     if (status === "delivered" || job?.status === "delivered") {
@@ -99,15 +97,7 @@ export default async function DispatchPage() {
 
   return (
     <>
-      <PageHeader title="Dispatch" description="Assign riders and track deliveries across the day.">
-        <Link
-          href="/dispatch/riders"
-          className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
-        >
-          <Truck weight="duotone" className="size-4" />
-          Riders
-        </Link>
-      </PageHeader>
+      <PageHeader title="Dispatch" description="Track deliveries across the day." />
 
       <div className="grid gap-5 px-6 py-6 lg:grid-cols-3 lg:px-10">
         {COLUMNS.map((col) => (
@@ -146,14 +136,6 @@ export default async function DispatchPage() {
                         {job.items} {job.items === 1 ? "item" : "items"}
                       </span>
                     )}
-                    {job.rider ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium">
-                        <span className="grid size-5 place-items-center rounded-full bg-muted text-[0.6rem] font-semibold text-muted-foreground">
-                          {job.rider[0]}
-                        </span>
-                        {job.rider}
-                      </span>
-                    ) : null}
                   </div>
                 </Link>
               ))}
