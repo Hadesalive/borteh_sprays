@@ -2,11 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import { ArrowLeft, UploadSimple } from "@phosphor-icons/react";
 
 import { createBrand, updateBrand } from "@/app/(dashboard)/brands/actions";
 import { Toggle } from "@/components/admin/toggle";
+import { FormSection } from "@/components/admin/form-section";
+import { FormField } from "@/components/admin/form-field";
 
 export type BrandValues = {
   id?: string;
@@ -20,45 +22,37 @@ export type BrandValues = {
 const inputClass =
   "h-9 w-full rounded-md border border-border bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none";
 
-const slugify = (v: string) =>
-  v.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="text-sm font-medium">{label}</span>
-      {hint ? <span className="ml-2 text-xs text-muted-foreground">{hint}</span> : null}
-      <div className="mt-1.5">{children}</div>
-    </label>
-  );
-}
-
-function ToggleRow({ title, description, on, onChange }: { title: string; description: string; on: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-3">
-      <div>
-        <p className="text-sm font-medium">{title}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
-      <Toggle defaultOn={on} label={title} onChange={onChange} />
-    </div>
-  );
-}
+const slugify = (v: string) => v.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
 export function BrandForm({ initial }: { initial?: BrandValues }) {
   const router = useRouter();
+  const uid = useId();
   const editing = Boolean(initial?.id);
   const [name, setName] = useState(initial?.name ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
+  const [nameTouched, setNameTouched] = useState(Boolean(initial?.name));
   const [description, setDescription] = useState(initial?.description ?? "");
   const [active, setActive] = useState(initial?.active ?? true);
   const [featured, setFeatured] = useState(initial?.featured ?? false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
+  const nameRef = useRef<HTMLInputElement>(null);
+  const slugRef = useRef<HTMLInputElement>(null);
+
   function save() {
     setError(null);
+    if (!name.trim()) {
+      setNameTouched(true);
+      nameRef.current?.focus();
+      return;
+    }
+    if (!slug.trim()) {
+      setSlugTouched(true);
+      slugRef.current?.focus();
+      return;
+    }
     const input = { name, slug, description: description || null, active, featured };
     start(async () => {
       const res = editing ? await updateBrand(initial!.id!, input) : await createBrand(input);
@@ -75,7 +69,7 @@ export function BrandForm({ initial }: { initial?: BrandValues }) {
           Brands
         </Link>
         <div className="mt-3 flex items-center justify-between gap-3">
-          <h1 className="text-xl font-semibold tracking-tight">{editing ? initial?.name : "New brand"}</h1>
+          <h1 className="font-display text-xl font-semibold tracking-tight">{editing ? initial?.name : "New brand"}</h1>
           <div className="flex items-center gap-2">
             <Link href="/brands" className="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
               Cancel
@@ -92,56 +86,65 @@ export function BrandForm({ initial }: { initial?: BrandValues }) {
         </div>
       </div>
 
-      <form className="mx-auto max-w-2xl space-y-8 px-6 py-8 lg:px-10" onSubmit={(e) => { e.preventDefault(); save(); }}>
+      <form className="mx-auto max-w-2xl space-y-6 px-6 py-8 lg:px-10" onSubmit={(e) => { e.preventDefault(); save(); }}>
         {error ? (
           <p className="rounded-md border border-destructive/30 bg-destructive-soft px-3 py-2 text-sm text-destructive-soft-foreground">{error}</p>
         ) : null}
 
-        <div className="flex items-center gap-4">
-          <span className="grid size-16 shrink-0 place-items-center rounded-lg border border-dashed border-border text-muted-foreground">
-            <UploadSimple weight="duotone" className="size-5" />
-          </span>
-          <div>
-            <p className="text-sm font-medium">Logo</p>
-            <p className="text-xs text-muted-foreground">Square PNG or SVG. Image upload to Storage is coming with media management.</p>
+        <FormSection title="Details">
+          <div className="sm:col-span-2 flex items-center gap-4">
+            <span className="grid size-16 shrink-0 place-items-center rounded-lg border border-dashed border-border text-muted-foreground">
+              <UploadSimple weight="duotone" className="size-5" />
+            </span>
+            <div>
+              <p className="text-xs font-medium text-foreground">Logo <span className="font-normal text-muted-foreground">— optional</span></p>
+              <p className="text-xs text-muted-foreground">Square PNG or SVG. Image upload to Storage is coming with media management.</p>
+            </div>
           </div>
-        </div>
+          <FormField label="Name" htmlFor={`${uid}-name`} error={nameTouched && !name.trim() ? "Name is required." : undefined}>
+            <input
+              ref={nameRef}
+              id={`${uid}-name`}
+              className={inputClass}
+              value={name}
+              onChange={(e) => { setName(e.target.value); setNameTouched(true); if (!slugTouched) setSlug(slugify(e.target.value)); }}
+              placeholder="e.g. Velvet & Oud"
+            />
+          </FormField>
+          <FormField label="Slug" htmlFor={`${uid}-slug`} helper="Used in links — lowercase, no spaces." error={slugTouched && !slug.trim() ? "Slug is required." : undefined}>
+            <input
+              ref={slugRef}
+              id={`${uid}-slug`}
+              className={inputClass}
+              value={slug}
+              onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }}
+              placeholder="velvet-oud"
+            />
+          </FormField>
+          <div className="sm:col-span-2">
+            <FormField label="Description" htmlFor={`${uid}-description`} optional>
+              <textarea
+                id={`${uid}-description`}
+                rows={3}
+                className={`${inputClass} h-auto resize-y py-2`}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="A short line shown on the brand page."
+              />
+            </FormField>
+          </div>
+        </FormSection>
 
-        <Field label="Name">
-          <input
-            className={inputClass}
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              if (!slugTouched) setSlug(slugify(e.target.value));
-            }}
-            placeholder="e.g. Velvet & Oud"
-          />
-        </Field>
-
-        <Field label="Slug" hint="used in links — lowercase, no spaces">
-          <input
-            className={inputClass}
-            value={slug}
-            onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }}
-            placeholder="velvet-oud"
-          />
-        </Field>
-
-        <Field label="Description" hint="optional">
-          <textarea
-            rows={3}
-            className={`${inputClass} h-auto resize-y py-2`}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="A short line shown on the brand page."
-          />
-        </Field>
-
-        <div className="divide-y divide-border border-t border-border">
-          <ToggleRow title="Active" description="Show this brand and its products in the app." on={active} onChange={setActive} />
-          <ToggleRow title="Feature on app home" description="Include in the home “Shop by brand” rail." on={featured} onChange={setFeatured} />
-        </div>
+        <FormSection title="Visibility">
+          <div className="flex items-center justify-between gap-4">
+            <div><p className="text-[13px] font-medium">Active</p><p className="text-xs text-muted-foreground">Show this brand and its products in the app.</p></div>
+            <Toggle defaultOn={active} label="Active" onChange={setActive} />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <div><p className="text-[13px] font-medium">Feature on app home</p><p className="text-xs text-muted-foreground">Include in the home &ldquo;Shop by brand&rdquo; rail.</p></div>
+            <Toggle defaultOn={featured} label="Feature on app home" onChange={setFeatured} />
+          </div>
+        </FormSection>
       </form>
     </>
   );
