@@ -25,6 +25,15 @@ export type Slide = {
 const inputClass =
   "h-9 w-full rounded-md border border-border bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none";
 
+function CompactField({ label, htmlFor, children }: { label: string; htmlFor: string; children: React.ReactNode }) {
+  return (
+    <label htmlFor={htmlFor} className="block">
+      <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
+      <div className="mt-1">{children}</div>
+    </label>
+  );
+}
+
 function SlideCard({
   slide,
   index,
@@ -69,19 +78,25 @@ function SlideCard({
         </div>
 
         <div className="min-w-0 flex-1 space-y-2.5">
-          <input
-            className={inputClass}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Slide title"
-          />
-          <textarea
-            rows={2}
-            className={`${inputClass} h-auto resize-y py-2`}
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            placeholder="Slide body"
-          />
+          <CompactField label="Title" htmlFor={`slide-${slide.id}-title`}>
+            <input
+              id={`slide-${slide.id}-title`}
+              className={inputClass}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Slide title"
+            />
+          </CompactField>
+          <CompactField label="Body" htmlFor={`slide-${slide.id}-body`}>
+            <textarea
+              id={`slide-${slide.id}-body`}
+              rows={2}
+              className={`${inputClass} h-auto resize-y py-2`}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Slide body"
+            />
+          </CompactField>
           {error ? <p className="text-xs text-destructive">{error}</p> : null}
 
           <div className="flex items-center justify-between gap-2 pt-0.5">
@@ -189,14 +204,19 @@ export function OnboardingEditor({ slides: initial }: { slides: Slide[] }) {
 
       {adding ? (
         <div className="mt-4 space-y-2.5 rounded-xl border border-border bg-card p-4">
-          <input className={inputClass} value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Slide title" />
-          <textarea
-            rows={2}
-            className={`${inputClass} h-auto resize-y py-2`}
-            value={newBody}
-            onChange={(e) => setNewBody(e.target.value)}
-            placeholder="Slide body"
-          />
+          <CompactField label="Title" htmlFor="new-slide-title">
+            <input id="new-slide-title" className={inputClass} value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Slide title" />
+          </CompactField>
+          <CompactField label="Body" htmlFor="new-slide-body">
+            <textarea
+              id="new-slide-body"
+              rows={2}
+              className={`${inputClass} h-auto resize-y py-2`}
+              value={newBody}
+              onChange={(e) => setNewBody(e.target.value)}
+              placeholder="Slide body"
+            />
+          </CompactField>
           {error ? <p className="text-xs text-destructive">{error}</p> : null}
           <div className="flex items-center justify-end gap-2">
             <button
