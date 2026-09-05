@@ -29,11 +29,12 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const { id } = await params;
   const db = createServerClient();
 
-  const { data: customer } = await db
+  const { data: customer, error } = await db
     .from("app_user")
     .select("id, display_name, phone, email, role, is_blocked, created_at, referral_code, referred_by")
     .eq("id", id)
     .maybeSingle();
+  if (error) throw error;
   if (!customer) notFound();
 
   const name = (customer.display_name as string)?.trim() || "Unnamed customer";
@@ -82,7 +83,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             <span className="grid size-11 shrink-0 place-items-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">{initials}</span>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold tracking-tight">{name}</h1>
+                <h1 className="font-display text-xl font-semibold tracking-tight">{name}</h1>
                 <StatusPill tone={customer.is_blocked ? "danger" : "neutral"}>{customer.is_blocked ? "Blocked" : humanize(customer.role as string)}</StatusPill>
               </div>
               <p className="nums text-sm text-muted-foreground">

@@ -6,6 +6,7 @@ import { Sparkle } from "@phosphor-icons/react";
 
 import { grantPoints, setTier } from "@/app/(dashboard)/customers/actions";
 import { formatInt } from "@/lib/format";
+import { FormField } from "@/components/admin/form-field";
 
 type Tier = { id: string; name: string; discount: number };
 
@@ -24,23 +25,25 @@ export function CustomerLoyalty({
   const [pending, start] = useTransition();
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
-  const [err, setErr] = useState<string | null>(null);
+  const [grantErr, setGrantErr] = useState<string | null>(null);
+  const [tierErr, setTierErr] = useState<string | null>(null);
 
   function grant() {
     const n = parseInt(amount, 10);
-    setErr(null);
+    setGrantErr(null);
     start(async () => {
       const res = await grantPoints(userId, n, reason);
       if (res.ok) { setAmount(""); setReason(""); router.refresh(); }
-      else setErr(res.error);
+      else setGrantErr(res.error);
     });
   }
 
   function changeTier(tierId: string) {
+    setTierErr(null);
     start(async () => {
       const res = await setTier(userId, tierId || null);
       if (res.ok) router.refresh();
-      else setErr(res.error);
+      else setTierErr(res.error);
     });
   }
 
@@ -54,37 +57,43 @@ export function CustomerLoyalty({
         <span className="text-sm text-muted-foreground">points</span>
       </div>
 
-      <label className="mt-4 block">
-        <span className="text-sm font-medium">Loyalty card</span>
-        <select
-          value={currentTierId ?? ""}
-          onChange={(e) => changeTier(e.target.value)}
-          disabled={pending}
-          className="mt-1.5 h-9 w-full rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
-        >
-          <option value="">No card</option>
-          {tiers.map((t) => (
-            <option key={t.id} value={t.id}>{t.name} · {t.discount}% off</option>
-          ))}
-        </select>
-      </label>
+      <div className="mt-4">
+        <FormField label="Loyalty card" htmlFor="loyalty-tier" error={tierErr ?? undefined}>
+          <select
+            id="loyalty-tier"
+            value={currentTierId ?? ""}
+            onChange={(e) => changeTier(e.target.value)}
+            disabled={pending}
+            className="h-9 w-full rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+          >
+            <option value="">No card</option>
+            {tiers.map((t) => (
+              <option key={t.id} value={t.id}>{t.name} · {t.discount}% off</option>
+            ))}
+          </select>
+        </FormField>
+      </div>
 
       <div className="mt-4 border-t border-border pt-4">
         <p className="text-sm font-medium">Grant points</p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Points"
-            className="nums h-9 w-24 rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
-          />
-          <input
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Reason (optional)"
-            className="h-9 min-w-0 flex-1 rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
-          />
+        <div className="mt-2 flex flex-wrap items-end gap-2">
+          <FormField label="Points" htmlFor="grant-amount" error={grantErr ?? undefined}>
+            <input
+              id="grant-amount"
+              type="number"
+              value={amount}
+              onChange={(e) => { setAmount(e.target.value); setGrantErr(null); }}
+              className="nums h-9 w-24 rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+            />
+          </FormField>
+          <FormField label="Reason" htmlFor="grant-reason" optional>
+            <input
+              id="grant-reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="h-9 min-w-0 flex-1 rounded-md border border-border bg-background px-2.5 text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+            />
+          </FormField>
           <button
             type="button"
             onClick={grant}
@@ -95,7 +104,6 @@ export function CustomerLoyalty({
           </button>
         </div>
         <p className="mt-1.5 text-xs text-muted-foreground">Use a negative number to deduct.</p>
-        {err ? <p className="mt-2 text-sm text-destructive">{err}</p> : null}
       </div>
     </div>
   );

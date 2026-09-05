@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { Ticket } from "@phosphor-icons/react";
 
 import { issueCoupon } from "@/app/(dashboard)/customers/actions";
+import { FormField } from "@/components/admin/form-field";
 
 type Coupon = { code: string; discount: number; active: boolean };
 
@@ -38,18 +39,19 @@ export function CustomerCoupons({
     <div className="rounded-xl border border-border bg-card p-5">
       <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Coupons</h2>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-1.5">
+      <div className="mt-3 flex flex-wrap items-end gap-2">
+        <FormField label="Discount" htmlFor="coupon-percent" error={err ?? undefined}>
           <input
+            id="coupon-percent"
             type="number"
             min={1}
             max={100}
             value={percent}
-            onChange={(e) => setPercent(e.target.value)}
+            onChange={(e) => { setPercent(e.target.value); setErr(null); }}
             className="nums h-9 w-16 rounded-md border border-border bg-background px-2.5 text-right text-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
           />
-          <span className="text-sm text-muted-foreground">% off</span>
-        </div>
+        </FormField>
+        <span className="pb-2.5 text-sm text-muted-foreground">% off</span>
         <button
           type="button"
           onClick={issue}
@@ -66,7 +68,6 @@ export function CustomerCoupons({
           Coupon created — give them code <span className="nums font-semibold">{issued}</span>
         </p>
       ) : null}
-      {err ? <p className="mt-2 text-sm text-destructive">{err}</p> : null}
 
       <ul className="mt-4 divide-y divide-border border-t border-border">
         {coupons.map((c) => (
