@@ -27,6 +27,38 @@ const inputClass =
 
 const slugify = (v: string) => v.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
+function PricePrefixInput({
+  id,
+  value,
+  onChange,
+  placeholder,
+  inputRef,
+  "aria-describedby": ariaDescribedby,
+}: {
+  id: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  inputRef: React.Ref<HTMLInputElement>;
+  "aria-describedby"?: string;
+}) {
+  return (
+    <div className="relative max-w-xs">
+      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Le</span>
+      <input
+        ref={inputRef}
+        id={id}
+        className={`${inputClass} pl-9`}
+        inputMode="decimal"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        aria-describedby={ariaDescribedby}
+      />
+    </div>
+  );
+}
+
 export function ComboForm({ initial, variants }: { initial?: ComboValues; variants: VariantOption[] }) {
   const router = useRouter();
   const uid = useId();
@@ -229,18 +261,13 @@ export function ComboForm({ initial, variants }: { initial?: ComboValues; varian
                 : undefined
             }
           >
-            <div className="relative max-w-xs">
-              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Le</span>
-              <input
-                ref={dealRef}
-                id={`${uid}-deal`}
-                className={`${inputClass} pl-9`}
-                inputMode="decimal"
-                value={deal}
-                onChange={(e) => { setDeal(e.target.value.replace(/[^0-9.]/g, "")); setDealErr(null); }}
-                placeholder={sumMinor ? String(Math.round(sumMinor / 100)) : "0"}
-              />
-            </div>
+            <PricePrefixInput
+              id={`${uid}-deal`}
+              inputRef={dealRef}
+              value={deal}
+              onChange={(e) => { setDeal(e.target.value.replace(/[^0-9.]/g, "")); setDealErr(null); }}
+              placeholder={sumMinor ? String(Math.round(sumMinor / 100)) : "0"}
+            />
           </FormField>
         </FormSection>
 

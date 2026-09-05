@@ -6,7 +6,7 @@ import { Cards, Trash } from "@phosphor-icons/react";
 
 import { deleteCombo, setComboActive } from "@/app/(dashboard)/combos/actions";
 import { formatLe } from "@/lib/format";
-import { StatusPill } from "@/components/admin/status-pill";
+import { Chip } from "@/components/admin/chip";
 import { Toggle } from "@/components/admin/toggle";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
 
@@ -61,7 +61,7 @@ export function CombosTable({ combos }: { combos: ComboRow[] }) {
       header: "Active",
       render: (c) => <Toggle defaultOn={c.active} label={`Activate ${c.name}`} onChange={(on) => start(async () => { await setComboActive(c.id, on); })} />,
     },
-    { header: "Status", render: (c) => <StatusPill tone={c.active ? "success" : "neutral"} dot>{c.active ? "Active" : "Hidden"}</StatusPill> },
+    { header: "Status", render: (c) => <Chip tone={c.active ? "success" : "neutral"}>{c.active ? "Active" : "Hidden"}</Chip> },
     {
       header: "",
       align: "right",

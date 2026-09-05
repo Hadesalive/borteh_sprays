@@ -6,7 +6,7 @@ import { Trash } from "@phosphor-icons/react";
 
 import { deleteBrand, setBrandFeatured } from "@/app/(dashboard)/brands/actions";
 import { formatInt } from "@/lib/format";
-import { StatusPill } from "@/components/admin/status-pill";
+import { Chip } from "@/components/admin/chip";
 import { Toggle } from "@/components/admin/toggle";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
 
@@ -48,7 +48,7 @@ export function BrandsTable({ brands }: { brands: BrandRow[] }) {
         <Toggle defaultOn={b.featured} label={`Feature ${b.name} on home`} onChange={(on) => start(async () => { await setBrandFeatured(b.id, on); })} />
       ),
     },
-    { header: "Status", render: (b) => <StatusPill tone={b.active ? "success" : "neutral"} dot>{b.active ? "Active" : "Hidden"}</StatusPill> },
+    { header: "Status", render: (b) => <Chip tone={b.active ? "success" : "neutral"}>{b.active ? "Active" : "Hidden"}</Chip> },
     {
       header: "",
       align: "right",

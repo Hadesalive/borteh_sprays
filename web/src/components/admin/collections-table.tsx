@@ -6,7 +6,7 @@ import { Stack, Trash } from "@phosphor-icons/react";
 
 import { deleteCollection, setCollectionFeatured } from "@/app/(dashboard)/collections/actions";
 import { formatInt } from "@/lib/format";
-import { StatusPill } from "@/components/admin/status-pill";
+import { Chip } from "@/components/admin/chip";
 import { Toggle } from "@/components/admin/toggle";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
 
@@ -44,7 +44,7 @@ export function CollectionsTable({ collections }: { collections: CollectionRow[]
         <Toggle defaultOn={c.featured} label={`Feature ${c.name} on home`} onChange={(on) => start(async () => { await setCollectionFeatured(c.id, on); })} />
       ),
     },
-    { header: "Status", render: (c) => <StatusPill tone={c.active ? "success" : "neutral"} dot>{c.active ? "Active" : "Hidden"}</StatusPill> },
+    { header: "Status", render: (c) => <Chip tone={c.active ? "success" : "neutral"}>{c.active ? "Active" : "Hidden"}</Chip> },
     {
       header: "",
       align: "right",
