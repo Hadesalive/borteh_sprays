@@ -1,6 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
+
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { UnsavedChangesProvider, BlockableLink } from "@/components/admin/unsaved-changes-guard";
 
 import { createServerClient } from "@/lib/supabase/server";
 import { Chip } from "@/components/admin/chip";
@@ -176,34 +178,50 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     .filter((g) => g.count > 0);
 
   return (
-    <div className="px-5 pb-6 pt-2">
-      <Link href="/products" className="inline-flex items-center gap-1.5 py-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground">
-        <ArrowLeft className="size-4" />
-        Products
-      </Link>
-      <div className="flex flex-wrap items-center gap-2.5 pb-4 pt-1">
-        <h1 className="text-xl font-[650] tracking-[-0.2px]">{initial.name || "Untitled product"}</h1>
-        <Chip tone={initial.is_active ? "success" : "neutral"}>{initial.is_active ? "Active" : "Hidden"}</Chip>
-        {initial.is_featured ? <Chip tone="info">Featured</Chip> : null}
-        {!initial.scent_family ? <Chip tone="warning">Needs a scent family</Chip> : null}
-      </div>
-
-      <div className="mb-5">
-        <ProductImages productId={initial.id} images={images} />
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <ProductEditor initial={initial} brands={brands} categories={categories} />
-        <ProductInventory productId={initial.id} variants={inventory} />
-      </div>
-
-      <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <ProductReviews productId={initial.id} reviews={reviews} />
-        <div className="space-y-5">
-          <ProductSignals engagement={engagement} similar={similar} available={engagementAvailable} />
-          <ProductRestock groups={restockGroups} />
+    <UnsavedChangesProvider>
+      <div className="px-5 pb-6 pt-2">
+        <BlockableLink href="/products" className="inline-flex items-center gap-1.5 py-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground">
+          <ArrowLeft className="size-4" />
+          Products
+        </BlockableLink>
+        <div className="flex flex-wrap items-center gap-2.5 pb-4 pt-1">
+          <h1 className="font-display text-xl font-semibold tracking-tight">{initial.name || "Untitled product"}</h1>
+          <Chip tone={initial.is_active ? "success" : "neutral"}>{initial.is_active ? "Active" : "Hidden"}</Chip>
+          {initial.is_featured ? <Chip tone="info">Featured</Chip> : null}
+          {!initial.scent_family ? <Chip tone="warning">Needs a scent family</Chip> : null}
         </div>
+
+        <Tabs defaultValue="details">
+          <TabsList variant="line">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="images">Images</TabsTrigger>
+            <TabsTrigger value="inventory">Inventory</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger value="insights">Insights</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="details" className="pt-4">
+            <ProductEditor initial={initial} brands={brands} categories={categories} />
+          </TabsContent>
+
+          <TabsContent value="images" className="pt-4">
+            <ProductImages productId={initial.id} images={images} />
+          </TabsContent>
+
+          <TabsContent value="inventory" className="pt-4">
+            <ProductInventory productId={initial.id} variants={inventory} />
+          </TabsContent>
+
+          <TabsContent value="reviews" className="pt-4">
+            <ProductReviews productId={initial.id} reviews={reviews} />
+          </TabsContent>
+
+          <TabsContent value="insights" className="space-y-4 pt-4">
+            <ProductSignals engagement={engagement} similar={similar} available={engagementAvailable} />
+            <ProductRestock groups={restockGroups} />
+          </TabsContent>
+        </Tabs>
       </div>
-    </div>
+    </UnsavedChangesProvider>
   );
 }
