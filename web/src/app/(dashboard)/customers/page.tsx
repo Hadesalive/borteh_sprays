@@ -1,10 +1,12 @@
-import { UsersThree } from "@phosphor-icons/react/dist/ssr";
-
 import { createServerClient } from "@/lib/supabase/server";
 import { type Tone } from "@/components/admin/chip";
 import { CustomersTable, type CustomerRow } from "@/components/admin/customers-table";
+import { PageHeader } from "@/components/admin/page-header";
 import { ExportButton } from "@/components/admin/export-button";
+import { EmptyState } from "@/components/admin/empty-state";
 import { formatInt, formatLe } from "@/lib/format";
+import { listCustomers, getBlockedCustomerCount, PAGE_SIZE } from "@/lib/queries/customers";
+import { type DataTableSummaryStat } from "@/components/admin/data-table";
 
 export const dynamic = "force-dynamic";
 
@@ -45,28 +47,33 @@ function lastOrderLabel(iso: string | null): string {
   return then.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
 }
 
-export default async function CustomersPage() {
+export default async function CustomersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const db = createServerClient();
+  const page = Math.max(0, Number((await searchParams).page ?? "0") || 0);
 
-  const [usersRes, ordersRes, loyaltyRes] = await Promise.all([
-    db
-      .from("app_user")
-      .select("id, display_name, phone, email, role, is_blocked, created_at")
-      .order("created_at", { ascending: false }),
-    db.from("order").select("user_id, total_minor, status, created_at"),
-    db.from("loyalty_account").select("user_id, points_balance"),
+  const [{ rows: users, total }, blockedTotal] = await Promise.all([
+    listCustomers(db, { page, pageSize: PAGE_SIZE }),
+    getBlockedCustomerCount(db),
   ]);
 
-  const error = usersRes.error;
+  // Order/loyalty stats are scoped to just this page's users — bounded, not a
+  // full-table scan the way the pre-migration version worked.
+  const userIds = users.map((u) => u.id);
+  const [ordersRes, loyaltyRes] = await Promise.all([
+    userIds.length
+      ? db.from("order").select("user_id, total_minor, status, created_at").in("user_id", userIds)
+      : Promise.resolve({ data: [] as { user_id: string; total_minor: number | null; status: string | null; created_at: string | null }[] }),
+    userIds.length
+      ? db.from("loyalty_account").select("user_id, points_balance").in("user_id", userIds)
+      : Promise.resolve({ data: [] as { user_id: string; points_balance: number | null }[] }),
+  ]);
 
-  // Aggregate orders per user.
   const stats = new Map<string, { orders: number; spent: number; last: string | null }>();
-  for (const o of (ordersRes.data ?? []) as {
-    user_id: string;
-    total_minor: number | null;
-    status: string | null;
-    created_at: string | null;
-  }[]) {
+  for (const o of (ordersRes.data ?? []) as { user_id: string; total_minor: number | null; status: string | null; created_at: string | null }[]) {
     if (!o.user_id) continue;
     const cur = stats.get(o.user_id) ?? { orders: 0, spent: 0, last: null };
     cur.orders += 1;
@@ -80,15 +87,7 @@ export default async function CustomersPage() {
     if (l.user_id) points.set(l.user_id, Number(l.points_balance ?? 0));
   }
 
-  const customers: Customer[] = ((usersRes.data ?? []) as {
-    id: string;
-    display_name: string | null;
-    phone: string | null;
-    email: string | null;
-    role: string | null;
-    is_blocked: boolean | null;
-    created_at: string | null;
-  }[]).map((u) => {
+  const customers: Customer[] = users.map((u) => {
     const s = stats.get(u.id);
     return {
       id: u.id,
@@ -116,37 +115,29 @@ export default async function CustomersPage() {
     };
   });
 
+  const summary: DataTableSummaryStat[] = [
+    { n: formatInt(total), label: "customers", tone: "text-foreground" },
+    { n: formatInt(blockedTotal), label: "blocked", tone: blockedTotal ? "text-destructive" : "text-foreground" },
+  ];
+
   return (
-    <div className="px-5 pb-6 pt-2">
-      <div className="flex items-center justify-between py-2 pb-4">
-        <div>
-          <h1 className="text-xl font-[650] tracking-[-0.2px]">Customers</h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {error
-              ? "Couldn't load customers — check the Supabase keys in web/.env.local."
-              : `${formatInt(customers.length)} ${customers.length === 1 ? "customer" : "customers"}`}
-          </p>
-        </div>
+    <>
+      <PageHeader title="Customers" description={`${formatInt(total)} ${total === 1 ? "customer" : "customers"}.`}>
         <ExportButton
+          label="Export this page"
           filename="borteh-customers.csv"
           headers={["Name", "Contact", "Tier", "Orders", "Total spent (Le)", "Last order"]}
           rows={rows.map((c) => [c.name, c.contact, c.tierLabel, c.orders, formatLe(c.spent, 2), c.last])}
         />
-      </div>
+      </PageHeader>
 
-      {customers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-[12px] border border-border bg-card px-6 py-20 text-center shadow-[0_1px_0_rgba(26,26,26,0.07)]">
-          <span className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
-            <UsersThree weight="duotone" className="size-6" />
-          </span>
-          <p className="mt-4 text-sm font-medium">No customers yet</p>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            {error ? "We couldn't reach the database." : "Customers will appear here once people sign up and start ordering."}
-          </p>
-        </div>
-      ) : (
-        <CustomersTable customers={rows} />
-      )}
-    </div>
+      <div className="px-5 pb-6 pt-2">
+        {total === 0 ? (
+          <EmptyState title="No customers yet" description="Customers will appear here once people sign up and start ordering." />
+        ) : (
+          <CustomersTable customers={rows} summary={summary} page={page} total={total} pageSize={PAGE_SIZE} />
+        )}
+      </div>
+    </>
   );
 }
