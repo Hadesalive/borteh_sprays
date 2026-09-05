@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProductEditor, type EditorInitial } from "@/components/admin/product-editor";
 
@@ -55,5 +55,14 @@ describe("ProductEditor", () => {
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Brand")).toBeInTheDocument();
     expect(screen.getByLabelText("Scent family")).toBeInTheDocument();
+  });
+
+  it("re-disables Save after a successful save (baseline resets to the saved state)", async () => {
+    render(<ProductEditor initial={BLANK} brands={brands} categories={categories} />);
+    const saveBtn = screen.getByRole("button", { name: "Save changes" });
+    await userEvent.type(screen.getByLabelText("Name"), "!");
+    expect(saveBtn).toBeEnabled();
+    await userEvent.click(saveBtn);
+    await waitFor(() => expect(saveBtn).toBeDisabled());
   });
 });

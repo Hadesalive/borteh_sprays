@@ -133,6 +133,7 @@ export function ProductEditor({ initial, brands, categories }: { initial: Editor
   const [gender, setGender] = useState(initial.gender);
   const [description, setDescription] = useState(initial.description);
   const [scentFamily, setScentFamily] = useState(initial.scent_family);
+  const [scentFamilyTouched, setScentFamilyTouched] = useState(false);
   const [accordsText, setAccordsText] = useState(initial.main_accords.join(", "));
   const [releaseYear, setReleaseYear] = useState(initial.release_year?.toString() ?? "");
   const [isActive, setIsActive] = useState(initial.is_active);
@@ -192,6 +193,7 @@ export function ProductEditor({ initial, brands, categories }: { initial: Editor
     setVariantErrors({});
     if (!scentFamily.trim()) {
       setError("Scent family is required — it's the gate that lets this product into recommendations.");
+      setScentFamilyTouched(true);
       scentFamilyRef.current?.focus();
       return;
     }
@@ -278,15 +280,15 @@ export function ProductEditor({ initial, brands, categories }: { initial: Editor
         <FormField
           label="Scent family"
           htmlFor={`${uid}-scent-family`}
-          helper={scentFamily.trim() ? "e.g. Woody Spicy" : undefined}
-          error={!scentFamily.trim() ? "Required for this product to be recommended." : undefined}
+          helper="e.g. Woody Spicy"
+          error={scentFamilyTouched && !scentFamily.trim() ? "Required for this product to be recommended." : undefined}
         >
           <input
             ref={scentFamilyRef}
             id={`${uid}-scent-family`}
             className={inputClass}
             value={scentFamily}
-            onChange={(e) => { setScentFamily(e.target.value); clearSavedFlag(); }}
+            onChange={(e) => { setScentFamily(e.target.value); setScentFamilyTouched(true); clearSavedFlag(); }}
             placeholder="Oriental, Woody, Fresh…"
           />
         </FormField>
