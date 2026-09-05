@@ -2,12 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useRef, useState, useTransition } from "react";
 import { ArrowLeft, Minus, Plus, X } from "@phosphor-icons/react";
 
 import { createCombo, updateCombo } from "@/app/(dashboard)/combos/actions";
 import { formatLe } from "@/lib/format";
 import { Toggle } from "@/components/admin/toggle";
+import { FormSection } from "@/components/admin/form-section";
+import { FormField } from "@/components/admin/form-field";
 
 export type VariantOption = { id: string; label: string; priceMinor: number };
 export type ComboValues = {
@@ -25,29 +27,27 @@ const inputClass =
 
 const slugify = (v: string) => v.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="text-sm font-medium">{label}</span>
-      {hint ? <span className="ml-2 text-xs text-muted-foreground">{hint}</span> : null}
-      <div className="mt-1.5">{children}</div>
-    </label>
-  );
-}
-
 export function ComboForm({ initial, variants }: { initial?: ComboValues; variants: VariantOption[] }) {
   const router = useRouter();
+  const uid = useId();
   const editing = Boolean(initial?.id);
   const [name, setName] = useState(initial?.name ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
+  const [nameTouched, setNameTouched] = useState(Boolean(initial?.name));
   const [description, setDescription] = useState(initial?.description ?? "");
   const [active, setActive] = useState(initial?.active ?? true);
   const [items, setItems] = useState<{ variantId: string; qty: number }[]>(initial?.items ?? []);
   // Deal price is edited in whole Leones; stored as minor units. Blank = no deal.
   const [deal, setDeal] = useState(initial?.dealPriceMinor != null ? String(initial.dealPriceMinor / 100) : "");
   const [error, setError] = useState<string | null>(null);
+  const [itemsErr, setItemsErr] = useState<string | null>(null);
+  const [dealErr, setDealErr] = useState<string | null>(null);
   const [pending, start] = useTransition();
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const slugRef = useRef<HTMLInputElement>(null);
+  const dealRef = useRef<HTMLInputElement>(null);
 
   const byId = useMemo(() => new Map(variants.map((v) => [v.id, v])), [variants]);
   const chosen = new Set(items.map((i) => i.variantId));
@@ -57,19 +57,37 @@ export function ComboForm({ initial, variants }: { initial?: ComboValues; varian
   const dealValid = dealMinor == null || (Number.isFinite(dealMinor) && dealMinor > 0);
   const savingsMinor = dealMinor != null && dealValid && dealMinor < sumMinor ? sumMinor - dealMinor : 0;
 
-  const addItem = (variantId: string) => setItems((prev) => [...prev, { variantId, qty: 1 }]);
+  const addItem = (variantId: string) => { setItems((prev) => [...prev, { variantId, qty: 1 }]); setItemsErr(null); };
   const setQty = (variantId: string, qty: number) =>
     setItems((prev) => (qty <= 0 ? prev.filter((i) => i.variantId !== variantId) : prev.map((i) => (i.variantId === variantId ? { ...i, qty } : i))));
   const removeItem = (variantId: string) => setItems((prev) => prev.filter((i) => i.variantId !== variantId));
 
   function save() {
     setError(null);
+    setItemsErr(null);
+    setDealErr(null);
+    if (!name.trim()) {
+      setNameTouched(true);
+      nameRef.current?.focus();
+      return;
+    }
+    if (!slug.trim()) {
+      setSlugTouched(true);
+      slugRef.current?.focus();
+      return;
+    }
+    if (items.length < 2) {
+      setItemsErr("A combo needs at least two fragrances.");
+      return;
+    }
     if (dealMinor != null && !dealValid) {
-      setError("Deal price must be a positive amount, or left blank.");
+      setDealErr("Deal price must be a positive amount, or left blank.");
+      dealRef.current?.focus();
       return;
     }
     if (dealMinor != null && dealMinor >= sumMinor) {
-      setError("Deal price must be below the pair’s sum — otherwise it isn’t a discount. Leave it blank to charge the sum.");
+      setDealErr("Deal price must be below the pair's sum — otherwise it isn't a discount. Leave it blank to charge the sum.");
+      dealRef.current?.focus();
       return;
     }
     const input = { name, slug, description, active, items, dealPriceMinor: dealMinor };
@@ -88,7 +106,7 @@ export function ComboForm({ initial, variants }: { initial?: ComboValues; varian
           Combos
         </Link>
         <div className="mt-3 flex items-center justify-between gap-3">
-          <h1 className="text-xl font-semibold tracking-tight">{editing ? initial?.name : "New combo"}</h1>
+          <h1 className="font-display text-xl font-semibold tracking-tight">{editing ? initial?.name : "New combo"}</h1>
           <div className="flex items-center gap-2">
             <Link href="/combos" className="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
               Cancel
@@ -105,118 +123,133 @@ export function ComboForm({ initial, variants }: { initial?: ComboValues; varian
         </div>
       </div>
 
-      <form className="mx-auto max-w-2xl space-y-8 px-6 py-8 lg:px-10" onSubmit={(e) => { e.preventDefault(); save(); }}>
+      <form className="mx-auto max-w-2xl space-y-6 px-6 py-8 lg:px-10" onSubmit={(e) => { e.preventDefault(); save(); }}>
         {error ? (
           <p className="rounded-md border border-destructive/30 bg-destructive-soft px-3 py-2 text-sm text-destructive-soft-foreground">{error}</p>
         ) : null}
 
-        <Field label="Name">
-          <input
-            className={inputClass}
-            value={name}
-            onChange={(e) => { setName(e.target.value); if (!slugTouched) setSlug(slugify(e.target.value)); }}
-            placeholder="e.g. The Signature Pair"
-          />
-        </Field>
-
-        <Field label="Slug" hint="used in links — lowercase, no spaces">
-          <input className={inputClass} value={slug} onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }} placeholder="signature-pair" />
-        </Field>
-
-        <Field label="Description" hint="optional — shown on the pair's page">
-          <textarea
-            className={`${inputClass} h-20 py-2`}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Two scents curated to wear together — day into night."
-          />
-        </Field>
-
-        {/* the pair */}
-        <div>
-          <p className="text-sm font-medium">Fragrances in the pair</p>
-          <p className="text-xs text-muted-foreground">Add two or more. Customers can add the whole pair to their bag in one tap.</p>
-
-          <div className="mt-3 divide-y divide-border rounded-md border border-border">
-            {items.length === 0 ? (
-              <p className="px-3 py-4 text-sm text-muted-foreground">No fragrances yet — add the first below.</p>
-            ) : (
-              items.map((it) => {
-                const v = byId.get(it.variantId);
-                return (
-                  <div key={it.variantId} className="flex items-center gap-3 px-3 py-2.5">
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm">{v?.label ?? "Unavailable fragrance"}</div>
-                      <div className="nums text-xs text-muted-foreground">{formatLe((v?.priceMinor ?? 0) * it.qty)}</div>
-                    </div>
-                    <div className="flex items-center rounded-md border border-border">
-                      <button type="button" className="grid size-8 place-items-center text-muted-foreground hover:text-foreground" aria-label="Decrease" onClick={() => setQty(it.variantId, it.qty - 1)}>
-                        <Minus className="size-3.5" />
-                      </button>
-                      <span className="nums w-6 text-center text-sm">{it.qty}</span>
-                      <button type="button" className="grid size-8 place-items-center text-muted-foreground hover:text-foreground" aria-label="Increase" onClick={() => setQty(it.variantId, it.qty + 1)}>
-                        <Plus className="size-3.5" />
-                      </button>
-                    </div>
-                    <button type="button" className="text-muted-foreground transition-colors hover:text-destructive" aria-label="Remove" onClick={() => removeItem(it.variantId)}>
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                );
-              })
-            )}
+        <FormSection title="Details">
+          <FormField label="Name" htmlFor={`${uid}-name`} error={nameTouched && !name.trim() ? "Name is required." : undefined}>
+            <input
+              ref={nameRef}
+              id={`${uid}-name`}
+              className={inputClass}
+              value={name}
+              onChange={(e) => { setName(e.target.value); setNameTouched(true); if (!slugTouched) setSlug(slugify(e.target.value)); }}
+              placeholder="e.g. The Signature Pair"
+            />
+          </FormField>
+          <FormField label="Slug" htmlFor={`${uid}-slug`} helper="Used in links — lowercase, no spaces." error={slugTouched && !slug.trim() ? "Slug is required." : undefined}>
+            <input
+              ref={slugRef}
+              id={`${uid}-slug`}
+              className={inputClass}
+              value={slug}
+              onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }}
+              placeholder="signature-pair"
+            />
+          </FormField>
+          <div className="sm:col-span-2">
+            <FormField label="Description" htmlFor={`${uid}-description`} optional helper="Shown on the pair's page.">
+              <textarea
+                id={`${uid}-description`}
+                className={`${inputClass} h-20 py-2`}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Two scents curated to wear together — day into night."
+              />
+            </FormField>
           </div>
+        </FormSection>
 
-          <select
-            className={`${inputClass} mt-3`}
-            value=""
-            onChange={(e) => { if (e.target.value) addItem(e.target.value); }}
-            disabled={available.length === 0}
+        <FormSection title="Fragrances in the pair" description="Add two or more. Customers can add the whole pair to their bag in one tap.">
+          <div className="sm:col-span-2">
+            <div className="divide-y divide-border rounded-md border border-border">
+              {items.length === 0 ? (
+                <p className="px-3 py-4 text-sm text-muted-foreground">No fragrances yet — add the first below.</p>
+              ) : (
+                items.map((it) => {
+                  const v = byId.get(it.variantId);
+                  return (
+                    <div key={it.variantId} className="flex items-center gap-3 px-3 py-2.5">
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm">{v?.label ?? "Unavailable fragrance"}</div>
+                        <div className="nums text-xs text-muted-foreground">{formatLe((v?.priceMinor ?? 0) * it.qty)}</div>
+                      </div>
+                      <div className="flex items-center rounded-md border border-border">
+                        <button type="button" className="grid size-8 place-items-center text-muted-foreground hover:text-foreground" aria-label="Decrease" onClick={() => setQty(it.variantId, it.qty - 1)}>
+                          <Minus className="size-3.5" />
+                        </button>
+                        <span className="nums w-6 text-center text-sm">{it.qty}</span>
+                        <button type="button" className="grid size-8 place-items-center text-muted-foreground hover:text-foreground" aria-label="Increase" onClick={() => setQty(it.variantId, it.qty + 1)}>
+                          <Plus className="size-3.5" />
+                        </button>
+                      </div>
+                      <button type="button" className="text-muted-foreground transition-colors hover:text-destructive" aria-label="Remove" onClick={() => removeItem(it.variantId)}>
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <select
+              className={`${inputClass} mt-3`}
+              value=""
+              onChange={(e) => { if (e.target.value) addItem(e.target.value); }}
+              disabled={available.length === 0}
+              aria-label="Add a fragrance"
+            >
+              <option value="">{available.length === 0 ? "All fragrances added" : "Add a fragrance…"}</option>
+              {available.map((v) => (
+                <option key={v.id} value={v.id}>{v.label} · {formatLe(v.priceMinor)}</option>
+              ))}
+            </select>
+            {itemsErr ? <p className="mt-1.5 text-xs text-destructive">{itemsErr}</p> : null}
+
+            <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
+              <span className="text-sm text-muted-foreground">Sum of fragrances</span>
+              <span className="nums text-sm">{formatLe(sumMinor)}</span>
+            </div>
+          </div>
+        </FormSection>
+
+        <FormSection title="Pricing">
+          <FormField
+            label="Deal price"
+            htmlFor={`${uid}-deal`}
+            optional
+            error={dealErr ?? undefined}
+            helper={
+              !dealErr
+                ? savingsMinor > 0
+                  ? `Customers save ${formatLe(savingsMinor)} versus buying the fragrances separately.`
+                  : `Set a price below ${formatLe(sumMinor)} to offer the pair as a deal. Blank charges the honest sum.`
+                : undefined
+            }
           >
-            <option value="">{available.length === 0 ? "All fragrances added" : "Add a fragrance…"}</option>
-            {available.map((v) => (
-              <option key={v.id} value={v.id}>{v.label} · {formatLe(v.priceMinor)}</option>
-            ))}
-          </select>
-
-          <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-            <span className="text-sm text-muted-foreground">Sum of fragrances</span>
-            <span className="nums text-sm">{formatLe(sumMinor)}</span>
-          </div>
-        </div>
-
-        {/* deal price */}
-        <div>
-          <Field label="Deal price" hint="optional — leave blank to charge the sum">
             <div className="relative max-w-xs">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Le</span>
               <input
+                ref={dealRef}
+                id={`${uid}-deal`}
                 className={`${inputClass} pl-9`}
                 inputMode="decimal"
                 value={deal}
-                onChange={(e) => setDeal(e.target.value.replace(/[^0-9.]/g, ""))}
+                onChange={(e) => { setDeal(e.target.value.replace(/[^0-9.]/g, "")); setDealErr(null); }}
                 placeholder={sumMinor ? String(Math.round(sumMinor / 100)) : "0"}
               />
             </div>
-          </Field>
-          {savingsMinor > 0 ? (
-            <p className="mt-2 text-xs font-medium text-success-soft-foreground">
-              Customers save {formatLe(savingsMinor)} versus buying the fragrances separately.
-            </p>
-          ) : (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Set a price below {formatLe(sumMinor)} to offer the pair as a deal. Blank charges the honest sum.
-            </p>
-          )}
-        </div>
+          </FormField>
+        </FormSection>
 
-        <div className="flex items-center justify-between gap-4 border-t border-border py-3">
-          <div>
-            <p className="text-sm font-medium">Active</p>
-            <p className="text-xs text-muted-foreground">Show this pair in the app (needs every fragrance in stock).</p>
+        <FormSection title="Visibility">
+          <div className="flex items-center justify-between gap-4">
+            <div><p className="text-[13px] font-medium">Active</p><p className="text-xs text-muted-foreground">Show this pair in the app (needs every fragrance in stock).</p></div>
+            <Toggle defaultOn={active} label="Active" onChange={setActive} />
           </div>
-          <Toggle defaultOn={active} label="Active" onChange={setActive} />
-        </div>
+        </FormSection>
       </form>
     </>
   );
