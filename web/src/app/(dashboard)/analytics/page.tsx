@@ -1,7 +1,13 @@
 import { cn } from "@/lib/utils";
 import { formatInt, formatLe, formatPct } from "@/lib/format";
 import { createServerClient } from "@/lib/supabase/server";
+import { PageHeader } from "@/components/admin/page-header";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
 import { RevenueChart } from "@/components/admin/revenue-chart";
+import { PaymentMixChart } from "@/components/admin/payment-mix-chart";
+import { OrderFunnelChart } from "@/components/admin/order-funnel-chart";
+import { BestSellersChart } from "@/components/admin/best-sellers-chart";
 import { ExportButton } from "@/components/admin/export-button";
 
 export const dynamic = "force-dynamic";
@@ -10,16 +16,13 @@ const CANCELLED = new Set(["cancelled", "returned"]);
 const PAST_PENDING = new Set(["confirmed", "preparing", "packing", "ready", "dispatched", "out_for_delivery", "delivered", "completed"]);
 const DELIVERED = new Set(["delivered", "completed"]);
 
-const card = "rounded-[12px] border border-border bg-card shadow-[0_1px_0_rgba(26,26,26,0.07)]";
-const cardHead = "flex items-baseline justify-between";
-const cardTitle = "text-[13px] font-semibold";
-const rowLine = "flex items-center gap-2 h-9 border-t border-accent text-[13px] first:border-t-0";
-
 function Delta({ ratio }: { ratio: number }) {
   if (!isFinite(ratio) || ratio === 0) return <span className="nums text-xs text-muted-foreground">—</span>;
   const up = ratio > 0;
   return <span className={cn("nums text-xs font-medium", up ? "text-success" : "text-destructive")}>{up ? "▲" : "▼"} {formatPct(Math.abs(ratio), 1)}</span>;
 }
+
+type BestSellerRow = { name: string; meta: string; units: number; minor: number };
 
 export default async function AnalyticsPage() {
   const db = createServerClient();
@@ -79,7 +82,6 @@ export default async function AnalyticsPage() {
     { stage: "Confirmed", count: confirmed },
     { stage: "Delivered", count: delivered7 },
   ];
-  const funnelTop = funnel[0].count || 1;
 
   // Best sellers.
   const byProduct = new Map<string, { meta: string; units: number; minor: number }>();
@@ -90,8 +92,7 @@ export default async function AnalyticsPage() {
     byProduct.set(it.product_name_snapshot, cur);
   }
   const bestTotal = [...byProduct.values()].reduce((s, v) => s + v.minor, 0) || 1;
-  const best = [...byProduct.entries()].map(([name, v]) => ({ name, ...v })).sort((a, b) => b.minor - a.minor).slice(0, 6);
-  const bestMax = Math.max(...best.map((b) => b.minor), 1);
+  const best: BestSellerRow[] = [...byProduct.entries()].map(([name, v]) => ({ name, ...v })).sort((a, b) => b.minor - a.minor).slice(0, 6);
 
   // Payment mix.
   const codMinor = last7.filter((o) => String(o.payment_method ?? "").includes("cash")).reduce((s, o) => s + (o.total_minor ?? 0), 0);
@@ -107,130 +108,114 @@ export default async function AnalyticsPage() {
     { label: "Cancelled", value: formatInt(cancelled7), delta: <span className="nums text-xs text-muted-foreground">{formatPct(cancelRate, 1)}</span> },
   ];
 
+  const bestSellersColumns: DataTableColumn<BestSellerRow>[] = [
+    {
+      header: "Product",
+      render: (b) => (
+        <>
+          {b.name} <span className="font-normal text-muted-foreground">{b.meta}</span>
+        </>
+      ),
+    },
+    { header: "Units", align: "right", render: (b) => <span className="nums">{formatInt(b.units)}</span> },
+    { header: "Revenue", align: "right", render: (b) => <span className="nums font-medium">{formatLe(b.minor, 2)}</span> },
+    { header: "Share", align: "right", render: (b) => <span className="nums text-muted-foreground">{formatPct(b.minor / bestTotal, 1)}</span> },
+  ];
+
   return (
-    <div className="px-5 pb-6 pt-2">
-      <div className="flex items-center justify-between py-2 pb-4">
-        <div>
-          <h1 className="text-xl font-[650] tracking-[-0.2px]">Reports</h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">Live · in-house, no third-party tracking.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 items-center rounded-lg border border-border bg-card px-3 text-[13px] font-medium text-muted-foreground">Last 7 days</span>
-          <ExportButton
-            filename="borteh-best-sellers.csv"
-            label="Export CSV"
-            headers={["Product", "Variant", "Units", "Revenue (Le)", "Share"]}
-            rows={best.map((b) => [b.name, b.meta, b.units, formatLe(b.minor, 2), formatPct(b.minor / bestTotal, 1)])}
-          />
-        </div>
-      </div>
+    <>
+      <PageHeader title="Analytics" description="Live · in-house, no third-party tracking.">
+        <span className="inline-flex h-8 items-center rounded-lg border border-border bg-card px-3 text-[13px] font-medium text-muted-foreground">Last 7 days</span>
+        <ExportButton
+          filename="borteh-best-sellers.csv"
+          label="Export CSV"
+          headers={["Product", "Variant", "Units", "Revenue (Le)", "Share"]}
+          rows={best.map((b) => [b.name, b.meta, b.units, formatLe(b.minor, 2), formatPct(b.minor / bestTotal, 1)])}
+        />
+      </PageHeader>
 
-      {/* Stats */}
-      <div className={cn(card, "flex flex-wrap gap-y-3 p-4")}>
-        {stats.map((s) => (
-          <div key={s.label} className="mr-5 border-r border-accent pr-5 last:mr-0 last:border-0 last:pr-0">
-            <div className="text-xs font-medium text-muted-foreground">{s.label}</div>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="nums text-xl font-[650] leading-tight tracking-[-0.2px]">{s.value}</span>
-              {s.delta}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Revenue + Payment mix */}
-      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className={cn(card, "p-4")}>
-          <div className={cardHead}>
-            <span className={cardTitle}>Revenue by day · vs last week</span>
-            <span className="nums text-xs text-muted-foreground">{formatLe(rev7)} vs {formatLe(revPrev)}</span>
-          </div>
-          <RevenueChart data={revenue} labels={labels} />
-        </div>
-
-        <div className={cn(card, "p-4")}>
-          <span className={cardTitle}>Payment mix</span>
-          <div className="mt-3 flex h-2 overflow-hidden rounded-sm">
-            <div className="bg-foreground" style={{ width: `${codShare * 100}%` }} />
-            <div className="bg-[#B5B2AC]" style={{ width: `${(1 - codShare) * 100}%` }} />
-          </div>
-          <div className="mt-3 flex flex-col gap-1 text-[13px]">
-            <div className="flex justify-between"><span className="text-muted-foreground">Cash &amp; COD</span><span className="nums font-medium">{formatLe(codMinor)} · {formatPct(codShare)}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Prepaid</span><span className="nums font-medium">{formatLe(prepaidMinor)} · {formatPct(1 - codShare)}</span></div>
-          </div>
-          <div className="mt-4 flex flex-col gap-1 border-t border-accent pt-3 text-[13px]">
-            <div className="flex justify-between"><span className="text-muted-foreground">Delivered rate</span><span className="nums font-medium">{formatPct(deliveredRate)}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Cancellation rate</span><span className="nums font-medium">{formatPct(cancelRate, 1)}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Avg order value</span><span className="nums font-medium">{formatLe(avg7, 2)}</span></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Funnel + Best sellers bars */}
-      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className={cn(card, "p-4")}>
-          <span className={cardTitle}>Order funnel</span>
-          <div className="mt-3 flex flex-col gap-3">
-            {funnel.map((f, i) => {
-              const pct = f.count / funnelTop;
-              const drop = i === 0 ? null : funnel[i - 1].count ? 1 - f.count / funnel[i - 1].count : 0;
-              return (
-                <div key={f.stage}>
-                  <div className="flex justify-between text-[13px]">
-                    <span>{f.stage}</span>
-                    <span className="nums"><span className="font-medium">{formatInt(f.count)}</span> {drop !== null ? <span className="text-[#B5B2AC]">−{formatPct(drop)}</span> : null}</span>
-                  </div>
-                  <div className="mt-1 h-1.5 overflow-hidden rounded-sm bg-accent">
-                    <div className={cn("h-full rounded-sm", i === funnel.length - 1 ? "bg-success" : "bg-brand")} style={{ width: `${pct * 100}%` }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className={cn(card, "p-4")}>
-          <span className={cardTitle}>Best sellers · 7d</span>
-          <div className="mt-2">
-            {best.length ? best.map((b) => (
-              <div key={b.name} className={rowLine}>
-                <span className="min-w-0 flex-1 truncate">{b.name}</span>
-                <div className="h-1.5 w-16 overflow-hidden rounded-sm bg-accent">
-                  <div className="h-full rounded-sm bg-brand" style={{ width: `${(b.minor / bestMax) * 100}%` }} />
-                </div>
-                <span className="nums w-20 text-right font-medium">{formatLe(b.minor, 2)}</span>
+      <div className="px-5 pb-6 pt-2">
+        {/* Stats */}
+        <Card className="flex flex-wrap gap-y-3 p-4">
+          {stats.map((s) => (
+            <div key={s.label} className="mr-5 border-r border-accent pr-5 last:mr-0 last:border-0 last:pr-0">
+              <div className="text-xs font-medium text-muted-foreground">{s.label}</div>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="nums text-xl font-[650] leading-tight tracking-[-0.2px]">{s.value}</span>
+                {s.delta}
               </div>
-            )) : <p className="py-2 text-[13px] text-muted-foreground">No sales yet.</p>}
-          </div>
+            </div>
+          ))}
+        </Card>
+
+        {/* Revenue + Payment mix */}
+        <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <Card className="overflow-hidden p-0">
+            <CardHeader className="border-b pt-4">
+              <CardTitle role="heading" aria-level={2}>Revenue by day</CardTitle>
+              <CardDescription>vs last week: {formatLe(rev7)} vs {formatLe(revPrev)}</CardDescription>
+            </CardHeader>
+            <CardContent className="py-4">
+              <RevenueChart data={revenue} labels={labels} />
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden p-0">
+            <CardHeader className="border-b pt-4">
+              <CardTitle role="heading" aria-level={2}>Payment mix</CardTitle>
+            </CardHeader>
+            <CardContent className="py-4">
+              {rev7 > 0 ? <PaymentMixChart codMinor={codMinor} prepaidMinor={prepaidMinor} /> : <p className="text-[13px] text-muted-foreground">No sales yet.</p>}
+              <div className="mt-3 flex flex-col gap-1 text-[13px]">
+                <div className="flex justify-between"><span className="text-muted-foreground">Cash &amp; COD</span><span className="nums font-medium">{formatLe(codMinor)} · {formatPct(codShare)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Prepaid</span><span className="nums font-medium">{formatLe(prepaidMinor)} · {formatPct(1 - codShare)}</span></div>
+              </div>
+              <div className="mt-4 flex flex-col gap-1 border-t border-accent pt-3 text-[13px]">
+                <div className="flex justify-between"><span className="text-muted-foreground">Delivered rate</span><span className="nums font-medium">{formatPct(deliveredRate)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Cancellation rate</span><span className="nums font-medium">{formatPct(cancelRate, 1)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Avg order value</span><span className="nums font-medium">{formatLe(avg7, 2)}</span></div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Funnel + Best sellers chart */}
+        <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <Card className="overflow-hidden p-0">
+            <CardHeader className="border-b pt-4">
+              <CardTitle role="heading" aria-level={2}>Order funnel</CardTitle>
+            </CardHeader>
+            <CardContent className="py-4">
+              <OrderFunnelChart stages={funnel} />
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                {funnel.slice(1).map((f, i) => {
+                  const prev = funnel[i].count;
+                  const drop = prev ? 1 - f.count / prev : 0;
+                  return (
+                    <span key={f.stage} className="nums">
+                      {f.stage} <span className="text-destructive">−{formatPct(drop)}</span>
+                    </span>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden p-0">
+            <CardHeader className="border-b pt-4">
+              <CardTitle role="heading" aria-level={2}>Best sellers · 7d</CardTitle>
+            </CardHeader>
+            <CardContent className="py-4">
+              {best.length ? <BestSellersChart items={best} /> : <p className="text-[13px] text-muted-foreground">No sales yet.</p>}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Best sellers table */}
+        <div className="mt-4">
+          <DataTable columns={bestSellersColumns} rows={best} rowKey={(b) => b.name} empty="No sales yet." />
         </div>
       </div>
-
-      {/* Best sellers table */}
-      <div className={cn(card, "mt-4 overflow-hidden")}>
-        <div className="border-b border-border px-4 py-2.5 text-[13px] font-semibold">Best sellers</div>
-        <table className="w-full border-collapse text-[13px]">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="px-3 py-1.5 pl-4 text-left text-xs font-medium text-muted-foreground">Product</th>
-              <th className="px-3 py-1.5 text-right text-xs font-medium text-muted-foreground">Units</th>
-              <th className="px-3 py-1.5 text-right text-xs font-medium text-muted-foreground">Revenue</th>
-              <th className="px-3 py-1.5 pr-4 text-right text-xs font-medium text-muted-foreground">Share</th>
-            </tr>
-          </thead>
-          <tbody>
-            {best.length ? best.map((b) => (
-              <tr key={b.name} className="border-t border-accent">
-                <td className="py-1.5 pl-4 pr-3 font-medium">{b.name} <span className="font-normal text-[#B5B2AC]">{b.meta}</span></td>
-                <td className="nums px-3 py-1.5 text-right">{formatInt(b.units)}</td>
-                <td className="nums px-3 py-1.5 text-right font-medium">{formatLe(b.minor, 2)}</td>
-                <td className="nums px-3 py-1.5 pr-4 text-right text-muted-foreground">{formatPct(b.minor / bestTotal, 1)}</td>
-              </tr>
-            )) : (
-              <tr><td colSpan={4} className="px-4 py-16 text-center text-muted-foreground">No sales yet.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </>
   );
 }
