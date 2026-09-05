@@ -22,6 +22,8 @@ export default async function CombosPage() {
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
+  if (error) throw error;
+
   const combos: ComboRow[] = ((data ?? []) as unknown as Raw[]).map((c) => {
     const its = c.combo_item ?? [];
     const resolved = its.map((it) => {
@@ -45,14 +47,7 @@ export default async function CombosPage() {
 
   return (
     <>
-      <PageHeader
-        title="Combos"
-        description={
-          error
-            ? "Couldn't load combos — check the Supabase keys in web/.env.local."
-            : `${combos.length} combos · ${active} live`
-        }
-      >
+      <PageHeader title="Combos" description={`${combos.length} combos · ${active} live`}>
         <Link
           href="/combos/new"
           className="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
@@ -61,10 +56,6 @@ export default async function CombosPage() {
           New combo
         </Link>
       </PageHeader>
-
-      <p className="px-6 pt-4 text-xs text-muted-foreground lg:px-10">
-        Pairs appear as “Perfect pairs” on the app home and “Complete the pair” on each fragrance’s page — only while every item is in stock.
-      </p>
 
       <CombosTable combos={combos} />
     </>

@@ -17,6 +17,8 @@ export default async function BrandsPage() {
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
+  if (error) throw error;
+
   const brands: BrandRow[] = (data ?? []).map((b) => ({
     id: b.id as string,
     name: b.name as string,
@@ -29,14 +31,7 @@ export default async function BrandsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Brands"
-        description={
-          error
-            ? "Couldn't load brands — check the Supabase keys in web/.env.local."
-            : `${brands.length} brands · ${featured} featured on the app home`
-        }
-      >
+      <PageHeader title="Brands" description={`${brands.length} brands · ${featured} featured on the app home`}>
         <Link
           href="/brands/new"
           className="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
@@ -45,10 +40,6 @@ export default async function BrandsPage() {
           New brand
         </Link>
       </PageHeader>
-
-      <p className="px-6 pt-4 text-xs text-muted-foreground lg:px-10">
-        Featured brands appear in the app&rsquo;s &ldquo;Shop by brand&rdquo; rail, in this order.
-      </p>
 
       <BrandsTable brands={brands} />
     </>
