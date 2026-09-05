@@ -31,7 +31,7 @@ export function ProductSignals({
   return (
     <Card className="overflow-hidden p-0">
       <CardHeader className="border-b pt-4">
-        <CardTitle>Engagement</CardTitle>
+        <CardTitle role="heading" aria-level={2}>Engagement</CardTitle>
         <CardDescription>How customers interact with this scent in the app. Read-only signal from the recs pipeline.</CardDescription>
       </CardHeader>
 
@@ -57,7 +57,7 @@ export function ProductSignals({
       </CardContent>
 
       <CardHeader className="border-t pt-4 pb-2">
-        <CardTitle className="flex items-center gap-1.5 text-sm">
+        <CardTitle role="heading" aria-level={3} className="flex items-center gap-1.5 text-sm">
           <Sparkle weight="duotone" className="size-4 text-brand" />
           Customers also see as similar
         </CardTitle>

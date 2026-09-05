@@ -2,6 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProductEditor, type EditorInitial } from "@/components/admin/product-editor";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { UnsavedChangesProvider } from "@/components/admin/unsaved-changes-guard";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
@@ -64,5 +66,27 @@ describe("ProductEditor", () => {
     expect(saveBtn).toBeEnabled();
     await userEvent.click(saveBtn);
     await waitFor(() => expect(saveBtn).toBeDisabled());
+  });
+
+  it("preserves unsaved edits when switching tabs away and back", async () => {
+    render(
+      <UnsavedChangesProvider>
+        <Tabs defaultValue="details">
+          <TabsList>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="other">Other</TabsTrigger>
+          </TabsList>
+          <TabsContent value="details" keepMounted>
+            <ProductEditor initial={BLANK} brands={brands} categories={categories} />
+          </TabsContent>
+          <TabsContent value="other">Other tab content</TabsContent>
+        </Tabs>
+      </UnsavedChangesProvider>
+    );
+    await userEvent.type(screen.getByLabelText("Name"), "!");
+    expect(screen.getByLabelText("Name")).toHaveValue("Midnight Oud!");
+    await userEvent.click(screen.getByRole("tab", { name: "Other" }));
+    await userEvent.click(screen.getByRole("tab", { name: "Details" }));
+    expect(screen.getByLabelText("Name")).toHaveValue("Midnight Oud!");
   });
 });

@@ -192,7 +192,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </div>
 
         <Tabs defaultValue="details">
-          <TabsList variant="line">
+          <TabsList variant="line" aria-label="Product sections">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
@@ -200,23 +200,23 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <TabsTrigger value="insights">Insights</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="details" className="pt-4">
+          <TabsContent value="details" keepMounted className="pt-4">
             <ProductEditor initial={initial} brands={brands} categories={categories} />
           </TabsContent>
 
-          <TabsContent value="images" className="pt-4">
+          <TabsContent value="images" keepMounted className="pt-4">
             <ProductImages productId={initial.id} images={images} />
           </TabsContent>
 
-          <TabsContent value="inventory" className="pt-4">
+          <TabsContent value="inventory" keepMounted className="pt-4">
             <ProductInventory productId={initial.id} variants={inventory} />
           </TabsContent>
 
-          <TabsContent value="reviews" className="pt-4">
+          <TabsContent value="reviews" keepMounted className="pt-4">
             <ProductReviews productId={initial.id} reviews={reviews} />
           </TabsContent>
 
-          <TabsContent value="insights" className="space-y-4 pt-4">
+          <TabsContent value="insights" keepMounted className="space-y-4 pt-4">
             <ProductSignals engagement={engagement} similar={similar} available={engagementAvailable} />
             <ProductRestock groups={restockGroups} />
           </TabsContent>

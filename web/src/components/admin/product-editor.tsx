@@ -162,7 +162,10 @@ export function ProductEditor({ initial, brands, categories }: { initial: Editor
   const isDirty = snapshot(liveFields) !== baselineSnapshot.current;
 
   const { setIsDirty } = useUnsavedChanges();
-  useEffect(() => { setIsDirty(isDirty); }, [isDirty, setIsDirty]);
+  useEffect(() => {
+    setIsDirty(isDirty);
+    return () => setIsDirty(false);
+  }, [isDirty, setIsDirty]);
   useEffect(() => {
     if (!isDirty) return;
     const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
@@ -343,18 +346,26 @@ export function ProductEditor({ initial, brands, categories }: { initial: Editor
                         {CONCENTRATIONS.map((c) => <option key={c} value={c}>{c}</option>)}
                       </select>
                     </CompactField>
-                    <CompactField label="Price (Le)" htmlFor={`${uid}-variant-${v._key}-price`}>
-                      <input
-                        ref={(el) => { priceRefs.current[v._key] = el; }}
-                        id={`${uid}-variant-${v._key}-price`}
-                        className={cn(smallInput, "nums", variantErrors[v._key] && "border-destructive")}
-                        inputMode="decimal"
-                        value={v.priceText}
-                        onChange={(e) => patchVariant(v._key, { priceText: e.target.value })}
-                        placeholder="0.00"
-                      />
-                      {variantErrors[v._key] ? <p className="mt-1 text-[11px] text-destructive">{variantErrors[v._key]}</p> : null}
-                    </CompactField>
+                    <div>
+                      <CompactField label="Price (Le)" htmlFor={`${uid}-variant-${v._key}-price`}>
+                        <input
+                          ref={(el) => { priceRefs.current[v._key] = el; }}
+                          id={`${uid}-variant-${v._key}-price`}
+                          className={cn(smallInput, "nums", variantErrors[v._key] && "border-destructive")}
+                          inputMode="decimal"
+                          value={v.priceText}
+                          onChange={(e) => patchVariant(v._key, { priceText: e.target.value })}
+                          placeholder="0.00"
+                          aria-invalid={!!variantErrors[v._key]}
+                          aria-describedby={variantErrors[v._key] ? `${uid}-variant-${v._key}-price-error` : undefined}
+                        />
+                      </CompactField>
+                      {variantErrors[v._key] ? (
+                        <p id={`${uid}-variant-${v._key}-price-error`} className="mt-1 text-[11px] text-destructive">
+                          {variantErrors[v._key]}
+                        </p>
+                      ) : null}
+                    </div>
                     <CompactField label="Compare-at (Le)" htmlFor={`${uid}-variant-${v._key}-compare`}>
                       <input id={`${uid}-variant-${v._key}-compare`} className={cn(smallInput, "nums")} inputMode="decimal" value={v.compareText} onChange={(e) => patchVariant(v._key, { compareText: e.target.value })} placeholder="—" />
                     </CompactField>

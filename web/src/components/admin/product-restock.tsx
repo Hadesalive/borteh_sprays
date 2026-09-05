@@ -11,7 +11,7 @@ export function ProductRestock({ groups }: { groups: RestockGroup[] }) {
   return (
     <Card className="overflow-hidden p-0">
       <CardHeader className="border-b pt-4">
-        <CardTitle className="flex items-center gap-1.5">
+        <CardTitle role="heading" aria-level={2} className="flex items-center gap-1.5">
           <BellRinging weight="duotone" className="size-4 text-brand" />
           Restock waitlist
         </CardTitle>
@@ -22,11 +22,11 @@ export function ProductRestock({ groups }: { groups: RestockGroup[] }) {
       </CardHeader>
       <CardContent className="p-0">
         {total === 0 ? (
-          <p className="px-5 py-6 text-center text-[13px] text-muted-foreground">No one is waiting on a restock.</p>
+          <p className="px-4 py-6 text-center text-[13px] text-muted-foreground">No one is waiting on a restock.</p>
         ) : (
           <ul>
             {groups.filter((g) => g.count > 0).map((g) => (
-              <li key={g.variantId} className="flex items-center justify-between gap-2 border-t border-border px-5 py-2.5 first:border-t-0">
+              <li key={g.variantId} className="flex items-center justify-between gap-2 border-t border-border px-4 py-2.5 first:border-t-0">
                 <span className="min-w-0">
                   <span className="text-[13px] font-medium">{g.label}</span>
                   <span className="nums ml-2 text-[12px] text-muted-foreground">{g.sku}</span>

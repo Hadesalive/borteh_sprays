@@ -72,7 +72,7 @@ function VariantRow({ v, productId }: { v: InventoryVariant; productId: string }
   }
 
   return (
-    <div className="border-t border-border px-5 py-4 first:border-t-0">
+    <div className="border-t border-border px-4 py-4 first:border-t-0">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="truncate text-[13px] font-medium">{v.label}</div>
@@ -140,12 +140,12 @@ export function ProductInventory({ productId, variants }: { productId: string; v
   return (
     <Card className="h-fit overflow-hidden p-0">
       <CardHeader className="border-b pt-4">
-        <CardTitle>Inventory</CardTitle>
+        <CardTitle role="heading" aria-level={2}>Inventory</CardTitle>
         <CardDescription>Every stock move is logged and attributed. Receiving into an out-of-stock variant notifies waitlisters.</CardDescription>
       </CardHeader>
       <CardContent className="p-0">
         {variants.length === 0 ? (
-          <p className="px-5 py-8 text-center text-[13px] text-muted-foreground">No variants to stock yet.</p>
+          <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">No variants to stock yet.</p>
         ) : (
           variants.map((v) => <VariantRow key={v.variantId} v={v} productId={productId} />)
         )}

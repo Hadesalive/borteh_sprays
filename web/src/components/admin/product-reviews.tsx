@@ -54,7 +54,7 @@ function ReviewItem({ r, productId }: { r: ReviewRow; productId: string }) {
   }
 
   return (
-    <div className="border-t border-border px-5 py-3.5 first:border-t-0">
+    <div className="border-t border-border px-4 py-3.5 first:border-t-0">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Stars n={r.rating} />
@@ -98,7 +98,7 @@ export function ProductReviews({ productId, reviews }: { productId: string; revi
   return (
     <Card className="overflow-hidden p-0">
       <CardHeader className="border-b pt-4">
-        <CardTitle>Reviews</CardTitle>
+        <CardTitle role="heading" aria-level={2}>Reviews</CardTitle>
         <CardDescription>Only published reviews count toward the product rating.</CardDescription>
         <CardAction>
           <span className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
@@ -109,7 +109,7 @@ export function ProductReviews({ productId, reviews }: { productId: string; revi
       </CardHeader>
       <CardContent className="p-0">
         {reviews.length === 0 ? (
-          <p className="px-5 py-8 text-center text-[13px] text-muted-foreground">No reviews yet.</p>
+          <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">No reviews yet.</p>
         ) : (
           reviews.map((r) => <ReviewItem key={r.id} r={r} productId={productId} />)
         )}

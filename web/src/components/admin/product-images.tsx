@@ -46,7 +46,7 @@ export function ProductImages({ productId, images }: { productId: string; images
   return (
     <Card className="overflow-hidden p-0">
       <CardHeader className="border-b pt-4">
-        <CardTitle>Images</CardTitle>
+        <CardTitle role="heading" aria-level={2}>Images</CardTitle>
         <CardDescription>The primary image (★) shows in the app catalog. Drag order sets the gallery sequence.</CardDescription>
         <CardAction>
           <label className={cn(
