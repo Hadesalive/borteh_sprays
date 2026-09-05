@@ -13,7 +13,6 @@ import {
   UsersThree,
   GearSix,
   Presentation,
-  TextAa,
   type Icon,
 } from "@phosphor-icons/react";
 
@@ -47,7 +46,6 @@ export const catalogNav: NavItem[] = [
 // App Studio — the mobile app's content: what it says and shows (the CMS).
 export const contentNav: NavItem[] = [
   { title: "Onboarding", href: "/content/onboarding", icon: Presentation },
-  { title: "App copy", href: "/content/copy", icon: TextAa },
 ];
 
 // Insight — visited, not lived in.
