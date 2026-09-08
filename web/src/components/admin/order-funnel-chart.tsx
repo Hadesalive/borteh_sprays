@@ -1,37 +1,42 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
+import { Funnel, FunnelChart, LabelList } from "recharts";
 
 import { formatInt } from "@/lib/format";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
+// ChartContainer requires a config, but Funnel colors each trapezoid via a
+// per-datum `fill` below (Recharts' own convention for this component) --
+// this entry isn't wired to any `--color-value` usage. Changing its `color`
+// here does nothing; edit the `fill` values in `data` below instead.
 const chartConfig = {
-  count: { label: "Orders", color: "var(--chart-1)" },
+  value: { label: "Orders", color: "var(--chart-1)" },
 } satisfies ChartConfig;
 
-/** Horizontal bar funnel — Placed / Confirmed / Delivered, oldest stage on
- *  top. The last stage renders in the success color so "made it all the way
- *  through" reads at a glance. Recharts' literal Funnel/trapezoid shape was
- *  considered and skipped: nothing in this codebase's build/review pipeline
- *  can render a browser, so a chart's correctness can only ever be verified
- *  by reading source and running tsc/tests — a horizontal BarChart is a
- *  pattern this exact codebase has already proven correct (RevenueChart, an
- *  identical BarChart usage, has been live since Wave 0), and reads as a
- *  valid funnel visualization on its own terms. */
+/** Real tapering funnel (Recharts' trapezoid shapes) for the Placed /
+ *  Confirmed / Delivered stage counts. A horizontal BarChart was used here
+ *  originally as a defensive choice made with no way to visually verify a
+ *  render in this pipeline; replaced now that the live page can be checked
+ *  directly. Per-stage counts stay in the DOM as plain text below the chart
+ *  (page.tsx's drop-off row), not only in this chart's hover tooltip — a
+ *  real keyboard/screen-reader concern for funnel data. The last stage
+ *  renders in the success color so "made it all the way through" reads at
+ *  a glance. */
 export function OrderFunnelChart({ stages }: { stages: { stage: string; count: number }[] }) {
+  const data = stages.map((s, i) => ({
+    name: s.stage,
+    value: s.count,
+    fill: i === stages.length - 1 ? "var(--success)" : "var(--chart-1)",
+  }));
+
   return (
-    <ChartContainer config={chartConfig} className="aspect-auto h-32 w-full" role="img" aria-label="Order funnel, last 7 days">
-      <BarChart data={stages} layout="vertical" margin={{ left: 0, right: 8, top: 4, bottom: 4 }}>
-        <CartesianGrid horizontal={false} stroke="var(--border)" />
-        <XAxis type="number" hide />
-        <YAxis type="category" dataKey="stage" tickLine={false} axisLine={false} width={76} stroke="var(--muted-foreground)" className="text-muted-foreground" />
-        <ChartTooltip content={<ChartTooltipContent formatter={(value) => formatInt(Number(value))} />} />
-        <Bar dataKey="count" radius={0}>
-          {stages.map((s, i) => (
-            <Cell key={s.stage} fill={i === stages.length - 1 ? "var(--success)" : "var(--color-count)"} />
-          ))}
-        </Bar>
-      </BarChart>
+    <ChartContainer config={chartConfig} className="aspect-auto h-40 w-full" role="img" aria-label="Order funnel, last 7 days">
+      <FunnelChart>
+        <ChartTooltip content={<ChartTooltipContent hideLabel nameKey="name" formatter={(value) => formatInt(Number(value))} />} />
+        <Funnel data={data} dataKey="value" nameKey="name">
+          <LabelList position="right" dataKey="name" fill="var(--muted-foreground)" stroke="none" fontSize={12} />
+        </Funnel>
+      </FunnelChart>
     </ChartContainer>
   );
 }
