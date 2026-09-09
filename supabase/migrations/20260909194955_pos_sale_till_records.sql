@@ -217,8 +217,10 @@ begin
          case when o.payment_method = 'monime' then 'mobile_money' else 'cash' end,
          null,
          o.subtotal_minor,
-         coalesce(o.discount_minor, 0),
-         o.subtotal_minor - coalesce(o.discount_minor, 0),
+         -- Keep the money that was actually taken: derive the discount from
+         -- the order's real total so ck_pos_sale_total always holds.
+         o.subtotal_minor - o.total_minor,
+         o.total_minor,
          case when o.status in ('cancelled','returned') then 'voided' else 'completed' end,
          case when o.status in ('cancelled','returned') then 'Migrated: order was ' || o.status end,
          null,
