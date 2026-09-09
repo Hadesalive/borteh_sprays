@@ -19,18 +19,11 @@ export function RevenueChart({ data, labels }: { data: number[]; labels: string[
 
   return (
     <ChartContainer config={chartConfig} className="mt-3 aspect-auto h-44 w-full" role="img" aria-label="Revenue, last 7 days">
-      <BarChart data={rows} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
-        <CartesianGrid vertical={false} stroke="var(--border)" />
-        <XAxis
-          dataKey="day"
-          tickLine={false}
-          axisLine={false}
-          tickMargin={8}
-          stroke="var(--muted-foreground)"
-          className="text-muted-foreground"
-        />
-        <ChartTooltip content={<ChartTooltipContent formatter={(value) => formatLe(Number(value))} />} />
-        <Bar dataKey="revenue" fill="var(--color-revenue)" radius={0} />
+      <BarChart accessibilityLayer data={rows} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
+        <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
+        <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={10} stroke="var(--muted-foreground)" />
+        <ChartTooltip cursor={false} content={<ChartTooltipContent formatter={(value) => formatLe(Number(value))} />} />
+        <Bar dataKey="revenue" fill="var(--color-revenue)" radius={4} maxBarSize={40} />
       </BarChart>
     </ChartContainer>
   );
