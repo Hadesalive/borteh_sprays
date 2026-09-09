@@ -64,14 +64,17 @@ export default async function AnalyticsPage() {
   const cancelled7 = orders.filter((o) => CANCELLED.has(o.status) && dateOf(o) >= start7).length;
   const cancelRate = orders7 + cancelled7 ? cancelled7 / (orders7 + cancelled7) : 0;
 
-  // Revenue by day.
+  // Revenue by day — this week, plus the same weekday last week for the
+  // chart's comparison line.
   const revenue: number[] = [];
+  const revenuePrev: number[] = [];
   const labels: string[] = [];
   const wd = new Intl.DateTimeFormat("en-US", { weekday: "short" });
+  const sumOn = (rows: typeof live, key: string) => rows.filter((o) => dateOf(o).toDateString() === key).reduce((s, o) => s + (o.total_minor ?? 0), 0);
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now.getTime() - i * day);
-    const key = d.toDateString();
-    revenue.push(last7.filter((o) => dateOf(o).toDateString() === key).reduce((s, o) => s + (o.total_minor ?? 0), 0));
+    revenue.push(sumOn(last7, d.toDateString()));
+    revenuePrev.push(sumOn(prev7, new Date(d.getTime() - 7 * day).toDateString()));
     labels.push(wd.format(d));
   }
 
@@ -156,7 +159,7 @@ export default async function AnalyticsPage() {
               <CardDescription>vs last week: {formatLe(rev7)} vs {formatLe(revPrev)}</CardDescription>
             </CardHeader>
             <CardContent className="py-4">
-              <RevenueChart data={revenue} labels={labels} />
+              <RevenueChart data={revenue} labels={labels} previous={revenuePrev} />
             </CardContent>
           </Card>
 
