@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { CaretUpDown, SignOut } from "@phosphor-icons/react";
 
 import { createAuthBrowserClient } from "@/lib/supabase/auth-browser";
-import { primaryNav, catalogNav, contentNav, insightNav, settingsItem, badgeCountFor, type NavItem, type BadgeCounts } from "@/lib/nav";
+import { primaryNav, catalogNav, contentNav, insightNav, settingsItem, allNavItems, badgeCountFor, type NavItem, type BadgeCounts } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -32,7 +32,11 @@ import {
 } from "@/components/ui/sidebar";
 
 function isActivePath(pathname: string, href: string) {
-  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  if (href === "/") return pathname === "/";
+  if (pathname !== href && !pathname.startsWith(`${href}/`)) return false;
+  // A nested destination that is itself a nav item (e.g. /pos/sales under
+  // /pos) owns the highlight; its parent stays quiet.
+  return !allNavItems.some((n) => n.href !== href && n.href.startsWith(`${href}/`) && (pathname === n.href || pathname.startsWith(`${n.href}/`)));
 }
 
 function NavItems({ items, badgeCounts }: { items: NavItem[]; badgeCounts?: BadgeCounts }) {

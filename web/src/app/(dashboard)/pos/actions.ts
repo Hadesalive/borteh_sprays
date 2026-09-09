@@ -55,9 +55,11 @@ export async function createPosSale(
   if (error) return { ok: false, error: error.message };
 
   const row = Array.isArray(data) ? data[0] : data;
-  const saleId = (row?.sale_id as string) ?? "";
-  const receiptNumber = (row?.receipt_number as string) ?? "";
+  const saleId = row?.sale_id as string | undefined;
+  const receiptNumber = row?.receipt_number as string | undefined;
+  if (!saleId || !receiptNumber) return { ok: false, error: "The sale did not come back with a receipt number." };
 
+  revalidatePath("/pos");
   revalidatePath("/pos/sales");
   revalidatePath("/inventory");
   revalidatePath("/analytics");
@@ -79,6 +81,7 @@ export async function voidPosSale(saleId: string, reason: string): Promise<VoidR
   if (error) return { ok: false, error: error.message };
   if (data !== true) return { ok: false, error: "This sale has already been voided." };
 
+  revalidatePath("/pos");
   revalidatePath("/pos/sales");
   revalidatePath(`/pos/sales/${saleId}`);
   revalidatePath("/inventory");

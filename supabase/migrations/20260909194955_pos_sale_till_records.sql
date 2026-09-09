@@ -29,6 +29,9 @@ $$;
 create table if not exists public.pos_sale (
   id                 uuid primary key default gen_random_uuid(),
   receipt_number     text not null unique default public.gen_receipt_number(),
+  -- Set only on rows migrated from the old pickup orders: the BS-… number the
+  -- customer may still hold on a paper slip or in WhatsApp.
+  legacy_order_number text unique,
   store_location_id  uuid not null references public.store_location(id),
   cashier_id         uuid references public.app_user(id) on delete set null,
   payment_method     text not null check (payment_method in ('cash','mobile_money')),
@@ -64,15 +67,21 @@ create table if not exists public.pos_sale_item (
 );
 create index if not exists idx_pos_sale_item_sale on public.pos_sale_item (sale_id);
 
+comment on table public.pos_sale is
+  'A counter (till) receipt. Never an order: no customer, no delivery, no status lifecycle. Written only by fn_pos_sale; corrected only by fn_void_pos_sale.';
+comment on table public.pos_sale_item is 'Line items of a till receipt, snapshotted at sale time like order_item.';
+
 alter table public.pos_sale      enable row level security;
 alter table public.pos_sale_item enable row level security;
 
 drop policy if exists pos_sale_staff on public.pos_sale;
 create policy pos_sale_staff on public.pos_sale
-  for all to authenticated using (public.is_staff()) with check (public.is_staff());
+  for select to authenticated using (public.is_staff());
 drop policy if exists pos_sale_item_staff on public.pos_sale_item;
 create policy pos_sale_item_staff on public.pos_sale_item
-  for all to authenticated using (public.is_staff()) with check (public.is_staff());
+  for select to authenticated using (public.is_staff());
+-- Receipts are corrected by voiding, never edited or deleted: only the
+-- service-role RPCs below may write these tables.
 
 -- ---------------------------------------------------------------------
 -- 2. Functions
@@ -119,7 +128,9 @@ begin
       v_subtotal, v_discount, v_subtotal - v_discount)
     returning id, pos_sale.receipt_number into v_sale_id, v_receipt;
 
-  for it in select * from jsonb_array_elements(p_items) loop
+  -- Lock inventory rows in a stable order so two concurrent sales sharing
+  -- bottles can't deadlock on each other.
+  for it in select value from jsonb_array_elements(p_items) order by value->>'variant_id' loop
     v_variant := (it->>'variant_id')::uuid;
     v_qty     := (it->>'qty')::int;
     if v_qty <= 0 then raise exception 'qty must be positive'; end if;
@@ -162,6 +173,8 @@ returns boolean
 language plpgsql security definer set search_path = public as $$
 declare
   v_status text;
+  v_sold_at timestamptz;
+  v_role text;
   r record;
   v_on int;
   v_res int;
@@ -170,14 +183,23 @@ begin
     raise exception 'a reason is required to void a sale';
   end if;
 
-  select status into v_status from public.pos_sale where id = p_sale for update;
+  select status, sold_at into v_status, v_sold_at from public.pos_sale where id = p_sale for update;
   if not found then raise exception 'sale not found'; end if;
   if v_status <> 'completed' then return false; end if;
+
+  -- A void is the only correction path, so keep it from quietly rewriting a
+  -- closed day: staff may void same-day, the owner may void anything.
+  select role into v_role from public.app_user where id = p_actor;
+  if v_sold_at < date_trunc('day', now()) and coalesce(v_role, '') <> 'owner' then
+    raise exception 'Only the owner can void a sale from a previous day';
+  end if;
 
   update public.pos_sale
      set status = 'voided', void_reason = trim(p_reason), voided_by = p_actor, voided_at = now()
    where id = p_sale;
 
+  -- A line whose variant has since been deleted has no shelf to return to;
+  -- it's skipped on purpose (the receipt still records it).
   for r in select variant_id, qty from public.pos_sale_item where sale_id = p_sale and variant_id is not null loop
     update public.inventory_item
        set qty_on_hand = qty_on_hand + r.qty, updated_at = now()
@@ -195,6 +217,20 @@ begin
 end;
 $$;
 
+-- Same lockdown as the other inventory mutators: service-role only. Without
+-- this, both SECURITY DEFINER functions would be callable through PostgREST
+-- with the anon key that ships inside the mobile app.
+revoke execute on function
+  public.fn_pos_sale(uuid,uuid,text,text,jsonb,bigint),
+  public.fn_void_pos_sale(uuid,uuid,text),
+  public.gen_receipt_number()
+  from public, anon, authenticated;
+grant execute on function
+  public.fn_pos_sale(uuid,uuid,text,text,jsonb,bigint),
+  public.fn_void_pos_sale(uuid,uuid,text),
+  public.gen_receipt_number()
+  to service_role;
+
 -- ---------------------------------------------------------------------
 -- 3. Backfill historical walk-in orders → pos_sale (idempotent)
 -- ---------------------------------------------------------------------
@@ -204,35 +240,72 @@ $$;
 -- stock_ledger rows (reference_type 'order', reference_id = the order) still
 -- point at the sale. Orders that somehow got a payment_intent or refund are
 -- left alone (restrict FKs).
+-- Before anything is deleted, the affected orders and their status history
+-- are snapshotted verbatim. order_status_history is append-only by policy
+-- (its update/delete grants are revoked), and the FK cascade would otherwise
+-- silently bypass that.
+create table if not exists public.pos_sale_migration_archive_order as
+  select o.* from public."order" o where false;
+create table if not exists public.pos_sale_migration_archive_status_history as
+  select h.* from public.order_status_history h where false;
+alter table public.pos_sale_migration_archive_order enable row level security;
+alter table public.pos_sale_migration_archive_status_history enable row level security;
+
 do $$
 begin
-  insert into public.pos_sale(id, receipt_number, store_location_id, cashier_id, payment_method,
-      payment_reference, subtotal_minor, discount_minor, total_minor, status, void_reason,
-      voided_by, voided_at, sold_at, created_at)
-  select o.id,
-         'T-' || to_char(coalesce(o.placed_at, o.created_at), 'YYYY') || '-'
-               || lpad(nextval('public.pos_receipt_seq')::text, 6, '0'),
-         o.store_location_id,
-         null,
-         case when o.payment_method = 'monime' then 'mobile_money' else 'cash' end,
-         null,
-         o.subtotal_minor,
-         -- Keep the money that was actually taken: derive the discount from
-         -- the order's real total so ck_pos_sale_total always holds.
-         o.subtotal_minor - o.total_minor,
-         o.total_minor,
-         case when o.status in ('cancelled','returned') then 'voided' else 'completed' end,
-         case when o.status in ('cancelled','returned') then 'Migrated: order was ' || o.status end,
-         null,
-         case when o.status in ('cancelled','returned') then coalesce(o.cancelled_at, o.placed_at, o.created_at) end,
-         coalesce(o.placed_at, o.created_at),
-         o.created_at
-    from public."order" o
+  insert into public.pos_sale_migration_archive_order
+  select o.* from public."order" o
    where o.fulfillment_type = 'pickup'
-     and not exists (select 1 from public.pos_sale s where s.id = o.id)
-     and not exists (select 1 from public.payment_intent pi where pi.order_id = o.id)
-     and not exists (select 1 from public.refund rf where rf.order_id = o.id)
-   order by coalesce(o.placed_at, o.created_at);
+     and not exists (select 1 from public.pos_sale_migration_archive_order a where a.id = o.id);
+  insert into public.pos_sale_migration_archive_status_history
+  select h.* from public.order_status_history h
+   join public."order" o on o.id = h.order_id
+   where o.fulfillment_type = 'pickup'
+     and not exists (select 1 from public.pos_sale_migration_archive_status_history a where a.id = h.id);
+
+  insert into public.pos_sale(id, receipt_number, legacy_order_number, store_location_id, cashier_id,
+      payment_method, payment_reference, subtotal_minor, discount_minor, total_minor, status,
+      void_reason, voided_by, voided_at, sold_at, created_at)
+  select src.id,
+         -- Receipt numbers assigned over an already-ordered subquery so they
+         -- run chronologically.
+         'T-' || to_char(src.sold_at, 'YYYY') || '-'
+               || lpad(nextval('public.pos_receipt_seq')::text, 6, '0'),
+         src.order_number,
+         src.store_location_id,
+         null,
+         src.payment_method,
+         null,
+         src.subtotal_minor,
+         src.discount_minor,
+         src.total_minor,
+         src.status,
+         src.void_reason,
+         null,
+         src.voided_at,
+         src.sold_at,
+         src.created_at
+    from (
+      select o.id, o.order_number, o.store_location_id, o.subtotal_minor, o.total_minor, o.created_at,
+             case when o.payment_method = 'monime' then 'mobile_money' else 'cash' end as payment_method,
+             -- Keep the money that was actually taken: derive the discount from
+             -- the order's real total so ck_pos_sale_total always holds.
+             o.subtotal_minor - o.total_minor as discount_minor,
+             case when o.status in ('cancelled','returned') then 'voided' else 'completed' end as status,
+             case when o.status in ('cancelled','returned') then 'Migrated: order was ' || o.status end as void_reason,
+             case when o.status in ('cancelled','returned') then coalesce(o.cancelled_at, o.placed_at, o.created_at) end as voided_at,
+             coalesce(o.placed_at, o.created_at) as sold_at
+        from public."order" o
+       where o.fulfillment_type = 'pickup'
+         and not exists (select 1 from public.pos_sale s where s.id = o.id)
+         and not exists (select 1 from public.payment_intent pi where pi.order_id = o.id)
+         and not exists (select 1 from public.refund rf where rf.order_id = o.id)
+         -- an order whose total exceeds its subtotal (a delivery fee on a
+         -- pickup order?) can't be expressed as a till receipt: leave it for
+         -- hand triage rather than abort the migration
+         and o.total_minor <= o.subtotal_minor
+       order by coalesce(o.placed_at, o.created_at), o.created_at
+    ) src;
 
   insert into public.pos_sale_item(sale_id, variant_id, product_name_snapshot, variant_label_snapshot,
       sku_snapshot, unit_price_minor, qty, line_total_minor)

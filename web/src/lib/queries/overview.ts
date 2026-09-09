@@ -49,7 +49,15 @@ export async function getOverviewStats(
     .select("*")
     .single();
   if (error) throw error;
-  return data as OverviewStats;
+  const stats = data as OverviewStats;
+  // The till columns arrived with the pos_sale migration; if the web deploys
+  // ahead of it, read them as "no till sales" rather than rendering NaN.
+  return {
+    ...stats,
+    pos_revenue_7d_minor: stats.pos_revenue_7d_minor ?? 0,
+    pos_revenue_today_minor: stats.pos_revenue_today_minor ?? 0,
+    pos_sales_7d: stats.pos_sales_7d ?? 0,
+  };
 }
 
 /**

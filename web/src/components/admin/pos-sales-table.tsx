@@ -52,8 +52,9 @@ export function PosSalesTable({
     {
       header: "Receipt",
       render: (s) => (
-        <span className={cn("nums font-medium", s.status === "voided" && "text-muted-foreground line-through")}>
-          {s.receipt} <span className="nums font-normal text-[12px] text-muted-foreground no-underline">{s.soldAt}</span>
+        <span className="nums font-medium">
+          <span className={cn(s.status === "voided" && "text-muted-foreground line-through")}>{s.receipt}</span>{" "}
+          <span className="nums font-normal text-[12px] text-muted-foreground">{s.soldAt}</span>
         </span>
       ),
     },

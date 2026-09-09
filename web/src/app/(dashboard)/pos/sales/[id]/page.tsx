@@ -33,6 +33,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 
 export default async function PosSaleDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) notFound();
   const db = createServerClient();
 
   const found = await getPosSale(db, id);

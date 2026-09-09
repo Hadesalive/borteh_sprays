@@ -45,13 +45,16 @@ export default async function AnalyticsPage() {
   const items = (itemsRes.data ?? []) as Array<{ product_name_snapshot: string; variant_label_snapshot: string | null; qty: number; line_total_minor: number; created_at: string }>;
   const sales = (salesRes.data ?? []) as Array<{ id: string; total_minor: number; sold_at: string }>;
 
-  const { data: saleItemRows, error: saleItemsError } = sales.length
-    ? await db.from("pos_sale_item").select("sale_id, product_name_snapshot, variant_label_snapshot, qty, line_total_minor").in("sale_id", sales.map((s) => s.id))
-    : { data: [], error: null };
+  // Items joined through their receipt so the filter runs in the database
+  // instead of as an id list in the query string.
+  const { data: saleItemRows, error: saleItemsError } = await db
+    .from("pos_sale_item")
+    .select("product_name_snapshot, variant_label_snapshot, qty, line_total_minor, pos_sale!inner(sold_at, status)")
+    .eq("pos_sale.status", "completed")
+    .gte("pos_sale.sold_at", start7.toISOString());
   if (saleItemsError) throw saleItemsError;
-  const soldAtBySale = new Map(sales.map((s) => [s.id, s.sold_at]));
-  const saleItems = ((saleItemRows ?? []) as Array<{ sale_id: string; product_name_snapshot: string; variant_label_snapshot: string | null; qty: number; line_total_minor: number }>)
-    .map((it) => ({ ...it, created_at: soldAtBySale.get(it.sale_id) ?? "" }));
+  const saleItems = ((saleItemRows ?? []) as unknown as Array<{ product_name_snapshot: string; variant_label_snapshot: string | null; qty: number; line_total_minor: number; pos_sale: { sold_at: string } }>)
+    .map(({ pos_sale, ...it }) => ({ ...it, created_at: pos_sale.sold_at }));
 
   const dateOf = (o: { placed_at: string | null; created_at: string }) => new Date(o.placed_at ?? o.created_at);
 
