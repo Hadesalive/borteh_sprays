@@ -13,20 +13,27 @@ export type SaleLine = {
   qty: number;
 };
 
-export type SaleResult = { ok: true; orderNumber: string } | { ok: false; error: string };
+export type PosPayment = "cash" | "mobile_money";
+
+export type SaleResult = { ok: true; saleId: string; receiptNumber: string } | { ok: false; error: string };
+export type VoidResult = { ok: true } | { ok: false; error: string };
 
 const STORE_ID = "c704bc0f-2122-4815-993e-42a83028cae6";
-// Counter sales are attributed to the "Walk-in customer" app_user.
-const WALKIN_USER_ID = "6e07c287-bb72-45d2-b003-30b56da03a47";
 
 /**
- * Record a counter (POS) sale via the atomic fn_pos_sale RPC: creates a pickup
- * order + items and moves stock (reserve → confirm) in one transaction, so the
- * deferred order-subtotal constraint passes.
+ * Record a counter sale via the atomic fn_pos_sale RPC: a till receipt
+ * (pos_sale + items, attributed to the signed-in cashier) with stock taken
+ * off the shelf in the same transaction. Counter sales never touch "order".
  */
-export async function createPosSale(lines: SaleLine[], payment: "cash" | "monime", discountMinor = 0): Promise<SaleResult> {
-  await requireStaff();
+export async function createPosSale(
+  lines: SaleLine[],
+  payment: PosPayment,
+  reference: string | null,
+  discountMinor = 0,
+): Promise<SaleResult> {
+  const staff = await requireStaff();
   if (lines.length === 0) return { ok: false, error: "Cart is empty." };
+  if (payment !== "cash" && payment !== "mobile_money") return { ok: false, error: "Choose cash or mobile money." };
 
   const p_items = lines.map((l) => ({
     variant_id: l.variantId,
@@ -38,19 +45,44 @@ export async function createPosSale(lines: SaleLine[], payment: "cash" | "monime
   }));
 
   const { data, error } = await createAdminClient().rpc("fn_pos_sale", {
-    p_user: WALKIN_USER_ID,
     p_store: STORE_ID,
-    p_payment: payment === "monime" ? "monime" : "cash_on_delivery",
+    p_cashier: staff.id,
+    p_payment: payment,
+    p_reference: reference?.trim() || null,
     p_items,
     p_discount_minor: Math.max(0, Math.round(discountMinor)),
   });
   if (error) return { ok: false, error: error.message };
 
   const row = Array.isArray(data) ? data[0] : data;
-  const orderNumber = (row?.order_number as string) ?? "";
+  const saleId = (row?.sale_id as string) ?? "";
+  const receiptNumber = (row?.receipt_number as string) ?? "";
 
-  revalidatePath("/orders");
+  revalidatePath("/pos/sales");
   revalidatePath("/inventory");
+  revalidatePath("/analytics");
   revalidatePath("/");
-  return { ok: true, orderNumber };
+  return { ok: true, saleId, receiptNumber };
+}
+
+/** Void a completed till sale: stock returns to the shelf, the receipt stays on record. */
+export async function voidPosSale(saleId: string, reason: string): Promise<VoidResult> {
+  const staff = await requireStaff();
+  const why = reason.trim();
+  if (!why) return { ok: false, error: "A reason is required." };
+
+  const { data, error } = await createAdminClient().rpc("fn_void_pos_sale", {
+    p_sale: saleId,
+    p_actor: staff.id,
+    p_reason: why,
+  });
+  if (error) return { ok: false, error: error.message };
+  if (data !== true) return { ok: false, error: "This sale has already been voided." };
+
+  revalidatePath("/pos/sales");
+  revalidatePath(`/pos/sales/${saleId}`);
+  revalidatePath("/inventory");
+  revalidatePath("/analytics");
+  revalidatePath("/");
+  return { ok: true };
 }

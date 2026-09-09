@@ -3,6 +3,7 @@ import {
   ShoppingBag,
   Truck,
   Barcode,
+  Receipt,
   Package,
   Drop,
   Stack,
@@ -31,6 +32,7 @@ export const primaryNav: NavItem[] = [
   { title: "Orders", href: "/orders", icon: ShoppingBag },
   { title: "Dispatch", href: "/dispatch", icon: Truck },
   { title: "Point of sale", href: "/pos", icon: Barcode },
+  { title: "Till sales", href: "/pos/sales", icon: Receipt },
 ];
 
 // Catalog & merchandising — what the shop sells and how the app shows it.

@@ -5,7 +5,7 @@ import { Barcode, Cards, DeviceMobile, MagnifyingGlass, Minus, Money, Plus, Spar
 
 import { formatLe } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { createPosSale, type SaleLine } from "@/app/(dashboard)/pos/actions";
+import { createPosSale, type PosPayment, type SaleLine } from "@/app/(dashboard)/pos/actions";
 
 export type CatalogItem = {
   id: string;
@@ -36,7 +36,8 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
   const [cart, setCart] = useState<Record<string, number>>({});
   const [claims, setClaims] = useState<Claim[]>([]);
   const [claimSeq, setClaimSeq] = useState(0);
-  const [tender, setTender] = useState<"cash" | "monime">("cash");
+  const [tender, setTender] = useState<PosPayment>("cash");
+  const [reference, setReference] = useState("");
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -90,11 +91,12 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
       qty: l.qty,
     }));
     start(async () => {
-      const res = await createPosSale(payload, tender, discount);
+      const res = await createPosSale(payload, tender, tender === "mobile_money" ? reference : null, discount);
       if (res.ok) {
         setCart({});
         setClaims([]);
-        setMsg({ ok: true, text: `Sale ${res.orderNumber} recorded.` });
+        setReference("");
+        setMsg({ ok: true, text: `Receipt ${res.receiptNumber} recorded.` });
       } else {
         setMsg({ ok: false, text: res.error });
       }
@@ -230,7 +232,7 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
         ) : null}
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          {(["cash", "monime"] as const).map((t) => (
+          {(["cash", "mobile_money"] as const).map((t) => (
             <button
               key={t}
               type="button"
@@ -241,10 +243,22 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
               )}
             >
               {t === "cash" ? <Money weight="duotone" className="size-4" /> : <DeviceMobile weight="duotone" className="size-4" />}
-              {t === "cash" ? "Cash" : "Monime"}
+              {t === "cash" ? "Cash" : "Mobile money"}
             </button>
           ))}
         </div>
+        {tender === "mobile_money" ? (
+          <label className="mt-2 block">
+            <span className="text-xs font-medium text-muted-foreground">Transaction reference</span>
+            <input
+              value={reference}
+              onChange={(e) => setReference(e.target.value)}
+              placeholder="e.g. the ID from the customer's confirmation SMS"
+              autoComplete="off"
+              className="nums mt-1 h-10 w-full rounded-md border border-border bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+            />
+          </label>
+        ) : null}
         <button
           type="button"
           onClick={charge}

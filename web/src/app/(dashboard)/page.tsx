@@ -45,7 +45,9 @@ export default async function OverviewPage() {
   const revenueDelta = ratio(stats.revenue_7d_minor, stats.revenue_prev_7d_minor);
   const deliveredRate =
     stats.orders_7d === 0 ? 0 : stats.delivered_7d_count / stats.orders_7d;
-  const perOrder = stats.orders_7d === 0 ? 0 : stats.items_sold_7d / stats.orders_7d;
+  // items_sold_7d spans both channels, so divide by app orders + till receipts.
+  const sales7d = stats.orders_7d + stats.pos_sales_7d;
+  const perOrder = sales7d === 0 ? 0 : stats.items_sold_7d / sales7d;
   const topMax = Math.max(...panels.topSellers.map((t) => t.revenue_minor), 1);
 
   const revenue7d = panels.revenueDaily.map((d) => d.revenue_minor);
@@ -75,6 +77,9 @@ export default async function OverviewPage() {
             value={formatLe(stats.revenue_today_minor)}
             delta={{ ratio: revenueDelta, caption: "vs the previous 7 days" }}
           />
+          <p className="nums mt-2 text-xs text-muted-foreground">
+            {formatLe(stats.revenue_today_minor - stats.pos_revenue_today_minor)} app · {formatLe(stats.pos_revenue_today_minor)} till
+          </p>
         </div>
 
         {/* Chart */}
@@ -86,6 +91,7 @@ export default async function OverviewPage() {
           <RevenueChart data={revenue7d} labels={dayLabels} />
           <div className="mt-3 flex items-center gap-4 border-t border-accent pt-3 text-xs text-muted-foreground">
             <span className="nums">{formatInt(stats.orders_7d)} orders</span>
+            <span className="nums">{formatInt(stats.pos_sales_7d)} till sales · {formatLe(stats.pos_revenue_7d_minor)}</span>
             <span className="nums">{perOrder.toFixed(1)} items / order</span>
             <span className="nums">{formatPct(deliveredRate)} delivered</span>
           </div>

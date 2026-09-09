@@ -72,7 +72,7 @@ export default async function OrdersPage({
 
   return (
     <>
-      <PageHeader title="Orders" description="Every online and counter order, newest first.">
+      <PageHeader title="Orders" description="Every app order, newest first. Counter sales live under Till sales.">
         <ExportButton
           label="Export this page"
           filename="borteh-orders.csv"

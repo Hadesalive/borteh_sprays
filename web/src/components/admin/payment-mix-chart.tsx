@@ -8,21 +8,21 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 // Colors are mirrored as `bg-chart-1` / `bg-chart-3` swatches on the
 // breakdown rows in analytics/page.tsx — keep the two in sync.
 const chartConfig = {
-  cod: { label: "Cash & COD", color: "var(--chart-1)" },
-  prepaid: { label: "Prepaid", color: "var(--chart-3)" },
+  app: { label: "App orders", color: "var(--chart-1)" },
+  till: { label: "Till sales", color: "var(--chart-3)" },
 } satisfies ChartConfig;
 
-/** Cash-on-delivery vs prepaid revenue as a stacked half-ring gauge —
- *  shadcn's "Radial Chart – Stacked". The two segments share one arc, so
- *  the split reads as a single proportion; the 7-day total sits in the
- *  gauge's mouth, and the exact per-method amounts live in the swatched
- *  rows the page renders beneath. */
-export function PaymentMixChart({ codMinor, prepaidMinor }: { codMinor: number; prepaidMinor: number }) {
-  const data = [{ cod: codMinor, prepaid: prepaidMinor }];
-  const total = codMinor + prepaidMinor;
+/** App-order vs till revenue as a stacked half-ring gauge — shadcn's
+ *  "Radial Chart – Stacked". The two segments share one arc, so the split
+ *  reads as a single proportion; the 7-day total sits in the gauge's mouth,
+ *  and the exact per-channel amounts live in the swatched rows the page
+ *  renders beneath. */
+export function PaymentMixChart({ appMinor, tillMinor }: { appMinor: number; tillMinor: number }) {
+  const data = [{ app: appMinor, till: tillMinor }];
+  const total = appMinor + tillMinor;
 
   return (
-    <ChartContainer config={chartConfig} className="mx-auto aspect-[5/3] w-full max-w-60" role="img" aria-label="Payment mix, cash on delivery versus prepaid">
+    <ChartContainer config={chartConfig} className="mx-auto aspect-[5/3] w-full max-w-60" role="img" aria-label="Revenue by channel, app orders versus till sales">
       <RadialBarChart data={data} startAngle={0} endAngle={180} cy="82%" innerRadius={76} outerRadius={104}>
         <ChartTooltip
           cursor={false}
@@ -56,8 +56,8 @@ export function PaymentMixChart({ codMinor, prepaidMinor }: { codMinor: number; 
             }}
           />
         </PolarRadiusAxis>
-        <RadialBar dataKey="prepaid" stackId="mix" fill="var(--color-prepaid)" cornerRadius={4} className="stroke-transparent stroke-2" />
-        <RadialBar dataKey="cod" stackId="mix" fill="var(--color-cod)" cornerRadius={4} className="stroke-transparent stroke-2" />
+        <RadialBar dataKey="till" stackId="mix" fill="var(--color-till)" cornerRadius={4} className="stroke-transparent stroke-2" />
+        <RadialBar dataKey="app" stackId="mix" fill="var(--color-app)" cornerRadius={4} className="stroke-transparent stroke-2" />
       </RadialBarChart>
     </ChartContainer>
   );

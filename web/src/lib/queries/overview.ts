@@ -4,8 +4,11 @@ export type OverviewStats = {
   revenue_today_minor: number;
   revenue_7d_minor: number;
   revenue_prev_7d_minor: number;
+  pos_revenue_7d_minor: number;
+  pos_revenue_today_minor: number;
   orders_7d: number;
   orders_prev_7d: number;
+  pos_sales_7d: number;
   pending_count: number;
   confirmed_count: number;
   out_for_delivery_count: number;
