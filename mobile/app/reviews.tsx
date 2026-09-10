@@ -1,9 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ChatCircle } from "phosphor-react-native";
-import { useMemo } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ChatCircle, DotsThree } from "phosphor-react-native";
+import { useMemo, useState } from "react";
+import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "@/components/BackButton";
+import { ReviewActionsSheet } from "@/components/ReviewActionsSheet";
 import { Button } from "@/components/Button";
 import { EmptyState } from "@/components/EmptyState";
 import { RatingBars } from "@/components/RatingBars";
@@ -11,7 +13,7 @@ import { StarRow } from "@/components/StarRow";
 import { AppText } from "@/components/Text";
 import { useProducts } from "@/lib/api";
 import { useSession } from "@/lib/auth";
-import { bucketRatings, useReviews } from "@/lib/reviews";
+import { blockUser, bucketRatings, reportReview, Review, ReportReason, useReviews } from "@/lib/reviews";
 import { Colors, space } from "@/lib/theme";
 import { ThemedStatusBar, useTheme, useThemedStyles } from "@/lib/theme-context";
 
@@ -27,6 +29,8 @@ export default function Reviews() {
   const { colors } = useTheme();
   const s = useThemedStyles(makeStyles);
 
+  const qc = useQueryClient();
+
   const { data: products } = useProducts();
   const product = useMemo(() => (products ?? []).find((p) => p.id === productId), [products, productId]);
   const { data: reviews } = useReviews(productId);
@@ -36,6 +40,52 @@ export default function Reviews() {
   const list = reviews ?? [];
 
   const writeReview = () => router.push(session ? { pathname: "/review", params: { productId: productId!, productName: productName ?? "" } } : "/login");
+
+  const refetchReviews = () => qc.invalidateQueries({ queryKey: ["reviews", productId] });
+
+  // Which review's menu is open, and whether we've drilled into the reasons.
+  // A sheet rather than Alert.alert: Android caps an alert at three buttons and
+  // drops the rest, which would hide two of the four reasons.
+  const [menuFor, setMenuFor] = useState<Review | null>(null);
+  const [reportingFor, setReportingFor] = useState<Review | null>(null);
+
+  const onMenuChoice = (choice: "report" | "block") => {
+    const rv = menuFor;
+    setMenuFor(null);
+    if (!rv) return;
+    if (choice === "report") {
+      setReportingFor(rv);
+      return;
+    }
+    Alert.alert("Block this customer?", "You'll stop seeing their reviews. They aren't told.", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Block",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await blockUser(rv.userId);
+            await refetchReviews();
+          } catch (e) {
+            Alert.alert("Couldn't block this customer", e instanceof Error ? e.message : "Please try again.");
+          }
+        },
+      },
+    ]);
+  };
+
+  const onReasonChosen = async (reason: ReportReason) => {
+    const rv = reportingFor;
+    setReportingFor(null);
+    if (!rv) return;
+    try {
+      await reportReview(rv.id, reason);
+      await refetchReviews();
+      Alert.alert("Thanks — we'll take a look", "This review is hidden while our staff check it.");
+    } catch (e) {
+      Alert.alert("Couldn't report this review", e instanceof Error ? e.message : "Please try again.");
+    }
+  };
 
   return (
     <View style={s.screen}>
@@ -75,7 +125,19 @@ export default function Reviews() {
         ) : (
           list.map((rv) => (
             <View key={rv.id} style={s.reviewItem}>
-              <StarRow rating={rv.rating} size={13} />
+              <View style={s.reviewHeader}>
+                <StarRow rating={rv.rating} size={13} />
+                {!rv.mine && session ? (
+                  <Pressable
+                    onPress={() => setMenuFor(rv)}
+                    hitSlop={12}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Options for ${rv.reviewerName ?? "this customer"}'s review`}
+                  >
+                    <DotsThree size={20} color={colors.ink60} weight="bold" />
+                  </Pressable>
+                ) : null}
+              </View>
               <AppText variant="body" style={{ marginTop: space.sm }}>“{rv.body || rv.title || "Lovely scent."}”</AppText>
               <AppText variant="caption" style={{ marginTop: space.sm }}>
                 {rv.reviewerName || "Customer"}
@@ -93,6 +155,31 @@ export default function Reviews() {
           <Button title="Write a review" variant="secondary" onPress={writeReview} />
         </View>
       ) : null}
+
+      <ReviewActionsSheet
+        visible={!!menuFor}
+        title="Review options"
+        options={[
+          { key: "report", label: "Report review" },
+          { key: "block", label: "Block this customer", destructive: true },
+        ]}
+        onSelect={onMenuChoice}
+        onClose={() => setMenuFor(null)}
+      />
+
+      <ReviewActionsSheet
+        visible={!!reportingFor}
+        title="Report review"
+        description="Why are you reporting it? It's hidden while our staff check."
+        options={[
+          { key: "offensive", label: "Offensive or abusive" },
+          { key: "spam", label: "Spam or an advert" },
+          { key: "irrelevant", label: "Not about this fragrance" },
+          { key: "other", label: "Something else" },
+        ]}
+        onSelect={onReasonChosen}
+        onClose={() => setReportingFor(null)}
+      />
     </View>
   );
 }
@@ -102,5 +189,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   summary: { flexDirection: "row", alignItems: "center", gap: space["2xl"], marginTop: space["2xl"], paddingBottom: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
   summaryNoBars: { flexDirection: "column", alignItems: "flex-start" },
   reviewItem: { paddingVertical: space.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
+  reviewHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   footer: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: space.gutter, paddingTop: space.lg, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.line },
 });

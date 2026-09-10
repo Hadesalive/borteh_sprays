@@ -3,7 +3,7 @@ import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Star, X } from "phosphor-react-native";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -38,10 +38,20 @@ export default function WriteReview() {
     setError(null);
     try {
       const name = (session?.user.user_metadata?.display_name as string) || "Customer";
-      await submitReview({ productId: productId!, rating, title, body, reviewerName: name });
+      const status = await submitReview({ productId: productId!, rating, title, body, reviewerName: name });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       qc.invalidateQueries({ queryKey: ["reviews", productId] });
-      router.back();
+      if (status === "pending") {
+        // Wait for the alert to be dismissed before navigating away — leaving
+        // this screen first can let the alert land on top of the one behind it.
+        Alert.alert(
+          "Review received",
+          "Thanks — we've got it. It's awaiting a quick check before it appears on the fragrance.",
+          [{ text: "OK", onPress: () => router.back() }],
+        );
+      } else {
+        router.back();
+      }
     } catch (e: any) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError(e?.message ?? "Couldn't submit your review. Try again.");
@@ -90,7 +100,7 @@ export default function WriteReview() {
           </View>
 
           <Button title={busy ? "Submitting…" : "Submit review"} onPress={submit} disabled={busy} style={{ marginTop: space["2xl"] }} />
-          <AppText variant="caption" style={{ textAlign: "center", marginTop: space.md }}>Your review will appear on the fragrance right away.</AppText>
+          <AppText variant="caption" style={{ textAlign: "center", marginTop: space.md }}>Most reviews appear on the fragrance right away.</AppText>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
