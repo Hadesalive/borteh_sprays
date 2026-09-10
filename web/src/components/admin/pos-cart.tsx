@@ -64,9 +64,11 @@ export function PosCart({
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Lines — the only part that scrolls, so the totals and Charge below
           stay put however long the sale gets. */}
-      <div className="min-h-0 flex-1 overflow-y-auto px-4">
+      <div className={cn("min-h-0 flex-1 overflow-y-auto px-4", empty && "grid place-items-center")}>
         {empty ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">Tap a product to start a sale.</p>
+          <p className="max-w-[16rem] text-balance text-center text-sm text-muted-foreground">
+            Scan a barcode or tap a product to start a sale.
+          </p>
         ) : (
           <ul className="divide-y divide-border">
             {lines.map((l) => (

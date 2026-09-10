@@ -198,10 +198,11 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
         ) : null}
 
         <h2 className="sr-only">Products</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4 2xl:grid-cols-5">
           {filtered.map((p) => {
             const out = p.stock <= 0;
             const inCart = cart[p.id] ?? 0;
+            const low = !out && p.stock <= 5;
             return (
               <button
                 key={p.id}
@@ -209,27 +210,52 @@ export function PosTerminal({ catalog, combos }: { catalog: CatalogItem[]; combo
                 onClick={() => add(p.id)}
                 disabled={out || inCart >= p.stock}
                 aria-label={`${p.name}, ${p.meta}, ${formatLe(p.price, 2)}, ${out ? "out of stock" : `${p.stock} in stock`}${inCart ? `, ${inCart} in the sale` : ""}`}
-                className="relative flex flex-col items-start gap-2 border border-border p-3 text-left transition-colors hover:border-foreground/20 hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none disabled:opacity-50"
-              >
-                {inCart > 0 ? (
-                  <span className="nums absolute right-2 top-2 grid size-6 place-items-center bg-primary text-xs font-semibold text-primary-foreground">
-                    {inCart}
-                  </span>
-                ) : null}
-                {p.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.image} alt="" className="size-12 object-cover ring-1 ring-border" />
-                ) : (
-                  <span className="grid size-12 place-items-center bg-muted text-muted-foreground ring-1 ring-border">
-                    <Sparkle weight="duotone" className="size-5" />
-                  </span>
+                className={cn(
+                  "group relative flex flex-col overflow-hidden border bg-card text-left transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none",
+                  inCart > 0 ? "border-primary" : "border-border hover:border-foreground/25 hover:shadow-card",
+                  out && "opacity-60",
                 )}
-                <span className="line-clamp-2 text-sm font-medium leading-tight">{p.name}</span>
-                <span className="text-xs text-muted-foreground">{p.meta}</span>
-                <span className="nums text-sm font-semibold">{formatLe(p.price, 2)}</span>
-                <span className={cn("nums text-[0.7rem]", out ? "text-destructive" : "text-muted-foreground")}>
-                  {out ? "Out of stock" : `${p.stock} in stock`}
-                </span>
+              >
+                {/* The bottle carries the tile — perfume photography is the
+                    fastest way for a cashier to find the right shelf item. */}
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted">
+                  {p.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={p.image}
+                      alt=""
+                      loading="lazy"
+                      className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <span className="grid size-full place-items-center text-muted-foreground/40">
+                      <Sparkle weight="duotone" className="size-8" />
+                    </span>
+                  )}
+                  {inCart > 0 ? (
+                    <span className="nums absolute right-2 top-2 grid min-w-6 place-items-center bg-primary px-1.5 py-0.5 text-xs font-semibold text-primary-foreground shadow-bevel">
+                      {inCart}
+                    </span>
+                  ) : null}
+                  {out ? (
+                    <span className="absolute inset-x-0 bottom-0 bg-destructive/90 py-1 text-center text-[0.7rem] font-medium text-destructive-foreground">
+                      Out of stock
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-1 flex-col p-3">
+                  <p className="line-clamp-2 text-[13px] font-medium leading-snug">{p.name}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{p.meta}</p>
+                  <div className="mt-auto flex items-baseline justify-between gap-2 pt-2.5">
+                    <span className="nums text-sm font-semibold">{formatLe(p.price, 2)}</span>
+                    {out ? null : (
+                      <span className={cn("nums text-[0.7rem]", low ? "text-warning" : "text-muted-foreground")}>
+                        {p.stock} left
+                      </span>
+                    )}
+                  </div>
+                </div>
               </button>
             );
           })}
