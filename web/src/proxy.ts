@@ -1,6 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Pages that must render for a signed-out stranger: the store listings' legal
+// URLs. Kept as a prefix match so nested routes (e.g. /privacy/children) stay
+// public too.
+const PUBLIC_PATHS = ["/privacy", "/data-deletion"];
+
+export function isPublic(pathname: string): boolean {
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
 // Next 16 renamed "middleware" → "proxy". Runs for every matched request.
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -30,9 +39,14 @@ export async function proxy(request: NextRequest) {
   const isStaff = role === "owner" || role === "staff";
   const isLogin = request.nextUrl.pathname === "/login";
 
-  // Signed out (or not staff) → only /login is reachable.
+  // Signed out (or not staff) → only /login and the public legal pages are
+  // reachable. The legal pages MUST stay open: the mobile app links to
+  // /privacy from signup and the profile screen, App Store and Play Store
+  // review both fetch it without a session, and Play requires /data-deletion
+  // to be publicly reachable too. Gating them behind /login reads to a
+  // reviewer as "no privacy policy" and fails review.
   if (!user || !isStaff) {
-    if (!isLogin) {
+    if (!isLogin && !isPublic(request.nextUrl.pathname)) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       return NextResponse.redirect(url);
