@@ -3,6 +3,7 @@ import {
   ShoppingBag,
   Truck,
   Barcode,
+  Flag,
   Receipt,
   Package,
   Drop,
@@ -54,6 +55,7 @@ export const contentNav: NavItem[] = [
 export const insightNav: NavItem[] = [
   { title: "Analytics", href: "/analytics", icon: ChartLineUp },
   { title: "Customers", href: "/customers", icon: UsersThree },
+  { title: "Review moderation", href: "/reviews", icon: Flag },
 ];
 
 export const settingsItem: NavItem = {

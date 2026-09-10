@@ -15,6 +15,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { NotificationsLive } from "@/components/NotificationsLive";
 import { NotificationToast } from "@/components/NotificationToast";
 import { QuickPeek } from "@/components/QuickPeek";
@@ -53,13 +54,17 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <QueryClientProvider client={queryClient}>
-            <ThemedShell />
-          </QueryClientProvider>
-        </ThemeProvider>
-      </SafeAreaProvider>
+      {/* Outermost so it still catches a failure inside the providers
+          themselves, not just inside a screen. */}
+      <ErrorBoundary>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            <QueryClientProvider client={queryClient}>
+              <ThemedShell />
+            </QueryClientProvider>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }
