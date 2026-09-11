@@ -53,7 +53,12 @@ export default async function DashboardLayout({
               <ThemeToggle />
             </div>
           </header>
-          <div className="flex-1 overflow-x-hidden">{children}</div>
+          {/* overflow-x-CLIP, not hidden: `hidden` on one axis forces the other to
+              compute as `auto`, which makes this a scroll container and stops any
+              descendant `position: sticky` (the POS cart, table headers) from ever
+              sticking. `clip` contains the same horizontal overflow without
+              establishing one. */}
+          <div className="flex-1 overflow-x-clip">{children}</div>
         </SidebarInset>
       </SidebarProvider>
       </TooltipProvider>

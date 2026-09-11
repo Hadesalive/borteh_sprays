@@ -105,7 +105,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                     <p className="text-xs text-muted-foreground">{fmtDate(o.created_at)}</p>
                   </div>
                   <Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip>
-                  <span className="nums w-24 text-right text-sm font-semibold">{formatLe(o.total_minor, 2)}</span>
+                  <span className="nums min-w-24 shrink-0 text-right text-sm font-semibold whitespace-nowrap">{formatLe(o.total_minor, 2)}</span>
                 </Link>
               </li>
             ))}
@@ -120,7 +120,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                   <li key={i} className="flex items-center justify-between py-2.5 text-sm">
                     <span className="min-w-0 flex-1 truncate text-muted-foreground">{l.reason || humanize(l.type)}</span>
                     <span className="text-xs text-muted-foreground">{fmtDate(l.created_at)}</span>
-                    <span className={`nums ml-4 w-14 text-right font-semibold ${l.delta >= 0 ? "text-success-soft-foreground" : "text-destructive"}`}>
+                    <span className={`nums ml-4 min-w-14 shrink-0 text-right font-semibold whitespace-nowrap ${l.delta >= 0 ? "text-success-soft-foreground" : "text-destructive"}`}>
                       {l.delta >= 0 ? "+" : ""}{formatInt(l.delta)}
                     </span>
                   </li>

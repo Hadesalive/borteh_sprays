@@ -84,7 +84,7 @@ export default async function PosSaleDetailPage({ params }: { params: Promise<{ 
                 <span className="nums text-xs text-muted-foreground">
                   {it.qty} × {formatLe(it.unit_price_minor, 2)}
                 </span>
-                <span className="nums w-24 text-right text-sm font-medium">{formatLe(it.line_total_minor, 2)}</span>
+                <span className="nums min-w-24 shrink-0 text-right text-sm font-medium whitespace-nowrap">{formatLe(it.line_total_minor, 2)}</span>
               </li>
             ))}
           </ul>

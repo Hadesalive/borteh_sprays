@@ -144,10 +144,10 @@ export default async function OrderDetailPage({
                       {[it.variant_label_snapshot, it.sku_snapshot].filter(Boolean).join(" · ")}
                     </p>
                   </div>
-                  <span className="nums w-28 text-right text-sm text-muted-foreground">
+                  <span className="nums min-w-28 shrink-0 text-right text-sm whitespace-nowrap text-muted-foreground">
                     {it.qty} × {formatLe(it.unit_price_minor, 2)}
                   </span>
-                  <span className="nums w-24 text-right text-sm font-semibold">
+                  <span className="nums min-w-24 shrink-0 text-right text-sm font-semibold whitespace-nowrap">
                     {formatLe(it.line_total_minor, 2)}
                   </span>
                 </li>

@@ -89,7 +89,7 @@ export default async function OverviewPage() {
             <span className="nums text-xs text-muted-foreground">Last 7 days · {formatLe(stats.revenue_7d_minor)}</span>
           </div>
           <RevenueChart data={revenue7d} labels={dayLabels} />
-          <div className="mt-3 flex items-center gap-4 border-t border-accent pt-3 text-xs text-muted-foreground">
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-accent pt-3 text-xs text-muted-foreground">
             <span className="nums">{formatInt(stats.orders_7d)} orders</span>
             <span className="nums">{formatInt(stats.pos_sales_7d)} till sales · {formatLe(stats.pos_revenue_7d_minor)}</span>
             <span className="nums">{perOrder.toFixed(1)} items / order</span>
@@ -149,7 +149,7 @@ export default async function OverviewPage() {
                 <div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-accent">
                   <div className="h-full rounded-sm bg-brand" style={{ width: `${(t.revenue_minor / topMax) * 100}%` }} />
                 </div>
-                <span className="nums w-[100px] text-right font-medium">{formatLe(t.revenue_minor, 2)}</span>
+                <span className="nums min-w-[100px] shrink-0 text-right font-medium whitespace-nowrap">{formatLe(t.revenue_minor, 2)}</span>
               </div>
             )) : <p className="py-2 text-[13px] text-muted-foreground">No sales yet.</p>}
           </Card>
@@ -173,7 +173,8 @@ export default async function OverviewPage() {
             <span className={cardTitle}>Recent orders</span>
             <Link href="/orders" className={cardLink}>View all</Link>
           </div>
-          <table className="mt-1 w-full border-collapse text-[13px]">
+          <div className="-mx-1 mt-1 overflow-x-auto px-1">
+          <table className="w-full border-collapse text-[13px]">
             <tbody>
               {recent.length ? recent.map((o) => (
                 <tr key={o.id} className="h-9 border-t border-accent">
@@ -188,6 +189,7 @@ export default async function OverviewPage() {
               )}
             </tbody>
           </table>
+          </div>
         </Card>
       </div>
     </>

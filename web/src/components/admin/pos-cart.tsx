@@ -99,7 +99,7 @@ export function PosCart({
                     <Plus className="size-3.5" />
                   </button>
                 </div>
-                <span className="nums ml-auto w-20 text-right text-sm font-semibold">{formatLe(l.price * l.qty, 2)}</span>
+                <span className="nums ml-auto min-w-20 shrink-0 text-right text-sm font-semibold whitespace-nowrap">{formatLe(l.price * l.qty, 2)}</span>
                 <button
                   type="button"
                   onClick={() => on.setQty(l.id, 0)}
@@ -133,7 +133,7 @@ export function PosCart({
                   type="button"
                   onClick={() => on.removeClaim(c.key)}
                   aria-label={`Remove the ${c.name} deal`}
-                  className="grid size-6 place-items-center text-muted-foreground transition-colors hover:text-destructive focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+                  className="grid size-11 shrink-0 place-items-center text-muted-foreground transition-colors hover:text-destructive focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
                 >
                   <X className="size-3.5" />
                 </button>

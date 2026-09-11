@@ -41,7 +41,7 @@ export function ProductSignals({
         ) : totalEvents === 0 ? (
           <p className="text-[13px] text-muted-foreground">No interactions logged yet.</p>
         ) : (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {METRICS.map((m) => {
               const row = byType.get(m.key);
               return (
