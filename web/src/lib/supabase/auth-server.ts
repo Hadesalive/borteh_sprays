@@ -65,3 +65,29 @@ export async function requireStaff(): Promise<StaffUser> {
   if (!user) throw new Error("Not authorized — staff sign-in required.");
   return user;
 }
+
+/**
+ * Stricter guard for the few actions that change who can get in at all.
+ *
+ * Staff can run the shop; only the owner may create accounts or change roles.
+ * Without this, any staff account could promote itself to owner, which makes
+ * every other permission boundary decorative.
+ *
+ * Reads the role the same two ways getStaffUser does — the JWT claim, else the
+ * `is_staff`-style DB truth — but requires it to be exactly "owner".
+ */
+export async function requireOwner(): Promise<StaffUser> {
+  const user = await getStaffUser();
+  if (!user) throw new Error("Not authorized — staff sign-in required.");
+  if (user.role === "owner") return user;
+
+  // The JWT said "staff", but the claim can lag a role change; confirm against
+  // app_user before refusing.
+  const auth = await createAuthServerClient();
+  const { data: { user: authUser } } = await auth.auth.getUser();
+  if (authUser) {
+    const { data } = await auth.from("app_user").select("role").eq("id", authUser.id).maybeSingle();
+    if ((data as { role?: string } | null)?.role === "owner") return { id: user.id, role: "owner" };
+  }
+  throw new Error("Only the owner can manage staff accounts.");
+}
