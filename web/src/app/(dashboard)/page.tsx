@@ -177,7 +177,7 @@ export default async function OverviewPage() {
             <tbody>
               {recent.length ? recent.map((o) => (
                 <tr key={o.id} className="h-9 border-t border-accent">
-                  <td className="nums w-14 py-1.5 pr-3 font-medium">#{o.order_number ?? "—"}</td>
+                  <td className="nums w-px py-1.5 pr-3 font-medium whitespace-nowrap">#{o.order_number ?? "—"}</td>
                   <td className="px-3 py-1.5">{recentNames.get(o.user_id ?? "") || "Walk-in"}</td>
                   <td className="px-3 py-1.5 text-muted-foreground">{paymentLabel(o.payment_method, recentChannels.get(o.id))}</td>
                   <td className="px-3 py-1.5"><Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip></td>
