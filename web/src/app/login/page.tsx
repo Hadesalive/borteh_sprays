@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Diamond } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
 
 import { createAuthBrowserClient } from "@/lib/supabase/auth-browser";
 
@@ -51,9 +52,7 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-[22rem]">
         <div className="mb-8 flex flex-col items-center text-center">
-          <span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
-            <Diamond weight="fill" className="size-5" />
-          </span>
+          <Image src="/brand-mark.png" alt="" aria-hidden width={96} height={96} priority className="size-12 object-contain" />
           <h1 className="font-display mt-4 text-2xl font-semibold tracking-tight">Borteh</h1>
           <p className="mt-1 text-sm text-muted-foreground">Sign in to the store admin</p>
         </div>

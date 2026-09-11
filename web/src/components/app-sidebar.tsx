@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { CaretUpDown, SignOut } from "@phosphor-icons/react";
@@ -85,12 +86,15 @@ export function AppSidebar({ user, badgeCounts }: { user?: { name: string; role:
           href="/"
           className="flex items-center gap-2.5 rounded-md px-1.5 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
         >
-          <span
+          <Image
+            src="/brand-mark.png"
+            alt=""
             aria-hidden
-            className="grid size-7 shrink-0 place-items-center group-data-[collapsible=icon]:size-6"
-          >
-            <span className="size-4 rotate-45 rounded-[4px] bg-sidebar-primary" />
-          </span>
+            width={56}
+            height={56}
+            priority
+            className="size-7 shrink-0 object-contain group-data-[collapsible=icon]:size-6"
+          />
           <span className="font-display text-lg leading-none text-sidebar-foreground group-data-[collapsible=icon]:hidden">
             Borteh
           </span>
