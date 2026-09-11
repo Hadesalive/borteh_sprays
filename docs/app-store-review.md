@@ -14,17 +14,23 @@ Apple rejects builds when the reviewer can't sign in (Guideline 2.1), and this
 app's login is a Sierra Leone phone number — which a reviewer in California
 cannot receive. Give them a working account.
 
-There is no SMS step (ADR-004: phone + password, no OTP), so the account is made
-through the app itself. No SQL, no dashboard:
+The demo account **already exists** — confirmed signed in on the simulator:
 
-1. Install the build (TestFlight or a dev build) and open **Sign up**.
-2. Phone: `077 000 000` — normalises to `+23277000000`, a number that isn't a
-   real Orange SL subscriber line.
-3. Name: `App Review`.
-4. Password: generate a strong one and **paste it straight into App Store
-   Connect → App Review Information**. Don't put it in Slack, this repo, or a
-   commit message.
-5. Sign in once to confirm it works, then leave the account signed out.
+- **Name:** `App Store Review`
+- **Phone:** `+23276000000` — typed at login as `076 000 000`
+
+If nobody remembers its password, don't create another account: the reset flow
+needs no SMS, only the phone and the name.
+
+1. App → **Forgot password**
+2. Phone `076 000 000`, Name `App Store Review` (must match the account exactly —
+   `fn_reset_password` rejects a mismatch with "no_match")
+3. Set a new password; it signs you in immediately
+4. Paste that password into **App Store Connect → App Review Information**, and
+   nowhere else — not Slack, not this repo, not a commit message.
+
+To create a *different* demo account instead, sign up in the app with any
+unused number (there's no SMS step, ADR-004) and a name of your choosing.
 
 Leave the account's order history empty. Seeding fake orders would land in the
 owner's real revenue figures — the Dashboard and Analytics count every order —
