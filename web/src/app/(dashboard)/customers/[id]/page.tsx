@@ -4,21 +4,12 @@ import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 
 import { createServerClient } from "@/lib/supabase/server";
 import { formatInt, formatLe } from "@/lib/format";
-import { StatusPill, type PillTone } from "@/components/admin/status-pill";
+import { Chip, humanize, statusTone } from "@/components/admin/chip";
 import { CustomerActions } from "@/components/admin/customer-actions";
 import { CustomerLoyalty } from "@/components/admin/customer-loyalty";
 import { CustomerCoupons } from "@/components/admin/customer-coupons";
 
 export const dynamic = "force-dynamic";
-
-const humanize = (s: string) => s.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
-
-function statusTone(status: string): PillTone {
-  if (status === "delivered") return "success";
-  if (status === "cancelled" || status === "returned") return "danger";
-  if (status === "pending_payment") return "warning";
-  return "info";
-}
 
 function fmtDate(ts: string | null): string {
   if (!ts) return "—";
@@ -84,7 +75,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-xl font-semibold tracking-tight">{name}</h1>
-                <StatusPill tone={customer.is_blocked ? "danger" : "neutral"}>{customer.is_blocked ? "Blocked" : humanize(customer.role as string)}</StatusPill>
+                <Chip tone={customer.is_blocked ? "danger" : "neutral"}>{customer.is_blocked ? "Blocked" : humanize(customer.role as string)}</Chip>
               </div>
               <p className="nums text-sm text-muted-foreground">
                 {[customer.phone, customer.email].filter(Boolean).join(" · ") || "No contact"} · joined {fmtDate(customer.created_at as string)}
@@ -113,7 +104,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                     <p className="nums truncate text-sm font-medium">#{o.order_number}</p>
                     <p className="text-xs text-muted-foreground">{fmtDate(o.created_at)}</p>
                   </div>
-                  <StatusPill tone={statusTone(o.status)} dot>{humanize(o.status)}</StatusPill>
+                  <Chip tone={statusTone(o.status)}>{humanize(o.status)}</Chip>
                   <span className="nums w-24 text-right text-sm font-semibold">{formatLe(o.total_minor, 2)}</span>
                 </Link>
               </li>
@@ -165,9 +156,9 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                   <Link href={`/customers/${r.id}`} className="truncate font-medium transition-colors hover:text-foreground/80">
                     {(r.display_name ?? "Unnamed").trim() || "Unnamed"}
                   </Link>
-                  <StatusPill tone={rewardedIds.has(r.id) ? "success" : "neutral"}>
+                  <Chip tone={rewardedIds.has(r.id) ? "success" : "neutral"}>
                     {rewardedIds.has(r.id) ? "Rewarded" : "Awaiting first delivery"}
-                  </StatusPill>
+                  </Chip>
                 </li>
               ))}
               {referred.length === 0 ? <li className="py-2 text-sm text-muted-foreground">No one referred yet.</li> : null}

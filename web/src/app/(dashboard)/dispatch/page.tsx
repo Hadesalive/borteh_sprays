@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { formatLe } from "@/lib/format";
 import { createServerClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/admin/page-header";
-import { StatusPill, type PillTone } from "@/components/admin/status-pill";
+import { Chip, type Tone } from "@/components/admin/chip";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ type Job = {
   zone: string;
   landmark: string;
   items: number;
-  payment: { label: string; tone: PillTone };
+  payment: { label: string; tone: Tone };
   cod: number | null;
 };
 
@@ -117,7 +117,7 @@ export default async function DispatchPage() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="nums text-sm font-semibold">#{job.orderNumber}</span>
-                    <StatusPill tone={job.payment.tone}>{job.payment.label}</StatusPill>
+                    <Chip tone={job.payment.tone}>{job.payment.label}</Chip>
                   </div>
                   <p className="mt-1.5 text-sm font-medium">{job.customer}</p>
                   <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">

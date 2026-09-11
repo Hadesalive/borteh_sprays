@@ -19,7 +19,7 @@ export function PaymentAttention({ rows }: { rows: PaymentAttentionRow[] }) {
   if (rows.length === 0) return null;
 
   return (
-    <div className="mb-4 overflow-hidden rounded-[12px] border border-destructive/40 bg-destructive/5">
+    <div className="mb-4 overflow-hidden border border-destructive/40 bg-destructive/5">
       <div className="flex items-center gap-2 border-b border-destructive/20 px-4 py-2.5">
         <WarningOctagon size={16} weight="fill" className="shrink-0 text-destructive" />
         <h2 className="text-sm font-[650] tracking-[-0.1px] text-destructive">

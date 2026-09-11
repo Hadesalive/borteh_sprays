@@ -13,6 +13,10 @@ const CHIP: Record<Tone, string> = {
 
 export const STATUS_TONE: Record<string, Tone> = {
   pending: "warning",
+  // The order table's own status for "placed, not yet paid" — it was missing
+  // here, so those orders rendered neutral grey on Orders and the Dashboard
+  // while the rest of the app treated them as needing attention.
+  pending_payment: "warning",
   cod_pending: "warning",
   confirmed: "info",
   preparing: "info",
