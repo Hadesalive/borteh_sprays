@@ -94,6 +94,23 @@ The first version of Borteh Sprays. Browse the shop, order for delivery in Freet
   is better — Apple wants somewhere a customer can actually get help.
 - Marketing URL: optional, leave blank if there is no public site yet.
 
+## Copyright
+
+```
+2026 Ahmad Bah
+```
+
+Apple's format is year + rights holder, with no © symbol (the store renders one)
+and no URL.
+
+It's the personal name because the developer account is
+`SU9B6GWGBX (Ahmad Bah (Individual))`. Note that an Individual account also
+publishes that legal name as the **seller** on the listing — customers see
+"Ahmad Bah" under the app title, not "Borteh Sprays". Showing the shop name
+instead requires enrolling as an Organization (D-U-N-S number, separate
+account), which isn't worth doing mid-submission. The app name and icon are
+unaffected.
+
 ## Category
 
 Primary: **Shopping**. Secondary: **Lifestyle**.
