@@ -2,99 +2,102 @@ import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 
 import { createServerClient } from "@/lib/supabase/server";
-import { formatLe } from "@/lib/format";
+import { PageHeader } from "@/components/admin/page-header";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { LoyaltyControls } from "@/components/admin/loyalty-controls";
 import { LoyaltyRates } from "@/components/admin/loyalty-rates";
-import { StatusPill } from "@/components/admin/status-pill";
+import { LoyaltyTiers, type TierRow } from "@/components/admin/loyalty-tiers";
 
 export const dynamic = "force-dynamic";
+
+type LoyaltyConfig = {
+  id: number;
+  loyalty_enabled: boolean;
+  promos_enabled: boolean;
+  tiers_enabled: boolean;
+  points_per_currency_unit: number;
+  point_value_minor: number;
+  points_expiry_days: number;
+  referral_points: number | null;
+};
 
 export default async function LoyaltyPage() {
   const db = createServerClient();
 
-  const { data: configData } = await db.from("loyalty_config").select("*").limit(1).maybeSingle();
-  const { data: tiersData } = await db.from("loyalty_tier").select("*").order("rank", { ascending: true });
+  const [configRes, tiersRes] = await Promise.all([
+    db.from("loyalty_config").select("*").limit(1).maybeSingle(),
+    db.from("loyalty_tier").select("*").order("rank", { ascending: true }),
+  ]);
+  if (configRes.error) throw configRes.error;
+  if (tiersRes.error) throw tiersRes.error;
 
-  const config = configData as {
-    id: number;
-    loyalty_enabled: boolean;
-    promos_enabled: boolean;
-    tiers_enabled: boolean;
-    points_per_currency_unit: number;
-    point_value_minor: number;
-    points_expiry_days: number;
-    referral_points: number | null;
-  } | null;
+  const config = configRes.data as LoyaltyConfig | null;
 
-  const tiers = (tiersData ?? []) as Array<{
+  const tiers: TierRow[] = ((tiersRes.data ?? []) as Array<{
     id: string;
     name: string;
     cumulative_spend_threshold_minor: number;
     discount_percent: number;
-    rank: number;
     is_active: boolean;
-  }>;
+  }>).map((t) => ({
+    id: t.id,
+    name: t.name,
+    thresholdMinor: t.cumulative_spend_threshold_minor,
+    discountPercent: Number(t.discount_percent),
+    isActive: t.is_active,
+  }));
 
   return (
     <>
-      <div className="border-b border-border px-6 py-5 lg:px-10">
-        <Link href="/settings" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="size-4" />
+      <PageHeader title="Loyalty" description="Points customers earn, and the tier discounts that come with spending more." />
+
+      <div className="px-5 pb-6 pt-2">
+        <Link
+          href="/settings"
+          className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-3.5" />
           Settings
         </Link>
-        <h1 className="mt-3 text-xl font-semibold tracking-tight">Loyalty &amp; promotions</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Turn programmes on or off and review how points and tiers work.</p>
-      </div>
-
-      <div className="mx-auto max-w-3xl space-y-10 px-6 py-8 lg:px-10">
-        <section>
-          <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">Programme</h2>
-          {config ? (
-            <div className="mt-2">
-              <LoyaltyControls
-                id={config.id}
-                loyaltyEnabled={config.loyalty_enabled}
-                promosEnabled={config.promos_enabled}
-                tiersEnabled={config.tiers_enabled}
-              />
-            </div>
-          ) : (
-            <p className="mt-4 text-sm text-muted-foreground">No loyalty configuration found.</p>
-          )}
-        </section>
 
         {config ? (
-          <section>
-            <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">Earning</h2>
+          <div className="mt-4 space-y-4">
             <LoyaltyRates
               id={config.id}
               pointsPerUnit={config.points_per_currency_unit}
               pointValueMinor={config.point_value_minor}
               expiryDays={config.points_expiry_days}
               referralPoints={config.referral_points ?? 0}
+              loyaltyEnabled={config.loyalty_enabled}
             />
-          </section>
-        ) : null}
 
-        <section>
-          <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">Tiers</h2>
-          <ul className="mt-2 divide-y divide-border">
-            {tiers.map((t) => (
-              <li key={t.id} className="flex items-center justify-between gap-4 py-4">
-                <div className="min-w-0">
-                  <p className="font-medium">{t.name}</p>
-                  <p className="nums truncate text-sm text-muted-foreground">
-                    {formatLe(t.cumulative_spend_threshold_minor)} · {t.discount_percent}% off
-                  </p>
-                </div>
-                <StatusPill tone={t.is_active ? "success" : "neutral"} dot>
-                  {t.is_active ? "Active" : "Inactive"}
-                </StatusPill>
-              </li>
-            ))}
-            {tiers.length === 0 ? <li className="py-10 text-center text-sm text-muted-foreground">No tiers yet.</li> : null}
-          </ul>
-        </section>
+            <Card className="overflow-hidden p-0">
+              <CardHeader className="border-b pt-4">
+                <CardTitle role="heading" aria-level={2}>Programme</CardTitle>
+                <CardDescription>
+                  Each switch works on its own — turning points off does not turn off tier discounts, and vice versa.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <LoyaltyControls
+                  id={config.id}
+                  loyaltyEnabled={config.loyalty_enabled}
+                  promosEnabled={config.promos_enabled}
+                  tiersEnabled={config.tiers_enabled}
+                />
+              </CardContent>
+            </Card>
+
+            <LoyaltyTiers tiers={tiers} tiersEnabled={config.tiers_enabled} />
+          </div>
+        ) : (
+          <Card className="mt-4 p-4">
+            <p className="text-[13px] text-muted-foreground">
+              No loyalty configuration row exists yet, so there is nothing to edit. One row in{" "}
+              <span className="nums">loyalty_config</span> is expected.
+            </p>
+          </Card>
+        )}
       </div>
     </>
   );
