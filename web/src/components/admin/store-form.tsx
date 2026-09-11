@@ -51,7 +51,7 @@ export function StoreForm({ initial }: { initial: StoreValues }) {
 
   return (
     <form
-      className="mx-auto max-w-2xl space-y-8 px-6 py-8 lg:px-10"
+      className="space-y-8"
       onSubmit={(e) => {
         e.preventDefault();
         save();

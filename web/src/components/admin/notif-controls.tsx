@@ -34,7 +34,7 @@ export function NotifControls({
   };
 
   return (
-    <ul className="mx-auto max-w-3xl divide-y divide-border px-6 py-2 lg:px-10">
+    <ul className="divide-y divide-accent">
       {ROWS.map((row) => (
         <li key={row.field} className="flex items-center justify-between gap-4 py-4">
           <div className="min-w-0">

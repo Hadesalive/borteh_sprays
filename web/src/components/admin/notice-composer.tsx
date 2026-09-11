@@ -42,7 +42,7 @@ export function NoticeComposer({ allCount, marketingCount }: { allCount: number;
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-6 lg:px-10">
+    <div>
       {/* kind */}
       <div className="flex gap-2">
         {(

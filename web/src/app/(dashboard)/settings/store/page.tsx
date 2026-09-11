@@ -2,17 +2,21 @@ import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 
 import { createServerClient } from "@/lib/supabase/server";
+import { PageHeader } from "@/components/admin/page-header";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/admin/empty-state";
 import { StoreForm } from "@/components/admin/store-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function StorePage() {
   const db = createServerClient();
-  const { data } = await db
+  const { data, error } = await db
     .from("store_location")
     .select("id, name, code, address_text, phone, type")
     .eq("is_default", true)
     .maybeSingle();
+  if (error) throw error;
 
   const store = data as {
     id: string;
@@ -25,30 +29,35 @@ export default async function StorePage() {
 
   return (
     <>
-      <div className="border-b border-border px-6 py-5 lg:px-10">
-        <Link href="/settings" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="size-4" />
+      <PageHeader title="Store profile" description="Your store name and pickup address, shown across the app." />
+
+      <div className="px-5 pb-6 pt-2">
+        <Link
+          href="/settings"
+          className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-3.5" />
           Settings
         </Link>
-        <h1 className="mt-3 text-xl font-semibold tracking-tight">Store profile</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Your store name and pickup address, shown across the app.</p>
-      </div>
 
-      {store ? (
-        <StoreForm
-          initial={{
-            id: store.id,
-            name: store.name ?? "",
-            code: store.code ?? "",
-            address: store.address_text ?? "",
-            phone: store.phone ?? "",
-          }}
-        />
-      ) : (
-        <p className="mx-auto max-w-2xl px-6 py-10 text-center text-sm text-muted-foreground lg:px-10">
-          No default store found yet.
-        </p>
-      )}
+        {store ? (
+          <Card className="mt-4 p-4">
+            <StoreForm
+              initial={{
+                id: store.id,
+                name: store.name ?? "",
+                code: store.code ?? "",
+                address: store.address_text ?? "",
+                phone: store.phone ?? "",
+              }}
+            />
+          </Card>
+        ) : (
+          <Card className="mt-4 overflow-hidden p-0">
+            <EmptyState title="No default store found yet." description="One store_location row marked as default is expected." />
+          </Card>
+        )}
+      </div>
     </>
   );
 }

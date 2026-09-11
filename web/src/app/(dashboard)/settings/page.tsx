@@ -5,6 +5,7 @@ import { ArrowRight, BellRinging, Gift, MapPinArea, MegaphoneSimple, Storefront,
 import { createServerClient } from "@/lib/supabase/server";
 import { formatInt } from "@/lib/format";
 import { PageHeader } from "@/components/admin/page-header";
+import { Card } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
 
@@ -36,8 +37,9 @@ export default async function SettingsPage() {
   return (
     <>
       <PageHeader title="Settings" description="Configure how Borteh runs — no code required." />
-      <div className="mx-auto max-w-3xl px-6 py-6 lg:px-10">
-        <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+      <div className="px-5 pb-6 pt-2">
+        <Card className="mt-4 overflow-hidden p-0">
+        <ul className="divide-y divide-accent">
           {rows.map((s) => {
             const inner = (
               <>
@@ -68,6 +70,7 @@ export default async function SettingsPage() {
             );
           })}
         </ul>
+        </Card>
       </div>
     </>
   );
